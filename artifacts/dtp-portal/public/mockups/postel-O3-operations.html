@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Operations e SLA – Dashboard Operativa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F7FC}
+*{box-sizing:border-box}
+a{color:#0047BB}a:hover{color:#003A99}
+</style>
+<link rel="stylesheet" href="dtp-theme.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="dtp-auth.css">
+<script src="dtp-auth.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<template id="tpl">
+
+<div class="dtp-root" style="min-height: 100dvh; display: flex; flex-wrap: wrap; background: #F3F7FC; font-family: 'Inter', system-ui, sans-serif; color: #1A1C1E; font-variant-numeric: tabular-nums">
+
+<div class="dtp-projectbar" style="flex: 1 1 100%; background: #F2F8FF; color: #1A1C1E; border-bottom: 1px solid #D9E1EC">
+<div style="padding: 8px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<a class="dtp-home" href="../workspace" title="Torna a Workspace / 2026" data-testid="link-home">Home</a>
+<span class="dtp-session"><span class="dtp-session-tag">Accesso demo</span><span class="dtp-session-who" data-testid="text-current-role"><span data-dtp-role></span></span><button class="dtp-logout" type="button" data-dtp-logout data-testid="button-logout">Esci</button></span>
+</div>
+</div>
+
+<nav class="dtp-sidenav" aria-label="Navigazione principale" style="flex: 1 1 240px; max-width: 100%; background: #0047BB; color: #FFFFFF; padding: 20px 14px; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 8px">
+<svg width="32" height="32" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#FFEC00"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#0047BB" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#0047BB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<div>
+<div style="font-weight: 700; font-size: 17px; line-height: 1.1">postel</div>
+<div style="font-size: 11px; color: #DCE8FF">Console operativa DTP</div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="5">
+<a class="dtp-sidelink" href="{{n.href}}" aria-current="{{n.current}}" style="min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-radius: 6px; background: {{n.bg}}; color: {{n.fg}}; font-size: 14px; font-weight: {{n.weight}}; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>{{n.label}}</a>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px; padding-top: 14px; border-top: 1px solid #3B74D6">
+<span style="font-size: 11px; color: #C8DAFB; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 12px 6px; font-weight: 600">Sistemi collegati</span>
+<sc-for list="{{ext}}" as="e" hint-placeholder-count="1">
+<a class="dtp-sidelink" href="#{{e.id}}" style="min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 12px; border-radius: 6px; color: #FFFFFF; font-size: 14px; font-weight: 500; text-decoration: none">{{e.label}}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></a>
+</sc-for>
+</div>
+<div style="margin-top: auto; padding: 12px; border-radius: 6px; background: #003A99; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 14px; font-weight: 600">{{who.name}}</span>
+<span style="font-size: 12px; color: #DCE8FF">{{who.role}}</span>
+</div>
+</nav>
+
+<main class="dtp-main" style="flex: 999 1 560px; min-width: 0; padding: 24px 32px 48px; display: flex; flex-direction: column; gap: 20px">
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div>
+<h1 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em">Operations e SLA</h1>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Ultimi 30 giorni (28 set → 27 ott 2026) · aggiornamento orario, ultimo alle 17:00</p>
+</div>
+<span role="status" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: #FBE3E1; color: #A3201A; font-size: 13px; font-weight: 600"><span style="width: 8px; height: 8px; border-radius: 4px; background: #C7322A"></span>1 incidente P1 in corso</span>
+</div>
+
+<form aria-label="Filtri" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; padding: 14px; border-radius: 6px; background: #FFFFFF; border: 1px solid #D9E1EC">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="6">
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: #4D5762; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em">{{f.label}}
+<select style="min-height: 40px; min-width: 150px; padding: 0 10px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; text-transform: none; letter-spacing: 0; color: #1A1C1E"><option>{{f.value}}</option></select>
+</label>
+</sc-for>
+<button class="dtp-btn dtp-btn-t" type="reset" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 0; background: transparent; font: inherit; font-size: 13px; font-weight: 600; color: #0047BB; cursor: pointer">Reimposta</button>
+</form>
+
+<section aria-label="Indicatori operativi" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="6">
+<div class="dtp-card" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; color: #4D5762; font-weight: 500">{{k.label}}</span>
+<span style="font-size: 26px; font-weight: 600; letter-spacing: -0.02em; color: {{k.color}}">{{k.value}}</span>
+<span style="font-size: 12px; color: #4D5762; line-height: 1.4">{{k.sub}}</span>
+</div>
+</sc-for>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-volumi" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px">
+<div>
+<h2 id="titolo-volumi" style="margin: 0; font-size: 18px; font-weight: 600">Circa 43 mila transazioni per giorno feriale, picco il 21 ottobre</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Transazioni giornaliere su tutti i servizi e i clienti</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; align-items: center">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #0047BB"></span>Giorni feriali</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #9DBDF2"></span>Weekend</span>
+</div>
+</div>
+<div role="img" aria-label="Volumi giornalieri tra 17 mila nel weekend e 46 mila nei giorni feriali" style="display: flex; gap: 10px">
+<div style="display: flex; flex-direction: column; justify-content: space-between; height: 190px; font-size: 11px; color: #4D5762; text-align: right; width: 32px">
+<span>50k</span><span>25k</span><span>0</span>
+</div>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<div style="position: relative; height: 190px; display: flex; align-items: flex-end; gap: 4px; border-bottom: 1px solid #B8C2CF">
+<div style="position: absolute; left: 0; right: 0; top: 0; border-top: 1px dashed #DDE4EE"></div>
+<div style="position: absolute; left: 0; right: 0; top: 95px; border-top: 1px dashed #DDE4EE"></div>
+<sc-for list="{{daily}}" as="d" hint-placeholder-count="30">
+<div style="flex: 1; min-width: 0; height: {{d.h}}; background: {{d.color}}; border-radius: 2px 2px 0 0"></div>
+</sc-for>
+</div>
+<div style="display: flex; justify-content: space-between; font-size: 11px; color: #4D5762"><span>28 set</span><span>5 ott</span><span>12 ott</span><span>19 ott</span><span>27 ott</span></div>
+</div>
+</div>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-sla" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div>
+<h2 id="titolo-sla" style="margin: 0; font-size: 18px; font-weight: 600">Due servizi sotto l'obiettivo SLA del 98%: Identificazioni Proprietarie e Doc Composition</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Livello di servizio per servizio · obiettivo: almeno 98% delle transazioni entro il tempo contrattuale</p>
+</div>
+<div style="overflow-x: auto">
+<div role="table" aria-label="Livelli di servizio per servizio" style="min-width: 1000px; font-size: 13px">
+<div role="row" style="display: grid; grid-template-columns: 2.2fr 1fr 1fr 0.9fr 0.9fr 1.5fr 0.9fr 1fr; color: #4D5762; font-size: 12px; border-bottom: 1px solid #D9E1EC">
+<span role="columnheader" style="padding: 10px">Servizio</span>
+<span role="columnheader" style="padding: 10px; text-align: right">Volume 30 gg</span>
+<span role="columnheader" style="padding: 10px; text-align: right">Errore tecnico</span>
+<span role="columnheader" style="padding: 10px; text-align: right">Tempo p95</span>
+<span role="columnheader" style="padding: 10px; text-align: right">Tempo SLA</span>
+<span role="columnheader" style="padding: 10px">Entro SLA</span>
+<span role="columnheader" style="padding: 10px; text-align: right">Uptime</span>
+<span role="columnheader" style="padding: 10px">Stato</span>
+</div>
+<sc-for list="{{svc}}" as="s" hint-placeholder-count="9">
+<div role="row" style="display: grid; grid-template-columns: 2.2fr 1fr 1fr 0.9fr 0.9fr 1.5fr 0.9fr 1fr; align-items: center; border-bottom: 1px solid #EAEFF5">
+<span role="rowheader" style="padding: 10px; font-weight: 600">{{s.name}}</span>
+<span role="cell" style="padding: 10px; text-align: right">{{s.vol}}</span>
+<span role="cell" style="padding: 10px; text-align: right; color: {{s.errColor}}; font-weight: {{s.errWeight}}">{{s.err}}</span>
+<span role="cell" style="padding: 10px; text-align: right">{{s.p95}}</span>
+<span role="cell" style="padding: 10px; text-align: right; color: #4D5762">{{s.target}}</span>
+<span role="cell" style="padding: 10px; display: flex; align-items: center; gap: 8px"><strong style="font-weight: 600; width: 46px">{{s.sla}}</strong><span style="position: relative; flex: 1; height: 8px; border-radius: 4px; background: #E4EAF2"><span style="display: block; width: {{s.slaW}}; height: 8px; border-radius: 4px; background: {{s.bar}}"></span><span style="position: absolute; left: 50%; top: -3px; width: 2px; height: 14px; background: #0B2A5B"></span></span></span>
+<span role="cell" style="padding: 10px; text-align: right">{{s.up}}</span>
+<span role="cell" style="padding: 10px"><span style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: {{s.bg}}; color: {{s.fg}}">{{s.state}}</span></span>
+</div>
+</sc-for>
+</div>
+</div>
+<p style="margin: 0; font-size: 12px; color: #4D5762">Barra "Entro SLA": scala dal 96% al 100%, la tacca indica l'obiettivo del 98%.</p>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-attivazioni" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div>
+<h2 id="titolo-attivazioni" style="margin: 0; font-size: 18px; font-weight: 600">Attivazioni in corso: 5, di cui una ferma oltre i 10 giorni previsti</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Ordini e contratti firmati in commercial orchestration che aspettano l'attivazione dei servizi</p>
+</div>
+</div>
+<div style="overflow-x: auto">
+<div role="table" aria-label="Attivazioni in corso" style="min-width: 1040px; font-size: 13px">
+<div role="row" style="display: grid; grid-template-columns: {{actCols}}; color: #4D5762; font-size: 12px; border-bottom: 1px solid #D9E1EC">
+<span role="columnheader" style="padding: 10px">Ordine</span>
+<span role="columnheader" style="padding: 10px">Cliente</span>
+<span role="columnheader" style="padding: 10px">Offerta</span>
+<span role="columnheader" style="padding: 10px">Richiesto il</span>
+<span role="columnheader" style="padding: 10px">Stato</span>
+<span role="columnheader" style="padding: 10px; text-align: right">Giorni</span>
+<span role="columnheader" style="padding: 10px">Incaricato</span>
+<sc-if value="{{isOps}}" hint-placeholder-val="{{ true }}"><span role="columnheader" style="padding: 10px">Azione</span></sc-if>
+</div>
+<sc-for list="{{acts}}" as="a" hint-placeholder-count="5">
+<div role="row" style="display: grid; grid-template-columns: {{actCols}}; align-items: center; border-bottom: 1px solid #EAEFF5">
+<span role="rowheader" style="padding: 10px; font-weight: 600">{{a.id}}</span>
+<span role="cell" style="padding: 10px"><a href="postel-O5-scheda-cliente.html" style="text-decoration: none; font-weight: 500">{{a.client}}</a></span>
+<span role="cell" style="padding: 10px">{{a.offer}}</span>
+<span role="cell" style="padding: 10px">{{a.date}}</span>
+<span role="cell" style="padding: 10px"><span style="display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: {{a.bg}}; color: {{a.fg}}">{{a.state}}</span></span>
+<span role="cell" style="padding: 10px; text-align: right; font-weight: 600; color: {{a.dayColor}}">{{a.days}}</span>
+<span role="cell" style="padding: 10px">{{a.owner}}</span>
+<sc-if value="{{isOps}}" hint-placeholder-val="{{ true }}"><span role="cell" style="padding: 6px 10px"><button class="dtp-btn" type="button" style="min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid {{a.btnBorder}}; background: {{a.btnBg}}; color: {{a.btnFg}}; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer">{{a.btn}}</button></span></sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px">
+<section class="dtp-card" aria-labelledby="titolo-ko" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div>
+<h2 id="titolo-ko" style="margin: 0; font-size: 18px; font-weight: 600">Motivi di esito negativo</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">41.380 KO di processo in 30 giorni, tutti i servizi</p>
+</div>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{ko}}" as="k" hint-placeholder-count="6">
+<li style="display: flex; flex-direction: column; gap: 5px">
+<div style="display: flex; justify-content: space-between; gap: 8px; font-size: 13px"><span>{{k.name}}</span><strong style="font-weight: 600">{{k.p}}</strong></div>
+<div style="height: 8px; border-radius: 4px; background: #E4EAF2"><div style="width: {{k.w}}; height: 8px; border-radius: 4px; background: #E8692A"></div></div>
+</li>
+</sc-for>
+</ul>
+<div style="padding-top: 12px; border-top: 1px solid #EAEFF5; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; color: #4D5762; font-weight: 500">Transazioni per canale</span>
+<div role="img" aria-label="API 64%, web 24%, app 12%" style="display: flex; height: 14px; border-radius: 4px; overflow: hidden">
+<div style="width: 64%; background: #0047BB"></div>
+<div style="width: 24%; background: #6FA0EE; border-left: 2px solid #FFFFFF"></div>
+<div style="width: 12%; background: #13877E; border-left: 2px solid #FFFFFF"></div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px"><span>API 64%</span><span>Web 24%</span><span>App 12%</span></div>
+</div>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-ticket" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div>
+<h2 id="titolo-ticket" style="margin: 0; font-size: 18px; font-weight: 600">Ticket e incidenti</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">37 ticket aperti · tempo medio di risoluzione 6,4 h</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{tickets}}" as="t" hint-placeholder-count="4">
+<div style="padding: 12px; border-radius: 6px; border: 1px solid #D9E1EC; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 12px; font-weight: 600; color: {{t.color}}">{{t.p}}</span>
+<span style="font-size: 22px; font-weight: 600">{{t.n}}</span>
+<span style="font-size: 11px; color: #4D5762">MTTR {{t.mttr}}</span>
+</div>
+</sc-for>
+</div>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+<sc-for list="{{incidents}}" as="i" hint-placeholder-count="4">
+<li style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #EAEFF5">
+<span style="flex: none; width: 36px; height: 24px; border-radius: 6px; background: {{i.bg}}; color: {{i.fg}}; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{i.p}}</span>
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-size: 14px; font-weight: 600">{{i.svc}}</span>
+<span style="font-size: 13px; color: #1A1C1E">{{i.what}}</span>
+<span style="font-size: 12px; color: {{i.statusColor}}; font-weight: 500">{{i.when}} · {{i.status}} · {{i.pix}}</span>
+<sc-if value="{{isOps}}" hint-placeholder-val="{{ true }}"><a href="#pix" style="font-size: 13px; font-weight: 600; text-decoration: none; padding: 6px 0">Apri in PIX</a></sc-if>
+</div>
+</li>
+</sc-for>
+</ul>
+</section>
+</div>
+
+</main>
+</div>
+</template>
+<script>
+/* Mini runtime per le pagine esportate: template {{ }}, sc-for, sc-if, onClick, setState. */
+(function () {
+  var _tl = Number.prototype.toLocaleString;
+  Number.prototype.toLocaleString = function (loc, opt) {
+    if (loc === 'it-IT') opt = Object.assign({ useGrouping: 'always' }, opt || {});
+    try { return _tl.call(this, loc, opt); } catch (e) { return _tl.call(this, loc); }
+  };
+  var HOLE = /\{\{\s*([^}]+?)\s*\}\}/g, FULL = /^\{\{\s*([^}]+?)\s*\}\}$/;
+  function lookup(path, scope) {
+    path = path.trim();
+    if (path === 'true') return true; if (path === 'false') return false;
+    if (/^-?\d+(\.\d+)?$/.test(path)) return Number(path);
+    var parts = path.split('.'), v = scope;
+    for (var i = 0; i < parts.length; i++) { if (v == null) return undefined; v = v[parts[i]]; }
+    return v;
+  }
+  function interp(str, scope) {
+    return str.replace(HOLE, function (_, p) { var v = lookup(p, scope); return v == null ? '' : String(v); });
+  }
+  function renderChildren(src, dst, scope) {
+    for (var c = src.firstChild; c; c = c.nextSibling) renderNode(c, dst, scope);
+  }
+  function renderNode(node, dst, scope) {
+    if (node.nodeType === 3) { dst.appendChild(document.createTextNode(interp(node.nodeValue, scope))); return; }
+    if (node.nodeType !== 1) return;
+    var tag = node.localName;
+    if (tag === 'sc-for') {
+      var list = lookup((node.getAttribute('list') || '').replace(/^\{\{|\}\}$/g, ''), scope) || [];
+      var as = node.getAttribute('as') || 'item';
+      list.forEach(function (item, i) {
+        var s = Object.create(scope); s[as] = item; s.$index = i;
+        renderChildren(node, dst, s);
+      });
+      return;
+    }
+    if (tag === 'sc-if') {
+      var val = lookup((node.getAttribute('value') || '').replace(/^\{\{|\}\}$/g, ''), scope);
+      if (val) renderChildren(node, dst, scope);
+      return;
+    }
+    var el = node.namespaceURI === 'http://www.w3.org/2000/svg'
+      ? document.createElementNS(node.namespaceURI, node.localName) : document.createElement(node.localName);
+    for (var a = 0; a < node.attributes.length; a++) {
+      var at = node.attributes[a], name = at.name, raw = at.value;
+      if (name.indexOf('hint-') === 0) continue;
+      var m = raw.match(FULL);
+      if (m) {
+        var v = lookup(m[1], scope);
+        if (name.indexOf('on') === 0 && typeof v === 'function') { el.addEventListener(name.slice(2), v); continue; }
+        if (name === 'defaultchecked' || name === 'checked') { if (v) { el.setAttribute('checked', ''); el.checked = true; } continue; }
+        if (name === 'defaultvalue') { el.setAttribute('value', v == null ? '' : String(v)); continue; }
+        if (v == null || v === false && name.indexOf('aria-') !== 0) continue;
+        el.setAttribute(name, String(v));
+      } else if (name === 'defaultvalue') { el.setAttribute('value', raw);
+      } else if (name === 'defaultchecked') { el.setAttribute('checked', '');
+      } else { el.setAttribute(name, interp(raw, scope)); }
+    }
+    renderChildren(node.localName === 'template' ? node.content : node, el, scope);
+    dst.appendChild(el);
+  }
+  function DCLogic(props) { this.props = props || {}; this.state = null; }
+  DCLogic.prototype.setState = function (o) {
+    this.state = Object.assign({}, this.state || {}, o);
+    this.__render();
+  };
+  DCLogic.prototype.forceUpdate = function () { this.__render(); };
+  window.DCLogic = DCLogic;
+  window.DC = {
+    mount: function (Comp, meta) {
+      var props = {};
+      Object.keys(meta).forEach(function (k) { if (k[0] !== '$' && meta[k] && 'default' in meta[k]) props[k] = meta[k]['default']; });
+      /* Sessione demo: il ruolo arriva da DTPAuth; senza permesso la pagina non viene disegnata. */
+      var auth = window.DTPAuth, access = auth ? auth.enter(meta) : null;
+      if (!access) return;
+      if (meta.persona && meta.persona.options) props.persona = access.role;
+      var tpl = document.getElementById('tpl').content, root = document.getElementById('app');
+      var c = new Comp(props);
+      c.__render = function () {
+        var frag = document.createDocumentFragment();
+        renderChildren(tpl, frag, c.renderVals());
+        root.replaceChildren(frag);
+        auth.decorate(root);
+      };
+      c.__render();
+    }
+  };
+})();
+
+</script>
+<script>
+
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var P = this.props.persona;
+    var WHO = { com: { name: 'Marco Rinaldi', role: 'Commerciale' }, ops: { name: 'Chiara Ferri', role: 'Operations · nessun dato economico' }, cdg: { name: 'Elena Moretti', role: 'Controllo di gestione' } };
+    var PAGES = [
+      ['o1', 'Executive overview', 'postel-O1-executive.html', ['com', 'cdg'], 'M3 3v18h18 M7 15l4-4 3 3 5-6'],
+      ['o2', 'Portafoglio e contratti', 'postel-O2-portafoglio.html', ['com', 'ops', 'cdg'], 'M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'],
+      ['o3', 'Operations e SLA', 'postel-O3-operations.html', ['com', 'ops'], 'M22 12h-4l-3 9L9 3l-3 9H2'],
+      ['o4', 'Ricavi, costi e margini', 'postel-O4-marginalita.html', ['com', 'cdg'], 'M17 7.5A6 6 0 1 0 17 16.5 M4 10.5h9 M4 13.5h9'],
+      ['o5', 'Scheda cliente 360°', 'postel-O5-scheda-cliente.html', ['com', 'ops', 'cdg'], 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21c0-4 4-6 8-6s8 2 8 6']
+    ];
+    var nav = PAGES.filter(function (p) { return p[3].indexOf(P) >= 0; }).map(function (p) {
+      var on = p[0] === 'o3';
+      return { label: p[1], href: p[2], icon: p[4], current: on ? 'page' : 'false', bg: on ? '#FFFFFF' : 'transparent', fg: on ? '#0047BB' : '#FFFFFF', weight: on ? 600 : 500 };
+    });
+    var EXT = { com: [['co', 'Commercial orchestration']], ops: [['pix', 'PIX · assistenza']], cdg: [['rf', 'Rating e fatturazione'], ['co', 'Commercial orchestration']] };
+    var ext = EXT[P].map(function (e) { return { id: e[0], label: e[1] }; });
+    var filters = [
+      { label: 'Periodo', value: 'Ultimi 30 giorni' }, { label: 'Famiglia', value: 'Tutte' },
+      { label: 'Servizio', value: 'Tutti' }, { label: 'Canale', value: 'Tutti' },
+      { label: 'Cliente', value: 'Tutti' }, { label: 'Bundle', value: 'Tutti' }
+    ];
+    var kpis = [
+      { label: 'Transazioni', value: '1,09 M', color: '#1A1C1E', sub: '+8,1% rispetto ai 30 giorni precedenti' },
+      { label: 'Tasso errore tecnico', value: '0,30%', color: '#1A1C1E', sub: 'obiettivo ≤ 0,50%' },
+      { label: 'Transazioni entro SLA', value: '99,4%', color: '#1A1C1E', sub: '2 servizi sotto il 98%' },
+      { label: 'Uptime piattaforma', value: '99,96%', color: '#1A6B4A', sub: 'obiettivo 99,90%' },
+      { label: 'Ticket aperti', value: '37', color: '#1A1C1E', sub: '1 P1 · 6 P2 · 18 P3 · 12 P4' },
+      { label: 'Tempo medio di risoluzione', value: '6,4 h', color: '#1A1C1E', sub: '−1,1 h rispetto al mese precedente' }
+    ];
+    var dv = [40448, 39895, 42129, 39886, 41983, 17402, 16925, 42358, 40526, 42373, 40979, 41226, 17986, 18787, 41844, 42436, 44367, 45942, 44478, 18415, 19566, 42609, 46403, 44016, 43521, 43560, 18726, 19766, 44323, 46325];
+    var daily = dv.map(function (v, i) {
+      var wk = [5, 6, 12, 13, 19, 20, 26, 27].indexOf(i) >= 0;
+      return { h: (v / 50000 * 190).toFixed(1) + 'px', color: wk ? '#9DBDF2' : '#0047BB' };
+    });
+    var raw = [
+      ['Verifiche Contatti', 412300, 0.21, '1,8 s', '5 s', 99.7, '99,98%'],
+      ['Identificazioni Full Prospect', 86450, 0.64, '9,2 s', '15 s', 98.9, '99,95%'],
+      ['Full Prospect con funnel completato', 63980, 0.31, '4,1 s', '10 s', 99.5, '99,95%'],
+      ['Identificazioni Proprietarie', 24910, 1.42, '12,6 s', '15 s', 96.8, '99,91%'],
+      ['Contratti', 71240, 0.18, '2,4 s', '5 s', 99.6, '99,97%'],
+      ['Doc Composition Contratti', 73860, 0.47, '6,8 s', '8 s', 97.9, '99,97%'],
+      ['Nuovi Certificati FEA', 39120, 0.35, '3,9 s', '10 s', 99.4, '99,96%'],
+      ['Apposizioni FEA con COD', 198740, 0.29, '1,6 s', '3 s', 99.3, '99,96%'],
+      ['Fatture Elettroniche', 118600, 0.12, '2,2 s', '10 s', 99.9, '99,99%']
+    ];
+    var svc = raw.map(function (r) {
+      var st = r[5] >= 99 ? ['Rispettato', '#E3F3EA', '#1A6B4A', '#2E8B62'] : (r[5] >= 98 ? ['Attenzione', '#FDF1D6', '#855800', '#E0A100'] : ['Violato', '#FBE3E1', '#A3201A', '#C7322A']);
+      return {
+        name: r[0], vol: r[1].toLocaleString('it-IT'),
+        err: r[2].toFixed(2).replace('.', ',') + '%', errColor: r[2] > 0.5 ? '#A3201A' : '#1A1C1E', errWeight: r[2] > 0.5 ? 600 : 400,
+        p95: r[3], target: r[4],
+        sla: r[5].toFixed(1).replace('.', ',') + '%', slaW: Math.max(0, (r[5] - 96) / 4 * 100).toFixed(1) + '%',
+        up: r[6], state: st[0], bg: st[1], fg: st[2], bar: st[3]
+      };
+    });
+    var koRaw = [['Documento non leggibile', 31], ['Selfie o liveness non superato', 22], ['OTP scaduto o errato', 18], ['Documento scaduto', 12], ['Dati non corrispondenti', 10], ['Scarto SDI', 7]];
+    var ko = koRaw.map(function (k) { return { name: k[0], p: k[1] + '%', w: (k[1] / 31 * 100).toFixed(1) + '%' }; });
+    var tickets = [
+      { p: 'P1', n: 1, mttr: '1,8 h', color: '#A3201A' },
+      { p: 'P2', n: 6, mttr: '4,9 h', color: '#B03A0B' },
+      { p: 'P3', n: 18, mttr: '7,2 h', color: '#855800' },
+      { p: 'P4', n: 12, mttr: '11,5 h', color: '#4D5762' }
+    ];
+    var incidents = [
+      { p: 'P1', bg: '#FBE3E1', fg: '#A3201A', svc: 'Identificazioni Proprietarie', what: 'Timeout del controllo liveness', when: '27 ott, 13:40', status: 'in corso da 3 h 20 min', statusColor: '#A3201A' },
+      { p: 'P2', bg: '#FDE7DC', fg: '#B03A0B', svc: 'Identificazioni Proprietarie', what: 'Latenza elevata del provider OCR', when: '18 ott', status: 'risolto in 2 h 10 min', statusColor: '#4D5762' },
+      { p: 'P2', bg: '#FDE7DC', fg: '#B03A0B', svc: 'Doc Composition Contratti', what: 'Errori di generazione PDF sul template v3', when: '9 ott', status: 'risolto in 45 min', statusColor: '#4D5762' },
+      { p: 'P3', bg: '#FDF1D6', fg: '#855800', svc: 'Fatture Elettroniche', what: 'Ritardo nella ricezione degli esiti SDI (esterno)', when: '2 ott', status: 'risolto in 5 h 30 min', statusColor: '#4D5762' }
+    ];
+    var isOps = P === 'ops';
+    var pixIds = ['PIX-48261', 'PIX-48107', 'PIX-47952', 'PIX-47830'];
+    incidents.forEach(function (x, i) { x.pix = pixIds[i]; });
+    kpis.push({ label: 'Attivazioni in corso', value: '5', color: '#1A1C1E', sub: '1 ferma oltre i 10 giorni previsti' });
+    var AS = { todo: ['Da prendere in carico', '#FDF1D6', '#855800', 'Prendi in carico'], cfg: ['In configurazione', '#E5EFFF', '#0047BB', 'Aggiorna stato'], test: ['In collaudo', '#E5EFFF', '#0047BB', 'Aggiorna stato'], act: ['In attivazione', '#E5EFFF', '#0047BB', 'Completa attivazione'], block: ['Bloccata · PIX-48213', '#FBE3E1', '#A3201A', 'Apri ticket'] };
+    var acts = [
+      ['ORD-2026-1172', 'Farmacie Riunite Sud S.r.l.', 'Nuovo servizio: Identificazioni Proprietarie', '15 ott 2026', 'block', 12, 'C. Ferri'],
+      ['ORD-2026-1179', 'Banca Levante S.p.A.', 'Upgrade a Enterprise', '20 ott 2026', 'cfg', 7, 'F. Moro'],
+      ['CTR-2026-0532', 'Studio Notarile Ricci', 'Nuovo contratto: bundle Base', '22 ott 2026', 'test', 5, 'C. Ferri'],
+      ['ORD-2026-1187', 'Assicurazioni Aurora S.p.A.', 'Ricarica 500 Nuovi Certificati FEA', '24 ott 2026', 'act', 3, 'C. Ferri'],
+      ['ORD-2026-1190', 'Logistica Adriatica S.r.l.', 'Upgrade a Medium', '26 ott 2026', 'todo', 1, '—']
+    ].map(function (r) {
+      var a = AS[r[4]], urgent = r[4] === 'block' || r[4] === 'todo';
+      return { id: r[0], client: r[1], offer: r[2], date: r[3], state: a[0], bg: a[1], fg: a[2], days: r[5], dayColor: r[5] > 10 ? '#A3201A' : '#1A1C1E', owner: r[6], btn: a[3], btnBg: urgent ? '#0047BB' : '#FFFFFF', btnFg: urgent ? '#FFFFFF' : '#1A1C1E', btnBorder: urgent ? '#0047BB' : '#B8C2CF' };
+    });
+    return { isOps: isOps, acts: acts,
+      actCols: isOps ? '1.1fr 1.7fr 2.1fr 0.9fr 1.4fr 0.6fr 0.9fr 1.3fr' : '1.1fr 1.8fr 2.3fr 1fr 1.5fr 0.6fr 1fr',
+      who: WHO[P], nav: nav, ext: ext, filters: filters, kpis: kpis, daily: daily, svc: svc, ko: ko, tickets: tickets, incidents: incidents };
+  }
+}
+
+DC.mount(Component, {"persona": {"editor": "enum", "options": ["ops", "com"], "default": "ops"}, "$preview": {"width": 1440, "height": 2200}});
+</script>
+</body>
+</html>

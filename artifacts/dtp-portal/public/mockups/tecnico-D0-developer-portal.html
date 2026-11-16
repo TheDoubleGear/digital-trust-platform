@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Developer portal – Delegato tecnico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F7FC}
+*{box-sizing:border-box}
+a{color:#0047BB}a:hover{color:#003A99}
+</style>
+<link rel="stylesheet" href="dtp-theme.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="dtp-auth.css">
+<script src="dtp-auth.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<template id="tpl">
+
+<div class="dtp-root" style="min-height: 100dvh; background: #F3F7FC; font-family: 'Inter', system-ui, sans-serif; color: #1A1C1E; font-variant-numeric: tabular-nums">
+
+<header class="dtp-header" style="background: #EEDC00; border-bottom: 1px solid #D6C600">
+<div class="dtp-projectbar" style="padding: 8px 32px; background: #F2F8FF; border-bottom: 1px solid #D9E1EC; display: flex; flex-wrap: wrap; align-items: center; gap: 12px"><a class="dtp-home" href="../workspace" title="Torna a Workspace / 2026" data-testid="link-home">Home</a><span class="dtp-session"><span class="dtp-session-tag">Accesso demo</span><span class="dtp-session-who" data-testid="text-current-role"><span data-dtp-role></span></span><button class="dtp-logout" type="button" data-dtp-logout data-testid="button-logout">Esci</button></span></div>
+<div style="padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<div>
+<div style="font-weight: 800; font-size: 21px; letter-spacing: -0.03em; line-height: 1.1; color: #0047BB">postel</div>
+<div style="font-size: 12px; color: #33383D">Developer portal · Digital Trust Platform</div>
+</div>
+</div>
+<div style="flex: 1 1 280px; display: flex; justify-content: center">
+<label style="position: relative; display: flex; align-items: center; width: 100%; max-width: 440px">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Cerca nella documentazione</span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4D5762" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 12px"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z M21 21l-4.3-4.3"></path></svg>
+<input type="search" placeholder="Cerca API, guide, codici di errore" style="width: 100%; min-height: 44px; padding: 0 12px 0 40px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E">
+</label>
+</div>
+<div role="group" aria-label="Ambiente" style="display: flex; padding: 3px; border-radius: 999px; background: #FFFFFF; gap: 2px">
+<sc-for list="{{envs}}" as="e" hint-placeholder-count="2">
+<button class="dtp-btn" type="button" aria-pressed="{{e.pressed}}" onClick="{{e.pick}}" style="min-height: 40px; padding: 0 18px; border-radius: 999px; border: 0; background: {{e.bg}}; color: {{e.fg}}; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 4px; background: {{e.dot}}"></span>{{e.label}}</button>
+</sc-for>
+</div>
+<button class="dtp-chip dtp-iconbtn" type="button" aria-label="Notifiche, 2 non lette" style="position: relative; width: 44px; height: 44px; border-radius: 999px; border: 1px solid #FFFFFF; background: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+<span style="position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; border-radius: 9px; background: #C7322A; color: #FFFFFF; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; padding: 0 4px">2</span>
+</button>
+<div style="display: flex; align-items: center; gap: 10px">
+<div aria-hidden="true" style="width: 36px; height: 36px; border-radius: 18px; background: #0047BB; color: #FFFFFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">AC</div>
+<div style="line-height: 1.25">
+<div style="font-size: 14px; font-weight: 600">Andrea Colombo</div>
+<div style="font-size: 12px; color: #33383D">Delegato tecnico · Assicurazioni Aurora S.p.A.</div>
+</div>
+</div>
+</div>
+</header>
+
+<sc-if value="{{isSandbox}}" hint-placeholder-val="{{ true }}">
+<div role="status" style="background: #FDF1D6; border-bottom: 1px solid #F0D58A; padding: 8px 32px; font-size: 13px; color: #6B4700; display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+<strong style="font-weight: 600">Ambiente sandbox.</strong>
+<span>Dati di prova ed esiti simulati: le chiamate non generano consumi e non raggiungono utenti reali.</span>
+</div>
+</sc-if>
+
+<div style="display: flex; flex-wrap: wrap; align-items: stretch">
+
+<nav aria-label="Sezioni del developer portal" style="flex: 0 0 248px; background: #FFFFFF; border-right: 1px solid #D9E1EC; padding: 20px 14px; display: flex; flex-direction: column; gap: 18px">
+<a class="dtp-sidelink" href="tecnico-D0-developer-portal.html" aria-current="page" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; border-radius: 6px; background: #E5EFFF; color: #0047BB; font-size: 14px; font-weight: 600; text-decoration: none">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"></path></svg>Home tecnica</a>
+<sc-for list="{{nav}}" as="g" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 12px 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #4D5762">{{g.phase}}</span>
+<sc-for list="{{g.items}}" as="i" hint-placeholder-count="2">
+<a class="dtp-sidelink" href="{{i.href}}" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px; border-radius: 6px; color: #3A424C; font-size: 14px; font-weight: 500; text-decoration: none">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{i.icon}}"></path></svg>{{i.label}}</a>
+</sc-for>
+</div>
+</sc-for>
+<div style="margin-top: auto; border-top: 1px solid #D9E1EC; padding: 14px 12px 0; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; color: #4D5762">Stato della piattaforma</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #1A6B4A"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 4px; background: #2E8B62"></span>Tutti i servizi operativi</span>
+<a href="#" style="font-size: 13px; font-weight: 500; text-decoration: none; padding: 6px 0">Pagina di stato →</a>
+</div>
+</nav>
+
+<main class="dtp-main" style="flex: 1 1 640px; min-width: 0; padding: 24px 32px 48px; display: flex; flex-direction: column; gap: 20px; max-width: 1192px">
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div>
+<h1 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em">Integrazioni DTP</h1>
+<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">9 servizi abilitati dal contratto · 2 applicazioni · {{envNote}}</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button class="dtp-btn dtp-btn-o" type="button" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1A1C1E; cursor: pointer">Crea applicazione</button>
+<a class="dtp-btn dtp-btn-p" href="https://sandbox.developer.postel.example/console" style="min-height: 44px; padding: 0 20px; border-radius: 999px; background: #0047BB; color: #FFFFFF; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Apri la console sandbox</a>
+</div>
+</div>
+
+<section aria-label="Riepilogo" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="5">
+<div class="dtp-card" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; color: #4D5762; font-weight: 500">{{k.label}}</span>
+<span style="font-size: 28px; font-weight: 600; letter-spacing: -0.02em; color: {{k.color}}">{{k.value}}</span>
+<span style="font-size: 13px; color: #4D5762">{{k.sub}}</span>
+</div>
+</sc-for>
+</section>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px; align-items: start">
+
+<section class="dtp-card" aria-labelledby="titolo-avvisi" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<h2 id="titolo-avvisi" style="margin: 0; font-size: 18px; font-weight: 600">Da fare</h2>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{alerts}}" as="a" hint-placeholder-count="4">
+<li style="display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: 6px; background: {{a.bg}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{a.fg}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 20px; margin-top: 1px"><path d="{{a.icon}}"></path></svg>
+<div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 600; color: #1A1C1E">{{a.title}}</span>
+<span style="font-size: 13px; color: #3A424C; line-height: 1.45">{{a.text}}</span>
+</div>
+<a href="#" style="flex: 0 0 auto; font-size: 13px; font-weight: 600; text-decoration: none; padding: 2px 0; color: {{a.link}}">{{a.cta}}</a>
+</li>
+</sc-for>
+</ul>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-collaudo" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+<h2 id="titolo-collaudo" style="margin: 0; font-size: 18px; font-weight: 600">Collaudi in corso</h2>
+<span style="font-size: 13px; color: #4D5762">Integrazione app mobile</span>
+</div>
+<sc-for list="{{tests}}" as="t" hint-placeholder-count="2">
+<div style="border: 1px solid #D9E1EC; border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+<span style="font-size: 14px; font-weight: 600">{{t.name}}</span>
+<span style="font-size: 13px; color: {{t.fg}}; font-weight: 600">{{t.status}}</span>
+</div>
+<div role="img" aria-label="{{t.aria}}" style="display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: #EAEFF5">
+<span style="width: {{t.passW}}; background: #2E8B62"></span>
+<span style="width: {{t.failW}}; background: #C7322A"></span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: #3A424C">
+<span><strong style="font-weight: 600; color: #1A6B4A">{{t.pass}}</strong> superati</span>
+<span><strong style="font-weight: 600; color: #A3201A">{{t.fail}}</strong> falliti</span>
+<span><strong style="font-weight: 600; color: #1A1C1E">{{t.todo}}</strong> da eseguire</span>
+</div>
+<p style="margin: 0; font-size: 13px; color: #4D5762; line-height: 1.45">{{t.note}}</p>
+</div>
+</sc-for>
+<a href="#" style="font-size: 14px; font-weight: 600; text-decoration: none; padding: 6px 0">Apri Collaudo e go-live →</a>
+</section>
+
+</div>
+
+<section class="dtp-card" id="catalogo" aria-labelledby="titolo-catalogo" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div>
+<h2 id="titolo-catalogo" style="margin: 0; font-size: 18px; font-weight: 600">Catalogo API</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">{{catCount}} · ogni API si apre nella console sandbox, già autenticata con le credenziali di prova</p>
+</div>
+<a href="#" style="font-size: 14px; font-weight: 600; text-decoration: none; padding: 10px 0">Scarica le specifiche OpenAPI</a>
+</div>
+<div role="group" aria-label="Filtra per famiglia" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{fams}}" as="f" hint-placeholder-count="6">
+<button class="dtp-chip" type="button" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}" style="min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid {{f.border}}; background: {{f.bg}}; color: {{f.fg}}; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{f.label}}</button>
+</sc-for>
+</div>
+<div style="overflow-x: auto">
+<div role="table" aria-label="Catalogo API" style="min-width: 1040px; font-size: 13px">
+<div role="row" style="display: grid; grid-template-columns: 1.25fr 1.55fr 1.15fr 1.45fr 0.5fr 1.25fr 1.05fr; gap: 12px; padding: 10px 12px; border-bottom: 1px solid #D9E1EC; color: #4D5762; font-weight: 500">
+<span role="columnheader">Tipologia API</span>
+<span role="columnheader">Servizio di riferimento</span>
+<span role="columnheader">Famiglia</span>
+<span role="columnheader">Modalità</span>
+<span role="columnheader">Versione</span>
+<span role="columnheader">Stato integrazione</span>
+<span role="columnheader">Sandbox</span>
+</div>
+<sc-for list="{{apis}}" as="r" hint-placeholder-count="13">
+<div role="row" style="display: grid; grid-template-columns: 1.25fr 1.55fr 1.15fr 1.45fr 0.5fr 1.25fr 1.05fr; gap: 12px; padding: 12px; border-bottom: 1px solid #EAEFF5; align-items: center">
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; color: #1A1C1E">{{r.type}}</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #4D5762">{{r.path}}</span></span>
+<span role="cell">{{r.svc}}</span>
+<span role="cell" style="color: #3A424C">{{r.fam}}</span>
+<span role="cell" style="color: #3A424C">{{r.mode}}</span>
+<span role="cell" style="font-family: 'IBM Plex Mono', monospace; font-size: 12px">{{r.ver}}</span>
+<span role="cell"><span style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: {{r.sbg}}; color: {{r.sfg}}; font-size: 12px; font-weight: 600"><span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 4px; background: {{r.sdot}}"></span>{{r.state}}</span></span>
+<span role="cell"><a class="dtp-btn" href="{{r.href}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid #B8C2CF; font-weight: 600; text-decoration: none; color: #0047BB">Prova in sandbox <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></a></span>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px; align-items: start">
+
+<section class="dtp-card" aria-labelledby="titolo-avvio" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<h2 id="titolo-avvio" style="margin: 0; font-size: 18px; font-weight: 600">Avvio rapido · {{envName}}</h2>
+<p style="margin: 0; font-size: 13px; color: #4D5762; line-height: 1.45">Ottieni un token di accesso con le credenziali dell'applicazione, poi chiama l'API del servizio. Base URL: <code style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #1A1C1E">{{baseUrl}}</code></p>
+<pre class="dtp-code" style="margin: 0; padding: 16px; border-radius: 6px; background: #0B2A5B; color: #E3E8F1; font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 1.6; overflow-x: auto; white-space: pre">{{snippet}}</pre>
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<a href="#" style="font-size: 13px; font-weight: 600; text-decoration: none; padding: 6px 0">Guida introduttiva →</a>
+<a href="#" style="font-size: 13px; font-weight: 600; text-decoration: none; padding: 6px 0">Dati e scenari di prova →</a>
+</div>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-app" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+<h2 id="titolo-app" style="margin: 0; font-size: 18px; font-weight: 600">Applicazioni e credenziali · {{envName}}</h2>
+<a href="#" style="font-size: 13px; font-weight: 600; text-decoration: none; padding: 6px 0">Gestisci</a>
+</div>
+<sc-for list="{{apps}}" as="p" hint-placeholder-count="2">
+<div style="border: 1px solid #D9E1EC; border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center">
+<span style="font-size: 14px; font-weight: 600">{{p.name}}</span>
+<span style="font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: {{p.bg}}; color: {{p.fg}}">{{p.state}}</span>
+</div>
+<div style="display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; font-size: 13px">
+<span style="color: #4D5762">Client ID</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px">{{p.cid}}</span>
+<span style="color: #4D5762">Segreto</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px">{{p.secret}}</span>
+<span style="color: #4D5762">Ambiti</span><span>{{p.scopes}}</span>
+<span style="color: #4D5762">Scadenza</span><span style="color: {{p.expColor}}; font-weight: {{p.expWeight}}">{{p.exp}}</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button class="dtp-btn dtp-btn-o" type="button" style="min-height: 40px; padding: 0 18px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #1A1C1E; cursor: pointer">Ruota il segreto</button>
+<button class="dtp-btn dtp-btn-o" type="button" style="min-height: 40px; padding: 0 18px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #A3201A; cursor: pointer">Revoca</button>
+</div>
+</div>
+</sc-for>
+</section>
+
+</div>
+
+</main>
+</div>
+</div>
+</template>
+<script>
+/* Mini runtime per le pagine esportate: template {{ }}, sc-for, sc-if, onClick, setState. */
+(function () {
+  var _tl = Number.prototype.toLocaleString;
+  Number.prototype.toLocaleString = function (loc, opt) {
+    if (loc === 'it-IT') opt = Object.assign({ useGrouping: 'always' }, opt || {});
+    try { return _tl.call(this, loc, opt); } catch (e) { return _tl.call(this, loc); }
+  };
+  var HOLE = /\{\{\s*([^}]+?)\s*\}\}/g, FULL = /^\{\{\s*([^}]+?)\s*\}\}$/;
+  function lookup(path, scope) {
+    path = path.trim();
+    if (path === 'true') return true; if (path === 'false') return false;
+    if (/^-?\d+(\.\d+)?$/.test(path)) return Number(path);
+    var parts = path.split('.'), v = scope;
+    for (var i = 0; i < parts.length; i++) { if (v == null) return undefined; v = v[parts[i]]; }
+    return v;
+  }
+  function interp(str, scope) {
+    return str.replace(HOLE, function (_, p) { var v = lookup(p, scope); return v == null ? '' : String(v); });
+  }
+  function renderChildren(src, dst, scope) {
+    for (var c = src.firstChild; c; c = c.nextSibling) renderNode(c, dst, scope);
+  }
+  function renderNode(node, dst, scope) {
+    if (node.nodeType === 3) { dst.appendChild(document.createTextNode(interp(node.nodeValue, scope))); return; }
+    if (node.nodeType !== 1) return;
+    var tag = node.localName;
+    if (tag === 'sc-for') {
+      var list = lookup((node.getAttribute('list') || '').replace(/^\{\{|\}\}$/g, ''), scope) || [];
+      var as = node.getAttribute('as') || 'item';
+      list.forEach(function (item, i) {
+        var s = Object.create(scope); s[as] = item; s.$index = i;
+        renderChildren(node, dst, s);
+      });
+      return;
+    }
+    if (tag === 'sc-if') {
+      var val = lookup((node.getAttribute('value') || '').replace(/^\{\{|\}\}$/g, ''), scope);
+      if (val) renderChildren(node, dst, scope);
+      return;
+    }
+    var el = node.namespaceURI === 'http://www.w3.org/2000/svg'
+      ? document.createElementNS(node.namespaceURI, node.localName) : document.createElement(node.localName);
+    for (var a = 0; a < node.attributes.length; a++) {
+      var at = node.attributes[a], name = at.name, raw = at.value;
+      if (name.indexOf('hint-') === 0) continue;
+      var m = raw.match(FULL);
+      if (m) {
+        var v = lookup(m[1], scope);
+        if (name.indexOf('on') === 0 && typeof v === 'function') { el.addEventListener(name.slice(2), v); continue; }
+        if (name === 'defaultchecked' || name === 'checked') { if (v) { el.setAttribute('checked', ''); el.checked = true; } continue; }
+        if (name === 'defaultvalue') { el.setAttribute('value', v == null ? '' : String(v)); continue; }
+        if (v == null || v === false && name.indexOf('aria-') !== 0) continue;
+        el.setAttribute(name, String(v));
+      } else if (name === 'defaultvalue') { el.setAttribute('value', raw);
+      } else if (name === 'defaultchecked') { el.setAttribute('checked', '');
+      } else { el.setAttribute(name, interp(raw, scope)); }
+    }
+    renderChildren(node.localName === 'template' ? node.content : node, el, scope);
+    dst.appendChild(el);
+  }
+  function DCLogic(props) { this.props = props || {}; this.state = null; }
+  DCLogic.prototype.setState = function (o) {
+    this.state = Object.assign({}, this.state || {}, o);
+    this.__render();
+  };
+  DCLogic.prototype.forceUpdate = function () { this.__render(); };
+  window.DCLogic = DCLogic;
+  window.DC = {
+    mount: function (Comp, meta) {
+      var props = {};
+      Object.keys(meta).forEach(function (k) { if (k[0] !== '$' && meta[k] && 'default' in meta[k]) props[k] = meta[k]['default']; });
+      /* Sessione demo: il ruolo arriva da DTPAuth; senza permesso la pagina non viene disegnata. */
+      var auth = window.DTPAuth, access = auth ? auth.enter(meta) : null;
+      if (!access) return;
+      if (meta.persona && meta.persona.options) props.persona = access.role;
+      var tpl = document.getElementById('tpl').content, root = document.getElementById('app');
+      var c = new Comp(props);
+      c.__render = function () {
+        var frag = document.createDocumentFragment();
+        renderChildren(tpl, frag, c.renderVals());
+        root.replaceChildren(frag);
+        auth.decorate(root);
+      };
+      c.__render();
+    }
+  };
+})();
+
+</script>
+<script>
+
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var E = st.env || this.props.ambiente || 'sandbox';
+    var F = st.fam || 'all';
+    var sb = E === 'sandbox';
+    var envs = [['sandbox', 'Sandbox', '#E0A100'], ['produzione', 'Produzione', '#2E8B62']].map(function (x) {
+      var on = x[0] === E;
+      return { label: x[1], dot: x[2], pressed: on ? 'true' : 'false', bg: on ? '#0047BB' : 'transparent', fg: on ? '#FFFFFF' : '#1A1C1E', pick: function () { self.setState({ env: x[0] }); } };
+    });
+    var I = {
+      cat: 'M4 5h16M4 12h16M4 19h10',
+      doc: 'M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z M14 3v6h6',
+      box: 'M8 3H5a2 2 0 0 0-2 2v3 M16 3h3a2 2 0 0 1 2 2v3 M8 21H5a2 2 0 0 1-2-2v-3 M16 21h3a2 2 0 0 0 2-2v-3 M9 12l2 2 4-4',
+      key: 'M15 7a4 4 0 1 1-3.9 4.9L3 20v-3h3v-3h3l2.1-2.1A4 4 0 0 1 15 7z',
+      hook: 'M4 14a4 4 0 1 0 8 0V9a3 3 0 1 1 3 3h-1 M14 18h6',
+      check: 'M9 11l3 3L22 4 M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11',
+      log: 'M22 12h-4l-3 9L9 3l-3 9H2',
+      help: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3 M12 17h.01'
+    };
+    var nav = [
+      { phase: 'Esplora', items: [{ label: 'Catalogo API', href: '#catalogo', icon: I.cat }, { label: 'Documentazione', href: '#', icon: I.doc }] },
+      { phase: 'Prova', items: [{ label: 'Sandbox', href: '#', icon: I.box }] },
+      { phase: 'Integra', items: [{ label: 'Applicazioni e credenziali', href: '#', icon: I.key }, { label: 'Webhook ed eventi', href: '#', icon: I.hook }] },
+      { phase: 'Rilascia', items: [{ label: 'Collaudo e go-live', href: '#', icon: I.check }] },
+      { phase: 'Opera', items: [{ label: 'Log e monitoraggio', href: '#', icon: I.log }, { label: 'Consumi dei servizi', href: 'cliente-M1-panoramica.html', icon: I.cat }, { label: 'SDK e supporto', href: 'cliente-A-assistenza.html', icon: I.help }] }
+    ];
+    var kpis = sb ? [
+      { label: 'Servizi in produzione', value: '9 di 9', sub: 'integrati sul canale web', color: '#1A1C1E' },
+      { label: 'Collaudi aperti', value: '2', sub: 'app mobile · 1 caso fallito', color: '#855800' },
+      { label: 'Chiamate di prova, ultime 24 ore', value: '342', sub: '27 con esito simulato negativo', color: '#1A1C1E' },
+      { label: 'Eventi webhook simulati', value: '58', sub: 'tutti consegnati', color: '#1A6B4A' },
+      { label: 'Rifiutate dal gateway', value: '12', sub: 'schema della richiesta non valido', color: '#855800' }
+    ] : [
+      { label: 'Servizi in produzione', value: '9 di 9', sub: 'integrati sul canale web', color: '#1A1C1E' },
+      { label: 'Chiamate API, ultime 24 ore', value: '1.284', sub: 'errore tecnico 0,6%', color: '#1A1C1E' },
+      { label: 'Latenza mediana', value: '410 ms', sub: '95° percentile 1,8 s', color: '#1A1C1E' },
+      { label: 'Webhook non consegnati', value: '3', sub: 'endpoint fatture in timeout', color: '#B03A0B' },
+      { label: 'Rifiutate dal gateway', value: '37', sub: 'validazione in ingresso: 29 schema, 8 credenziali', color: '#855800' }
+    ];
+    var AI = { crit: 'M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9z M12 8v4 M12 16h.01', warn: 'M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z M12 9v4 M12 17h.01', info: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 16v-4 M12 8h.01' };
+    var AS = { crit: ['#FDE7DC', '#B03A0B'], warn: ['#FDF1D6', '#855800'], info: ['#E5EFFF', '#0047BB'] };
+    var alerts = [
+      ['crit', 'Credenziale di produzione in scadenza', 'Il segreto dell\'applicazione «Portale web» scade il 30 nov 2026. Ruotalo prima per evitare interruzioni.', 'Ruota ora'],
+      ['warn', 'Verifiche Contatti v1 in dismissione', 'La versione 1 sarà dismessa il 31 gen 2027. La v2 è disponibile in sandbox con la guida di migrazione.', 'Guida'],
+      ['warn', '3 webhook non consegnati', 'Eventi di esito Fatture Elettroniche in timeout verso l\'endpoint registrato nelle ultime 24 ore.', 'Registro'],
+      ['info', 'SDK mobile 3.2 disponibile', 'Aggiunge il componente white label di firma per Android e iOS.', 'Note di rilascio']
+    ].map(function (a) { var s = AS[a[0]]; return { bg: s[0], fg: s[1], link: s[1], icon: AI[a[0]], title: a[1], text: a[2], cta: a[3] }; });
+    var tests = [
+      ['Identificazioni Full Prospect', 6, 0, 2, 'In esecuzione', '#855800', 'Mancano i casi di documento scaduto e di sessione interrotta.'],
+      ['Apposizioni FEA con COD', 3, 1, 3, '1 caso fallito', '#A3201A', 'Fallito: codice OTP scaduto non gestito dall\'app. Correggi e ripeti il caso.']
+    ].map(function (t) {
+      var tot = t[1] + t[2] + t[3];
+      return { name: t[0], pass: t[1], fail: t[2], todo: t[3], status: t[4], fg: t[5], note: t[6], passW: (t[1] / tot * 100) + '%', failW: (t[2] / tot * 100) + '%', aria: t[1] + ' casi superati, ' + t[2] + ' falliti, ' + t[3] + ' da eseguire su ' + tot };
+    });
+    var SS = {
+      prod: ['In produzione', '#E3F3EA', '#1A6B4A', '#2E8B62'],
+      test: ['In collaudo · app', '#FDF1D6', '#855800', '#E0A100'],
+      mig: ['Migrare a v2', '#FDE7DC', '#B03A0B', '#E8692A']
+    };
+    var SB = 'https://sandbox.developer.postel.example/try/';
+    var raw = [
+      ['id', 'Identificazione', '/identificazioni', 'Identificazioni Full Prospect', 'Identità e verifica', 'Asincrona con webhook · SDK web e mobile', 'v2', 'test', 'identificazione-full-prospect'],
+      ['id', 'Identificazione · evento funnel', '/identificazioni/{id}/eventi', 'Full Prospect con funnel completato', 'Identità e verifica', 'Evento della stessa API', 'v2', 'prod', 'identificazione-full-prospect#funnel'],
+      ['id', 'Identificazione', '/identificazioni-proprietarie', 'Identificazioni Proprietarie', 'Identità e verifica', 'Asincrona con webhook', 'v2', 'prod', 'identificazione-proprietaria'],
+      ['id', 'Verifica', '/verifiche-contatti', 'Verifiche Contatti', 'Identità e verifica', 'Sincrona', 'v1', 'mig', 'verifica-contatti'],
+      ['fea', 'Emissione certificati', '/certificati', 'Nuovi Certificati FEA', 'Firma elettronica', 'Asincrona con webhook', 'v1', 'prod', 'certificati-fea'],
+      ['fea', 'Firma', '/apposizioni', 'Apposizioni FEA con COD', 'Firma elettronica', 'Asincrona con webhook · componente white label', 'v1', 'test', 'apposizione-fea'],
+      ['doc', 'Composizione documentale', '/composizioni', 'Doc Composition Contratti', 'Contratti e documenti', 'Sincrona', 'v1', 'prod', 'doc-composition'],
+      ['doc', 'Gestione contratti', '/contratti', 'Contratti', 'Contratti e documenti', 'Sincrona e asincrona con webhook', 'v1', 'prod', 'contratti'],
+      ['fat', 'Fatturazione elettronica', '/fatture', 'Fatture Elettroniche', 'Fatturazione', 'Asincrona con webhook', 'v1', 'prod', 'fatture-elettroniche'],
+      ['tr', 'Autenticazione', '/oauth/token', 'Tutti i servizi', 'Trasversale', 'Sincrona · token OAuth 2.0', 'v1', 'prod', 'autenticazione'],
+      ['tr', 'Eventi e webhook', '/webhook', 'Tutti i servizi', 'Trasversale', 'Asincrona · notifiche al cliente', 'v1', 'prod', 'webhook'],
+      ['tr', 'Stato delle transazioni', '/transazioni/{id}', 'Tutti i servizi', 'Trasversale', 'Sincrona · per identificativo', 'v1', 'prod', 'stato-transazioni'],
+      ['tr', 'Stato della piattaforma', '/stato', 'Tutti i servizi', 'Trasversale', 'Sincrona · disponibilità per servizio', 'v1', 'prod', 'stato-piattaforma']
+    ];
+    var famList = [['all', 'Tutte'], ['id', 'Identità e verifica'], ['fea', 'Firma elettronica'], ['doc', 'Contratti e documenti'], ['fat', 'Fatturazione'], ['tr', 'Trasversali']];
+    var fams = famList.map(function (f) {
+      var on = f[0] === F;
+      return { label: f[1], pressed: on ? 'true' : 'false', bg: on ? '#0047BB' : '#FFFFFF', fg: on ? '#FFFFFF' : '#1A1C1E', border: on ? '#0047BB' : '#B8C2CF', pick: function () { self.setState({ fam: f[0] }); } };
+    });
+    var apis = raw.filter(function (r) { return F === 'all' || r[0] === F; }).map(function (r) {
+      var s = SS[r[7]];
+      return { type: r[1], path: r[2], svc: r[3], fam: r[4], mode: r[5], ver: r[6], state: s[0], sbg: s[1], sfg: s[2], sdot: s[3], href: SB + r[8] };
+    });
+    var catCount = apis.length === 1 ? '1 API' : apis.length + ' API';
+    var baseUrl = sb ? 'https://sandbox.api.postel.example/v1' : 'https://api.postel.example/v1';
+    var snippet = 'curl -X POST ' + baseUrl + '/oauth/token \\\n  -u "$CLIENT_ID:$CLIENT_SECRET" \\\n  -d "grant_type=client_credentials" \\\n  -d "scope=identificazioni verifiche-contatti"\n\ncurl ' + baseUrl + '/verifiche-contatti \\\n  -H "Authorization: Bearer $ACCESS_TOKEN" \\\n  -H "Content-Type: application/json" \\\n  -d \'{"canale": "email", "valore": "' + (sb ? 'esito.positivo@test.postel.example' : 'cliente@dominio.it') + '"}\'';
+    var apps = sb ? [
+      { name: 'Portale web', state: 'Sandbox', bg: '#FDF1D6', fg: '#855800', cid: 'sbx_web_7f3a91c2', secret: '••••••••4kQ2', scopes: 'Tutti i servizi del contratto', exp: 'nessuna', expColor: '#1A1C1E', expWeight: 400 },
+      { name: 'App mobile', state: 'Sandbox', bg: '#FDF1D6', fg: '#855800', cid: 'sbx_app_2c8d04e7', secret: '••••••••Zr8m', scopes: 'Identificazioni, firma FEA', exp: 'nessuna', expColor: '#1A1C1E', expWeight: 400 }
+    ] : [
+      { name: 'Portale web', state: 'Produzione', bg: '#E3F3EA', fg: '#1A6B4A', cid: 'prd_web_b51e3a08', secret: '••••••••n7Ws', scopes: 'Tutti i servizi del contratto', exp: '30 nov 2026 · tra 20 giorni', expColor: '#B03A0B', expWeight: 600 },
+      { name: 'App mobile', state: 'Collaudo non concluso', bg: '#EAEFF5', fg: '#3A424C', cid: '—', secret: '—', scopes: 'Credenziali disponibili dopo il collaudo', exp: '—', expColor: '#4D5762', expWeight: 400 }
+    ];
+    return {
+      envs: envs, isSandbox: sb, envName: sb ? 'sandbox' : 'produzione', envNote: sb ? 'stai lavorando in sandbox' : 'stai consultando la produzione',
+      nav: nav, kpis: kpis, alerts: alerts, tests: tests, fams: fams, apis: apis, catCount: catCount,
+      baseUrl: baseUrl, snippet: snippet, apps: apps
+    };
+  }
+}
+
+DC.mount(Component, {"ambiente": {"editor": "enum", "options": ["sandbox", "produzione"], "default": "sandbox"}, "$preview": {"width": 1440, "height": 2150}});
+</script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistenza – Portale cliente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F7FC}
+*{box-sizing:border-box}
+a{color:#0047BB}a:hover{color:#003A99}
+</style>
+<link rel="stylesheet" href="dtp-theme.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="dtp-auth.css">
+<script src="dtp-auth.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<template id="tpl">
+
+<div class="dtp-root" style="min-height: 100dvh; background: #F3F7FC; font-family: 'Inter', system-ui, sans-serif; color: #1A1C1E; font-variant-numeric: tabular-nums">
+
+<div class="dtp-projectbar" style="background: #F2F8FF; color: #1A1C1E; border-bottom: 1px solid #D9E1EC">
+<div style="max-width: 1360px; margin: 0 auto; padding: 8px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<a class="dtp-home" href="../workspace" title="Torna a Workspace / 2026" data-testid="link-home">Home</a>
+<span class="dtp-session"><span class="dtp-session-tag">Accesso demo</span><span class="dtp-session-who" data-testid="text-current-role"><span data-dtp-role></span></span><button class="dtp-logout" type="button" data-dtp-logout data-testid="button-logout">Esci</button></span>
+</div>
+</div>
+
+<header class="dtp-header" style="background: #EEDC00; border-bottom: 1px solid #D6C600">
+<div style="max-width: 1360px; margin: 0 auto; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<div>
+<div style="font-weight: 800; font-size: 21px; letter-spacing: -0.03em; line-height: 1.1; color: #0047BB">postel</div>
+<div style="font-size: 12px; color: #33383D">Digital Trust Platform</div>
+</div>
+</div>
+<nav aria-label="Pagine del portale" style="display: flex; flex-wrap: wrap; gap: 4px; flex: 1 1 420px">
+<sc-if class="dtp-navlink" value="{{navFull}}" hint-placeholder-val="{{ true }}"><a href="cliente-H-catalogo.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Catalogo e acquisti</a></sc-if>
+<sc-if class="dtp-navlink" value="{{navFull}}" hint-placeholder-val="{{ true }}"><a href="cliente-U-utenze.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Utenze e deleghe</a></sc-if>
+<a class="dtp-navlink" href="cliente-M1-panoramica.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Contratto e consumi</a>
+<a class="dtp-navlink" href="cliente-A-assistenza.html" aria-current="page" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 600; text-decoration: none; color: #FFFFFF; background: #0047BB">Assistenza</a>
+<sc-if class="dtp-navlink" value="{{navTec}}" hint-placeholder-val="{{ false }}"><a href="tecnico-D0-developer-portal.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Developer portal</a></sc-if>
+</nav>
+<a class="dtp-iconbtn" href="cliente-N-notifiche.html" aria-label="Notifiche, 3 non lette" style="position: relative; width: 44px; height: 44px; border-radius: 999px; border: 1px solid #FFFFFF; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+<span style="position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; border-radius: 9px; background: #C7322A; color: #FFFFFF; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; padding: 0 4px">3</span>
+</a>
+<div style="display: flex; align-items: center; gap: 10px">
+<div aria-hidden="true" style="width: 36px; height: 36px; border-radius: 18px; background: #0047BB; color: #FFFFFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">{{who.ini}}</div>
+<div style="line-height: 1.25">
+<div style="font-size: 14px; font-weight: 600">{{who.name}}</div>
+<div style="font-size: 12px; color: #33383D">{{who.role}} · Assicurazioni Aurora S.p.A.</div>
+</div>
+</div>
+</div>
+</header>
+
+<main class="dtp-main" style="max-width: 1360px; margin: 0 auto; padding: 0 32px 48px; display: flex; flex-direction: column; gap: 20px">
+
+<div class="dtp-hero dtp-hero-bleed" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+<div>
+<h1 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em">Assistenza</h1>
+<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">Trova la risposta nelle guide oppure apri una richiesta: la prende in carico il supporto Postel e, se serve, la passa agli specialisti.</p>
+</div>
+<label style="position: relative; display: flex; align-items: center; flex: 0 1 420px">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Cerca nelle guide</span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4D5762" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 12px"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z M21 21l-4.3-4.3"></path></svg>
+<input type="search" placeholder="Cerca nelle guide, ad esempio «soglie» o «delega»" style="width: 100%; min-height: 44px; padding: 0 12px 0 40px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E">
+</label>
+</div>
+
+<section aria-label="Risorse self-service" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+<sc-for list="{{selfs}}" as="s" hint-placeholder-count="4">
+<a class="dtp-card dtp-linkcard" href="#guide" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: #1A1C1E">
+<span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 6px; background: {{s.bg}}; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{s.fg}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{s.icon}}"></path></svg></span>
+<span style="font-size: 16px; font-weight: 600">{{s.title}}</span>
+<span style="font-size: 13px; color: #4D5762; line-height: 1.45">{{s.text}}</span>
+</a>
+</sc-for>
+</section>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px; align-items: start">
+
+<section class="dtp-card" aria-labelledby="titolo-nuova" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<h2 id="titolo-nuova" style="margin: 0; font-size: 18px; font-weight: 600">Apri una richiesta</h2>
+<div role="group" aria-label="Argomento" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{topics}}" as="t" hint-placeholder-count="4">
+<button class="dtp-chip" type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid {{t.border}}; background: {{t.bg}}; color: {{t.fg}}; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{t.label}}</button>
+</sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Collega la richiesta a
+<select style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E"><option>Una transazione</option><option>Un servizio</option><option>Un ordine</option><option>Una fattura</option><option>Nessun elemento</option></select>
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Identificativo della transazione
+<input type="text" value="TRX-7F3A-20261110-0042" style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E">
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Priorità
+<select style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E"><option>Normale</option><option>Alta: servizio bloccato</option><option>Bassa: informazione</option></select>
+</label>
+</div>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Oggetto
+<input type="text" value="{{draft.subject}}" style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E">
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Descrizione
+<textarea rows="4" style="padding: 10px 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E; resize: vertical">{{draft.text}}</textarea>
+</label>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<button class="dtp-btn dtp-btn-o" type="button" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1A1C1E; cursor: pointer">Allega file</button>
+<button class="dtp-btn dtp-btn-p" type="button" onClick="{{send}}" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 0; background: #0047BB; font: inherit; font-size: 14px; font-weight: 600; color: #FFFFFF; cursor: pointer">{{sendLabel}}</button>
+</div>
+<p style="margin: 0; font-size: 12px; color: #4D5762; line-height: 1.5">La richiesta è associata ad Assicurazioni Aurora S.p.A. e all'elemento indicato, così il supporto vede subito il contesto.</p>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-stato" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+<h2 id="titolo-stato" style="margin: 0; font-size: 18px; font-weight: 600">Stato dei servizi</h2>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #1A6B4A"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 4px; background: #2E8B62"></span>Tutti operativi</span>
+</div>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+<sc-for list="{{status}}" as="s" hint-placeholder-count="4">
+<li style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #EAEFF5; font-size: 14px"><span>{{s.name}}</span><span style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: {{s.fg}}; font-weight: 600"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 4px; background: {{s.dot}}"></span>{{s.state}}</span></li>
+</sc-for>
+</ul>
+<p style="margin: 0; font-size: 13px; color: #4D5762; line-height: 1.45">Ultimo incidente: rallentamento delle identificazioni il 6 nov dalle 10:12 alle 10:40, risolto.</p>
+</section>
+
+</div>
+
+<section class="dtp-card" aria-labelledby="titolo-richieste" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div>
+<h2 id="titolo-richieste" style="margin: 0; font-size: 18px; font-weight: 600">{{listTitle}}</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Ogni aggiornamento ti arriva anche come notifica.</p>
+</div>
+</div>
+<div style="overflow-x: auto">
+<div role="table" aria-label="Richieste di assistenza" style="min-width: 980px; font-size: 13px">
+<div role="row" style="display: grid; grid-template-columns: 0.9fr 2.2fr 1.4fr 1.3fr 1.2fr 1.3fr; gap: 12px; padding: 10px 12px; border-bottom: 1px solid #D9E1EC; color: #4D5762; font-weight: 500">
+<span role="columnheader">Richiesta</span><span role="columnheader">Oggetto</span><span role="columnheader">Collegata a</span><span role="columnheader">In carico a</span><span role="columnheader">Stato</span><span role="columnheader">Ultimo aggiornamento</span>
+</div>
+<sc-for list="{{tickets}}" as="t" hint-placeholder-count="4">
+<div role="row" style="display: grid; grid-template-columns: 0.9fr 2.2fr 1.4fr 1.3fr 1.2fr 1.3fr; gap: 12px; padding: 12px; border-bottom: 1px solid #EAEFF5; align-items: center">
+<a role="cell" href="#ticket" style="font-weight: 600; text-decoration: none">{{t.id}}</a>
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">{{t.subject}}</span><span style="color: #4D5762">aperta da {{t.by}}</span></span>
+<span role="cell" style="color: #3A424C">{{t.link}}</span>
+<span role="cell">{{t.owner}}</span>
+<span role="cell"><span style="display: inline-block; padding: 3px 10px; border-radius: 999px; background: {{t.bg}}; color: {{t.fg}}; font-size: 12px; font-weight: 600">{{t.state}}</span></span>
+<span role="cell" style="color: #3A424C">{{t.when}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+</main>
+</div>
+</template>
+<script>
+/* Mini runtime per le pagine esportate: template {{ }}, sc-for, sc-if, onClick, setState. */
+(function () {
+  var _tl = Number.prototype.toLocaleString;
+  Number.prototype.toLocaleString = function (loc, opt) {
+    if (loc === 'it-IT') opt = Object.assign({ useGrouping: 'always' }, opt || {});
+    try { return _tl.call(this, loc, opt); } catch (e) { return _tl.call(this, loc); }
+  };
+  var HOLE = /\{\{\s*([^}]+?)\s*\}\}/g, FULL = /^\{\{\s*([^}]+?)\s*\}\}$/;
+  function lookup(path, scope) {
+    path = path.trim();
+    if (path === 'true') return true; if (path === 'false') return false;
+    if (/^-?\d+(\.\d+)?$/.test(path)) return Number(path);
+    var parts = path.split('.'), v = scope;
+    for (var i = 0; i < parts.length; i++) { if (v == null) return undefined; v = v[parts[i]]; }
+    return v;
+  }
+  function interp(str, scope) {
+    return str.replace(HOLE, function (_, p) { var v = lookup(p, scope); return v == null ? '' : String(v); });
+  }
+  function renderChildren(src, dst, scope) {
+    for (var c = src.firstChild; c; c = c.nextSibling) renderNode(c, dst, scope);
+  }
+  function renderNode(node, dst, scope) {
+    if (node.nodeType === 3) { dst.appendChild(document.createTextNode(interp(node.nodeValue, scope))); return; }
+    if (node.nodeType !== 1) return;
+    var tag = node.localName;
+    if (tag === 'sc-for') {
+      var list = lookup((node.getAttribute('list') || '').replace(/^\{\{|\}\}$/g, ''), scope) || [];
+      var as = node.getAttribute('as') || 'item';
+      list.forEach(function (item, i) {
+        var s = Object.create(scope); s[as] = item; s.$index = i;
+        renderChildren(node, dst, s);
+      });
+      return;
+    }
+    if (tag === 'sc-if') {
+      var val = lookup((node.getAttribute('value') || '').replace(/^\{\{|\}\}$/g, ''), scope);
+      if (val) renderChildren(node, dst, scope);
+      return;
+    }
+    var el = node.namespaceURI === 'http://www.w3.org/2000/svg'
+      ? document.createElementNS(node.namespaceURI, node.localName) : document.createElement(node.localName);
+    for (var a = 0; a < node.attributes.length; a++) {
+      var at = node.attributes[a], name = at.name, raw = at.value;
+      if (name.indexOf('hint-') === 0) continue;
+      var m = raw.match(FULL);
+      if (m) {
+        var v = lookup(m[1], scope);
+        if (name.indexOf('on') === 0 && typeof v === 'function') { el.addEventListener(name.slice(2), v); continue; }
+        if (name === 'defaultchecked' || name === 'checked') { if (v) { el.setAttribute('checked', ''); el.checked = true; } continue; }
+        if (name === 'defaultvalue') { el.setAttribute('value', v == null ? '' : String(v)); continue; }
+        if (v == null || v === false && name.indexOf('aria-') !== 0) continue;
+        el.setAttribute(name, String(v));
+      } else if (name === 'defaultvalue') { el.setAttribute('value', raw);
+      } else if (name === 'defaultchecked') { el.setAttribute('checked', '');
+      } else { el.setAttribute(name, interp(raw, scope)); }
+    }
+    renderChildren(node.localName === 'template' ? node.content : node, el, scope);
+    dst.appendChild(el);
+  }
+  function DCLogic(props) { this.props = props || {}; this.state = null; }
+  DCLogic.prototype.setState = function (o) {
+    this.state = Object.assign({}, this.state || {}, o);
+    this.__render();
+  };
+  DCLogic.prototype.forceUpdate = function () { this.__render(); };
+  window.DCLogic = DCLogic;
+  window.DC = {
+    mount: function (Comp, meta) {
+      var props = {};
+      Object.keys(meta).forEach(function (k) { if (k[0] !== '$' && meta[k] && 'default' in meta[k]) props[k] = meta[k]['default']; });
+      /* Sessione demo: il ruolo arriva da DTPAuth; senza permesso la pagina non viene disegnata. */
+      var auth = window.DTPAuth, access = auth ? auth.enter(meta) : null;
+      if (!access) return;
+      if (meta.persona && meta.persona.options) props.persona = access.role;
+      var tpl = document.getElementById('tpl').content, root = document.getElementById('app');
+      var c = new Comp(props);
+      c.__render = function () {
+        var frag = document.createDocumentFragment();
+        renderChildren(tpl, frag, c.renderVals());
+        root.replaceChildren(frag);
+        auth.decorate(root);
+      };
+      c.__render();
+    }
+  };
+})();
+
+</script>
+<script>
+
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var set = function (o) { self.setState(o); };
+    var P = this.props.persona;
+    var WHO = {
+      lr: { name: 'Paolo Ferretti', role: 'Legale rappresentante', ini: 'PF' },
+      amm: { name: 'Giulia Marchetti', role: 'Delegato amministrativo', ini: 'GM' },
+      op: { name: 'Davide Sala', role: 'Delegato operativo', ini: 'DS' },
+      tec: { name: 'Andrea Colombo', role: 'Delegato tecnico', ini: 'AC' }
+    };
+    var I = {
+      book: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20 M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z',
+      faq: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3 M12 17h.01',
+      play: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M10 8l6 4-6 4z',
+      pulse: 'M22 12h-4l-3 9L9 3l-3 9H2'
+    };
+    var selfs = [
+      { title: 'Manuali', text: 'Guide al portale: catalogo, deleghe, consumi, fatture e contratto.', icon: I.book, bg: '#E5EFFF', fg: '#0047BB' },
+      { title: 'Domande frequenti', text: 'Le risposte alle richieste più comuni, per argomento.', icon: I.faq, bg: '#E5EFFF', fg: '#0047BB' },
+      { title: 'Tutorial', text: 'Brevi video sulle operazioni principali, passo per passo.', icon: I.play, bg: '#E5EFFF', fg: '#0047BB' },
+      { title: P === 'tec' ? 'Documentazione tecnica' : 'Stato dei servizi', text: P === 'tec' ? 'API, SDK e sandbox sono nel developer portal.' : 'Disponibilità dei servizi in tempo reale e incidenti recenti.', icon: I.pulse, bg: '#E3F3EA', fg: '#1A6B4A' }
+    ];
+    var TOP = { lr: ['Contratto e fatture', 'Deleghe e accessi', 'Servizi e consumi', 'Integrazione tecnica'], amm: ['Contratto e fatture', 'Deleghe e accessi', 'Servizi e consumi'], op: ['Deleghe e accessi', 'Servizi e consumi'], tec: ['Integrazione tecnica', 'Servizi e consumi', 'Deleghe e accessi'] }[P];
+    var topic = st.topic && TOP.indexOf(st.topic) >= 0 ? st.topic : TOP[0];
+    var topics = TOP.map(function (t) { var on = t === topic; return { label: t, pressed: on ? 'true' : 'false', bg: on ? '#0047BB' : '#FFFFFF', fg: on ? '#FFFFFF' : '#1A1C1E', border: on ? '#0047BB' : '#B8C2CF', pick: function () { set({ topic: t }); } }; });
+    var DR = {
+      'Contratto e fatture': ['Overage di ottobre: chiarimento sull\'importo', 'Vorremmo il dettaglio delle unità conteggiate oltre la quantità inclusa per Nuovi Certificati FEA.'],
+      'Deleghe e accessi': ['Il delegato non ha ricevuto l\'invito', 'L\'invito inviato il 10 nov non risulta arrivato al destinatario.'],
+      'Servizi e consumi': ['Esito negativo su una identificazione', 'La transazione indicata risulta con esito negativo senza motivo visibile.'],
+      'Integrazione tecnica': ['Webhook non consegnati verso il nostro endpoint', 'Da ieri alcuni eventi di esito non arrivano: allego l\'identificativo della transazione.']
+    };
+    var sent = st.sent || [];
+    var send = function () { if (sent.indexOf(topic) < 0) set({ sent: sent.concat([topic]) }); };
+    var dot = function (s) { return s === 'Operativo' ? ['#2E8B62', '#1A6B4A'] : ['#E0A100', '#855800']; };
+    var status = ['Identità e verifica', 'Firma elettronica', 'Contratti e documenti', 'Fatturazione'].map(function (n) { var s = 'Operativo', d = dot(s); return { name: n, state: s, dot: d[0], fg: d[1] }; });
+    var TS = { open: ['Aperta', '#E5EFFF', '#0047BB'], work: ['In lavorazione', '#FDF1D6', '#855800'], wait: ['In attesa di tua risposta', '#FDE7DC', '#B03A0B'], closed: ['Chiusa', '#E3F3EA', '#1A6B4A'] };
+    var base = [
+      ['TCK-20418', 'Esito negativo su una identificazione', 'Davide Sala', 'Transazione TRX-7F3A-…-0039', 'Specialisti Postel (L2)', 'work', 'oggi 11:20 · passata agli specialisti', ['lr', 'op']],
+      ['TCK-20391', 'Webhook non consegnati verso il nostro endpoint', 'Andrea Colombo', 'Servizio Fatture Elettroniche', 'Supporto Postel', 'wait', 'ieri 17:45 · richiesti i log dell\'endpoint', ['lr', 'tec']],
+      ['TCK-20355', 'Overage di settembre: chiarimento', 'Giulia Marchetti', 'Fattura FT-2026-09044', 'Supporto Postel', 'closed', '2 ott · risolta con nota di dettaglio', ['lr', 'amm']],
+      ['TCK-20302', 'Il delegato non ha ricevuto l\'invito', 'Paolo Ferretti', 'Delega operativa', 'Supporto Postel', 'closed', '12 set · invito inviato di nuovo', ['lr']]
+    ];
+    var tickets = sent.map(function (t, i) { return ['TCK-' + (20430 + i), DR[t][0], WHO[P].name, t === 'Integrazione tecnica' ? 'Servizio Fatture Elettroniche' : 'Transazione TRX-7F3A-…-0042', 'Supporto Postel', 'open', 'adesso · presa in carico entro 4 ore lavorative', [P, 'lr']]; }).reverse().concat(base)
+      .filter(function (t) { return t[7].indexOf(P) >= 0; })
+      .map(function (t) { var s = TS[t[5]]; return { id: t[0], subject: t[1], by: t[2], link: t[3], owner: t[4], state: s[0], bg: s[1], fg: s[2], when: t[6] }; });
+    return {
+      who: WHO[P], navFull: P !== 'tec', navTec: P === 'tec', selfs: selfs, topics: topics,
+      draft: { subject: DR[topic][0], text: DR[topic][1] },
+      send: send, sendLabel: sent.indexOf(topic) >= 0 ? 'Richiesta inviata' : 'Invia la richiesta',
+      status: status, tickets: tickets,
+      listTitle: P === 'lr' ? 'Richieste della tua azienda' : 'Le tue richieste'
+    };
+  }
+}
+
+DC.mount(Component, {"persona": {"editor": "enum", "options": ["lr", "amm", "op", "tec"], "default": "lr"}, "$preview": {"width": 1440, "height": 1700}});
+</script>
+</body>
+</html>

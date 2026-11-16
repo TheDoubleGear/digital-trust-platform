@@ -1,0 +1,30 @@
+/* Sessione dimostrativa: ruolo corrente, uscita, avvisi e collegamenti non disponibili.
+   Condiviso dalle 19 pagine HTML (dashboard con runtime e vetrina pubblica). */
+.dtp-session{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px;margin-left:auto;font-family:'Inter',system-ui,sans-serif}
+.dtp-session-tag{font-size:12px;color:#4D5762;line-height:1.4}
+.dtp-session-who{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px;border-radius:999px;background:#FFFFFF;border:1px solid #D9E1EC;font-size:13px;font-weight:600;color:#1A1C1E}
+.dtp-session-who small{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#4D5762}
+.dtp-session-who::before{content:"";width:8px;height:8px;border-radius:50%;background:#EEDC00;box-shadow:0 0 0 1px #B5A700}
+.dtp-logout{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 16px;border-radius:999px;border:1px solid #0047BB;background:#0047BB;color:#FFFFFF;font:inherit;font-family:'Inter',system-ui,sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background-color .15s ease}
+.dtp-logout:hover{background:#003A99}
+.dtp-logout:active{transform:translateY(1px)}
+.dtp-logout:focus-visible{outline:3px solid #0B2A5B;outline-offset:2px}
+
+/* Accesso e sessione integrati nella testata Postel. */
+.dtp-header-session{display:flex;flex-wrap:wrap;align-items:center;gap:10px;max-width:100%}
+.dtp-header-session .dtp-home{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border:1px solid #0047BB;border-radius:999px;background:#FFFFFF;color:#0047BB;font-size:13px;font-weight:600;text-decoration:none;transition:background-color .15s ease}
+.dtp-header-session .dtp-home:hover{background:#E5EFFF;color:#003A99}
+.dtp-header-session .dtp-home:focus-visible{outline:3px solid #0047BB;outline-offset:2px}
+
+/* Collegamenti che il ruolo corrente non può aprire */
+a[data-dtp-locked]{opacity:.5;cursor:not-allowed!important;box-shadow:none!important;transform:none!important}
+
+/* Avviso di cortesia */
+.dtp-toast{position:fixed;left:50%;bottom:20px;z-index:200;max-width:min(560px,calc(100vw - 32px));padding:12px 18px;border-radius:6px;border-left:4px solid #FFEC00;background:#0B2A5B;color:#FFFFFF;font-family:'Inter',system-ui,sans-serif;font-size:14px;font-weight:500;line-height:1.45;box-shadow:0 12px 32px rgba(11,31,77,.32);transform:translate(-50%,24px);opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+.dtp-toast[data-show="true"]{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:720px){
+  .dtp-session{margin-left:0;width:100%}
+  .dtp-session .dtp-logout{margin-left:auto}
+}
+@media (prefers-reduced-motion:reduce){.dtp-toast{transition:none}}

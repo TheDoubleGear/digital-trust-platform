@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contratto e consumi – Portale cliente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F7FC}
+*{box-sizing:border-box}
+a{color:#0047BB}a:hover{color:#003A99}
+</style>
+<link rel="stylesheet" href="dtp-theme.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="dtp-auth.css">
+<script src="dtp-auth.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<template id="tpl">
+
+<div class="dtp-root" style="min-height: 100dvh; background: #F3F7FC; font-family: 'Inter', system-ui, sans-serif; color: #1A1C1E; font-variant-numeric: tabular-nums">
+
+<div class="dtp-projectbar" style="background: #F2F8FF; color: #1A1C1E; border-bottom: 1px solid #D9E1EC">
+<div style="max-width: 1360px; margin: 0 auto; padding: 8px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<a class="dtp-home" href="../workspace" title="Torna a Workspace / 2026" data-testid="link-home">Home</a>
+<span class="dtp-session"><span class="dtp-session-tag">Accesso demo</span><span class="dtp-session-who" data-testid="text-current-role"><span data-dtp-role></span></span><button class="dtp-logout" type="button" data-dtp-logout data-testid="button-logout">Esci</button></span>
+</div>
+</div>
+
+<header class="dtp-header" style="background: #EEDC00; border-bottom: 1px solid #D6C600">
+<div style="max-width: 1360px; margin: 0 auto; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<div>
+<div style="font-weight: 800; font-size: 21px; letter-spacing: -0.03em; line-height: 1.1; color: #0047BB">postel</div>
+<div style="font-size: 12px; color: #33383D">Digital Trust Platform</div>
+</div>
+</div>
+<nav aria-label="Pagine del portale" style="display: flex; flex-wrap: wrap; gap: 4px; flex: 1 1 420px">
+<sc-if class="dtp-navlink" value="{{navFull}}" hint-placeholder-val="{{ true }}"><a href="cliente-H-catalogo.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Catalogo e acquisti</a></sc-if>
+<sc-if class="dtp-navlink" value="{{navFull}}" hint-placeholder-val="{{ true }}"><a href="cliente-U-utenze.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Utenze e deleghe</a></sc-if>
+<a class="dtp-navlink" href="cliente-M1-panoramica.html" aria-current="page" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 600; text-decoration: none; color: #FFFFFF; background: #0047BB">Contratto e consumi</a>
+<a class="dtp-navlink" href="cliente-A-assistenza.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Assistenza</a>
+<sc-if class="dtp-navlink" value="{{navTec}}" hint-placeholder-val="{{ false }}"><a href="tecnico-D0-developer-portal.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Developer portal</a></sc-if>
+</nav>
+<a class="dtp-iconbtn" href="cliente-N-notifiche.html" aria-label="Notifiche, 3 non lette" style="position: relative; width: 44px; height: 44px; border-radius: 999px; border: 1px solid #FFFFFF; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+<span style="position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; border-radius: 9px; background: #C7322A; color: #FFFFFF; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; padding: 0 4px">3</span>
+</a>
+<div style="display: flex; align-items: center; gap: 10px">
+<div aria-hidden="true" style="width: 36px; height: 36px; border-radius: 18px; background: #0047BB; color: #FFFFFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">{{who.ini}}</div>
+<div style="line-height: 1.25">
+<div style="font-size: 14px; font-weight: 600">{{who.name}}</div>
+<div style="font-size: 12px; color: #33383D">{{who.role}} · Assicurazioni Aurora S.p.A.</div>
+</div>
+</div>
+</div>
+</header>
+
+<main class="dtp-main" style="max-width: 1360px; margin: 0 auto; padding: 24px 32px 48px; display: flex; flex-direction: column; gap: 22px">
+
+<section class="dtp-card" aria-label="Contratto" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 22px 24px; display: flex; flex-wrap: wrap; gap: 28px; align-items: center">
+<div style="display: flex; align-items: center; gap: 16px; flex: 1 1 380px">
+<div style="width: 64px; height: 64px; border-radius: 6px; border: 1px dashed #9AA6B8; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #4D5762; text-align: center; line-height: 1.3">[LOGO<br>CLIENTE]</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.01em">Contratto e consumi</h1>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+<span style="padding: 4px 10px; border-radius: 999px; background: #0047BB; color: #FFFFFF; font-size: 12px; font-weight: 600">Bundle Medium</span>
+<span style="font-size: 13px; color: #4D5762">{{contractLine}}</span>
+</div>
+</div>
+</div>
+<div style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 13px">
+<span style="color: #4D5762">Periodo contrattuale <strong style="color: #1A1C1E; font-weight: 600">01 mar 2026 → 28 feb 2027</strong></span>
+<span style="color: #4D5762">Rinnovo tra <strong style="color: #1A1C1E; font-weight: 600">124 giorni</strong></span>
+</div>
+<div role="img" aria-label="Tempo trascorso 65,9 per cento del periodo contrattuale" style="height: 8px; border-radius: 4px; background: #E4EAF2; overflow: hidden"><div style="width: 65.9%; height: 8px; background: #0B2A5B"></div></div>
+<div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 12px; color: #4D5762">
+<span>240 di 364 giorni trascorsi (65,9%)</span>
+<span>Ultimo aggiornamento: 27 ott 2026, 06:00</span>
+</div>
+</div>
+</section>
+
+<nav aria-label="Sotto-viste di Contratto e consumi" style="display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid #D9E1EC">
+<sc-for list="{{subtabs}}" as="t" hint-placeholder-count="5">
+<a href="{{t.href}}" aria-current="{{t.current}}" style="padding: 12px 16px; font-size: 14px; font-weight: {{t.weight}}; text-decoration: none; color: {{t.color}}; border-bottom: 3px solid {{t.line}}; margin-bottom: -1px">{{t.label}}</a>
+</sc-for>
+</nav>
+
+<form aria-label="Filtri" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end">
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Periodo
+<select style="min-height: 44px; min-width: 210px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E"><option>Periodo contrattuale</option><option>Ultimo mese</option><option>Ultimo trimestre</option><option>Intervallo personalizzato</option></select>
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Famiglia di servizi
+<select style="min-height: 44px; min-width: 190px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E"><option>Tutte</option><option>Identità e verifica</option><option>Contratti e documenti</option><option>Firma elettronica</option><option>Fatturazione</option></select>
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Canale
+<select style="min-height: 44px; min-width: 150px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E"><option>Tutti</option><option>Web</option><option>App</option><option>API</option></select>
+</label>
+<div style="flex: 1 1 40px"></div>
+<button class="dtp-btn dtp-btn-o" type="button" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1A1C1E; cursor: pointer">Report PDF</button>
+<button class="dtp-btn dtp-btn-o" type="button" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1A1C1E; cursor: pointer">{{exportLabel}}</button>
+</form>
+
+<section aria-label="Indicatori principali" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+<div class="dtp-card" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 13px; color: #4D5762; font-weight: 500">{{k.label}}</div>
+<div style="font-size: 30px; font-weight: 600; letter-spacing: -0.02em; color: {{k.color}}">{{k.value}}</div>
+<div style="font-size: 13px; color: #4D5762">{{k.sub}}</div>
+</div>
+</sc-for>
+</section>
+
+<div role="status" style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 6px; background: #FDE7DC; border: 1px solid #F3C2A8">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B03A0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+<p style="margin: 0; flex: 1 1 480px; font-size: 14px; line-height: 1.45; color: #5C1F06"><strong style="font-weight: 600">7 servizi su 9 si esauriranno prima del rinnovo del 28 feb 2027</strong> al ritmo attuale. {{bannerText}}</p>
+<sc-if value="{{f.buy}}" hint-placeholder-val="{{ true }}">
+<a class="dtp-btn" href="cliente-H-catalogo.html" style="min-height: 44px; padding: 0 20px; border-radius: 999px; background: #B03A0B; color: #FFFFFF; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Ricarica o upgrade</a>
+</sc-if>
+<sc-if value="{{f.noBuy}}" hint-placeholder-val="{{ false }}">
+<button class="dtp-btn" type="button" onClick="{{signal}}" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 0; background: #B03A0B; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{signalLabel}}</button>
+</sc-if>
+</div>
+
+<section aria-labelledby="titolo-servizi" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div>
+<h2 id="titolo-servizi" style="margin: 0; font-size: 18px; font-weight: 600">Servizi attivi</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Ordinati per urgenza. Soglie: attenzione 70%, critico 90%, esaurito 100%.</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: #4D5762; align-items: center">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 2px; height: 14px; background: #4D5762"></span>soglie 70% e 90%</span>
+<span style="display: flex; align-items: center; gap: 6px"><svg width="10" height="8" viewBox="0 0 10 8" aria-hidden="true"><path d="M5 0l5 8H0z" fill="#1A1C1E"></path></svg>ritmo atteso a oggi (65,9%)</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px">
+<sc-for list="{{services}}" as="s" hint-placeholder-count="9">
+<article class="dtp-card" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<span style="font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #4D5762; font-weight: 600">{{s.family}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; color: {{s.fg}}; background: {{s.bg}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{s.icon}}"></path></svg>{{s.state}}</span>
+</div>
+<h3 style="margin: 0; font-size: 16px; font-weight: 600; line-height: 1.3; min-height: 42px">{{s.name}}</h3>
+<div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap">
+<span style="font-size: 28px; font-weight: 600; letter-spacing: -0.02em">{{s.used}}</span>
+<span style="font-size: 14px; color: #4D5762">di {{s.incl}} · <strong style="color: #1A1C1E; font-weight: 600">{{s.pct}}</strong></span>
+</div>
+<div style="position: relative; padding-bottom: 10px">
+<div style="height: 10px; border-radius: 5px; background: #E4EAF2; overflow: hidden"><div style="height: 10px; width: {{s.barW}}; background: {{s.bar}}"></div></div>
+<div style="position: absolute; left: 70%; top: -3px; width: 2px; height: 16px; background: #4D5762"></div>
+<div style="position: absolute; left: 90%; top: -3px; width: 2px; height: 16px; background: #4D5762"></div>
+<svg width="10" height="8" viewBox="0 0 10 8" aria-hidden="true" style="position: absolute; left: calc(65.9% - 5px); top: 12px"><path d="M5 0l5 8H0z" fill="#1A1C1E"></path></svg>
+</div>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<div><dt style="font-size: 12px; color: #4D5762">Residuo</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">{{s.left}}</dd></div>
+<div><dt style="font-size: 12px; color: #4D5762">Esaurimento</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">{{s.exhaust}}</dd></div>
+<div><dt style="font-size: 12px; color: #4D5762">Ritmo</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">{{s.pacing}}</dd></div>
+</dl>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; border-top: 1px solid #EAEFF5; padding-top: 12px; min-height: 44px">
+<span style="font-size: 12px; font-weight: 500; color: {{s.noteColor}}">{{s.note}}</span>
+<a href="cliente-M2-dettaglio.html" style="font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 0">Dettaglio →</a>
+</div>
+</article>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 6px; border: 1px dashed #9AA6B8; background: #FFFFFF">
+<span style="font-size: 14px"><strong style="font-weight: 600">Servizi non attivi:</strong> nessuno. Tutti i servizi del catalogo sono inclusi nel tuo bundle; quando un servizio non è attivo compare qui con il collegamento al catalogo.</span>
+<a href="cliente-H-catalogo.html" style="font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 0">Vai al catalogo →</a>
+</div>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<section class="dtp-card" aria-labelledby="titolo-trend" style="flex: 999 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px">
+<div>
+<h2 id="titolo-trend" style="margin: 0; font-size: 18px; font-weight: 600">Andamento mensile dei consumi</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Transazioni per famiglia di servizi · ottobre al 27/10, ritmo giornaliero +6,0% rispetto a settembre</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: #1A1C1E; align-items: center">
+<sc-for list="{{families}}" as="fm" hint-placeholder-count="4">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 2px; background: {{fm.color}}"></span>{{fm.name}}</span>
+</sc-for>
+</div>
+</div>
+<div role="img" aria-label="Consumi mensili da marzo a ottobre 2026: picco a settembre con 7.190 transazioni, calo stagionale ad agosto" style="display: flex; gap: 12px">
+<div style="display: flex; flex-direction: column; justify-content: space-between; height: 240px; padding-top: 20px; font-size: 11px; color: #4D5762; text-align: right; width: 40px">
+<span>7.500</span><span>5.000</span><span>2.500</span><span>0</span>
+</div>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<div style="position: relative; height: 240px; display: flex; align-items: flex-end; gap: 4%; padding: 20px 2% 0; border-bottom: 1px solid #B8C2CF">
+<div style="position: absolute; left: 0; right: 0; top: 20px; border-top: 1px dashed #DDE4EE"></div>
+<div style="position: absolute; left: 0; right: 0; top: 93px; border-top: 1px dashed #DDE4EE"></div>
+<div style="position: absolute; left: 0; right: 0; top: 167px; border-top: 1px dashed #DDE4EE"></div>
+<sc-for list="{{months}}" as="m" hint-placeholder-count="8">
+<div style="position: relative; flex: 1; display: flex; flex-direction: column-reverse; height: {{m.h}}; min-width: 0">
+<div style="height: {{m.h1}}; background: #0047BB"></div>
+<div style="height: {{m.h2}}; background: #6FA0EE; border-bottom: 1px solid #FFFFFF"></div>
+<div style="height: {{m.h3}}; background: #13877E; border-bottom: 1px solid #FFFFFF"></div>
+<div style="height: {{m.h4}}; background: #E3A43A; border-bottom: 1px solid #FFFFFF; border-radius: 3px 3px 0 0"></div>
+<span style="position: absolute; top: -18px; left: 0; right: 0; text-align: center; font-size: 11px; color: #1A1C1E; font-weight: 600">{{m.total}}</span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; gap: 4%; padding: 0 2%">
+<sc-for list="{{months}}" as="m" hint-placeholder-count="8">
+<span style="flex: 1; text-align: center; font-size: 12px; color: #4D5762">{{m.label}}</span>
+</sc-for>
+</div>
+</div>
+</div>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-notifiche" style="flex: 1 1 340px; background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<h2 id="titolo-notifiche" style="margin: 0; font-size: 18px; font-weight: 600">Storico notifiche</h2>
+<span style="font-size: 12px; color: #4D5762">3 non lette</span>
+</div>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+<sc-for list="{{alerts}}" as="a" hint-placeholder-count="5">
+<li style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #EAEFF5">
+<span style="flex: none; width: 28px; height: 28px; border-radius: 6px; background: {{a.bg}}; color: {{a.fg}}; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{a.icon}}"></path></svg></span>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; line-height: 1.35; font-weight: {{a.weight}}">{{a.text}}</span>
+<span style="font-size: 12px; color: #4D5762">{{a.date}}</span>
+</div>
+</li>
+</sc-for>
+</ul>
+</section>
+</div>
+
+<section class="dtp-card" id="soglie" aria-labelledby="titolo-soglie" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div>
+<h2 id="titolo-soglie" style="margin: 0; font-size: 18px; font-weight: 600">Soglie e destinatari delle notifiche</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">{{sogliaSub}}</p>
+</div>
+<sc-if value="{{f.edit}}" hint-placeholder-val="{{ true }}">
+<button class="dtp-btn dtp-btn-p" type="button" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">Salva le modifiche</button>
+</sc-if>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 20px">
+<div style="flex: 999 1 560px; min-width: 0; overflow-x: auto">
+<div role="table" aria-label="Soglie per servizio" style="min-width: 520px; font-size: 13px">
+<div role="row" style="display: grid; grid-template-columns: 2.4fr 1fr 1fr; color: #4D5762; font-size: 12px; border-bottom: 1px solid #D9E1EC">
+<span role="columnheader" style="padding: 8px 10px">Servizio</span>
+<span role="columnheader" style="padding: 8px 10px">Attenzione</span>
+<span role="columnheader" style="padding: 8px 10px">Critico</span>
+</div>
+<sc-for list="{{thresholds}}" as="t" hint-placeholder-count="9">
+<div role="row" style="display: grid; grid-template-columns: 2.4fr 1fr 1fr; align-items: center; border-bottom: 1px solid #EAEFF5">
+<span role="rowheader" style="padding: 6px 10px; font-weight: 500">{{t.name}}</span>
+<span role="cell" style="padding: 6px 10px">
+<sc-if value="{{f.edit}}" hint-placeholder-val="{{ true }}"><label style="display: flex; align-items: center; gap: 6px"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Soglia di attenzione {{t.name}}</span><input type="number" defaultValue="{{t.warn}}" min="10" max="99" style="width: 72px; min-height: 40px; padding: 0 8px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px"> %</label></sc-if>
+<sc-if value="{{f.noEdit}}" hint-placeholder-val="{{ false }}"><span>{{t.warn}}%</span></sc-if>
+</span>
+<span role="cell" style="padding: 6px 10px">
+<sc-if value="{{f.edit}}" hint-placeholder-val="{{ true }}"><label style="display: flex; align-items: center; gap: 6px"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Soglia critica {{t.name}}</span><input type="number" defaultValue="{{t.crit}}" min="10" max="99" style="width: 72px; min-height: 40px; padding: 0 8px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px"> %</label></sc-if>
+<sc-if value="{{f.noEdit}}" hint-placeholder-val="{{ false }}"><span>{{t.crit}}%</span></sc-if>
+</span>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 13px; font-weight: 600">Destinatari</span>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{recipients}}" as="r" hint-placeholder-count="3">
+<li style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid #D9E1EC; border-radius: 6px">
+<span style="display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 14px; font-weight: 600">{{r.name}}</strong><span style="font-size: 12px; color: #4D5762">{{r.what}}</span></span>
+<sc-if value="{{f.edit}}" hint-placeholder-val="{{ true }}"><a href="#modifica" style="font-size: 13px; font-weight: 600; text-decoration: none; padding: 8px 0">Modifica</a></sc-if>
+</li>
+</sc-for>
+</ul>
+<sc-if value="{{f.edit}}" hint-placeholder-val="{{ true }}"><button class="dtp-btn dtp-btn-o" type="button" style="min-height: 44px; border-radius: 999px; border: 1px dashed #9AA6B8; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #0047BB; cursor: pointer">Aggiungi destinatario</button></sc-if>
+</div>
+</div>
+</section>
+
+<footer style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 12px; color: #4D5762; padding-top: 8px">
+<span>I consumi mostrati sono gli stessi usati per la fatturazione.</span>
+<span style="display: flex; gap: 16px"><a href="#glossario">Glossario KPI</a><a href="cliente-A-assistenza.html">Assistenza</a></span>
+</footer>
+
+</main>
+</div>
+</template>
+<script>
+/* Mini runtime per le pagine esportate: template {{ }}, sc-for, sc-if, onClick, setState. */
+(function () {
+  var _tl = Number.prototype.toLocaleString;
+  Number.prototype.toLocaleString = function (loc, opt) {
+    if (loc === 'it-IT') opt = Object.assign({ useGrouping: 'always' }, opt || {});
+    try { return _tl.call(this, loc, opt); } catch (e) { return _tl.call(this, loc); }
+  };
+  var HOLE = /\{\{\s*([^}]+?)\s*\}\}/g, FULL = /^\{\{\s*([^}]+?)\s*\}\}$/;
+  function lookup(path, scope) {
+    path = path.trim();
+    if (path === 'true') return true; if (path === 'false') return false;
+    if (/^-?\d+(\.\d+)?$/.test(path)) return Number(path);
+    var parts = path.split('.'), v = scope;
+    for (var i = 0; i < parts.length; i++) { if (v == null) return undefined; v = v[parts[i]]; }
+    return v;
+  }
+  function interp(str, scope) {
+    return str.replace(HOLE, function (_, p) { var v = lookup(p, scope); return v == null ? '' : String(v); });
+  }
+  function renderChildren(src, dst, scope) {
+    for (var c = src.firstChild; c; c = c.nextSibling) renderNode(c, dst, scope);
+  }
+  function renderNode(node, dst, scope) {
+    if (node.nodeType === 3) { dst.appendChild(document.createTextNode(interp(node.nodeValue, scope))); return; }
+    if (node.nodeType !== 1) return;
+    var tag = node.localName;
+    if (tag === 'sc-for') {
+      var list = lookup((node.getAttribute('list') || '').replace(/^\{\{|\}\}$/g, ''), scope) || [];
+      var as = node.getAttribute('as') || 'item';
+      list.forEach(function (item, i) {
+        var s = Object.create(scope); s[as] = item; s.$index = i;
+        renderChildren(node, dst, s);
+      });
+      return;
+    }
+    if (tag === 'sc-if') {
+      var val = lookup((node.getAttribute('value') || '').replace(/^\{\{|\}\}$/g, ''), scope);
+      if (val) renderChildren(node, dst, scope);
+      return;
+    }
+    var el = node.namespaceURI === 'http://www.w3.org/2000/svg'
+      ? document.createElementNS(node.namespaceURI, node.localName) : document.createElement(node.localName);
+    for (var a = 0; a < node.attributes.length; a++) {
+      var at = node.attributes[a], name = at.name, raw = at.value;
+      if (name.indexOf('hint-') === 0) continue;
+      var m = raw.match(FULL);
+      if (m) {
+        var v = lookup(m[1], scope);
+        if (name.indexOf('on') === 0 && typeof v === 'function') { el.addEventListener(name.slice(2), v); continue; }
+        if (name === 'defaultchecked' || name === 'checked') { if (v) { el.setAttribute('checked', ''); el.checked = true; } continue; }
+        if (name === 'defaultvalue') { el.setAttribute('value', v == null ? '' : String(v)); continue; }
+        if (v == null || v === false && name.indexOf('aria-') !== 0) continue;
+        el.setAttribute(name, String(v));
+      } else if (name === 'defaultvalue') { el.setAttribute('value', raw);
+      } else if (name === 'defaultchecked') { el.setAttribute('checked', '');
+      } else { el.setAttribute(name, interp(raw, scope)); }
+    }
+    renderChildren(node.localName === 'template' ? node.content : node, el, scope);
+    dst.appendChild(el);
+  }
+  function DCLogic(props) { this.props = props || {}; this.state = null; }
+  DCLogic.prototype.setState = function (o) {
+    this.state = Object.assign({}, this.state || {}, o);
+    this.__render();
+  };
+  DCLogic.prototype.forceUpdate = function () { this.__render(); };
+  window.DCLogic = DCLogic;
+  window.DC = {
+    mount: function (Comp, meta) {
+      var props = {};
+      Object.keys(meta).forEach(function (k) { if (k[0] !== '$' && meta[k] && 'default' in meta[k]) props[k] = meta[k]['default']; });
+      /* Sessione demo: il ruolo arriva da DTPAuth; senza permesso la pagina non viene disegnata. */
+      var auth = window.DTPAuth, access = auth ? auth.enter(meta) : null;
+      if (!access) return;
+      if (meta.persona && meta.persona.options) props.persona = access.role;
+      var tpl = document.getElementById('tpl').content, root = document.getElementById('app');
+      var c = new Comp(props);
+      c.__render = function () {
+        var frag = document.createDocumentFragment();
+        renderChildren(tpl, frag, c.renderVals());
+        root.replaceChildren(frag);
+        auth.decorate(root);
+      };
+      c.__render();
+    }
+  };
+})();
+
+</script>
+<script>
+
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var P = this.props.persona;
+    var set = function (o) { self.setState(o); };
+    var WHO = {
+      lr: { name: 'Paolo Ferretti', role: 'Legale rappresentante', ini: 'PF' },
+      amm: { name: 'Giulia Marchetti', role: 'Delegato amministrativo', ini: 'GM' },
+      op: { name: 'Davide Sala', role: 'Delegato operativo', ini: 'DS' },
+      tec: { name: 'Andrea Colombo', role: 'Delegato tecnico', ini: 'AC' }
+    };
+    var money = P === 'lr' || P === 'amm';
+    var f = { money: money, buy: money, noBuy: !money, edit: money, noEdit: !money };
+    var tabsRaw = [['Panoramica', 'cliente-M1-panoramica.html', true], ['Dettaglio servizio', 'cliente-M2-dettaglio.html', false], ['Qualità processi', 'cliente-M3-qualita.html', false]];
+    if (money) { tabsRaw.push(['Fatture', 'cliente-M4-fatture.html', false]); tabsRaw.push(['Contratto', 'cliente-M5-contratto.html', false]); }
+    var subtabs = tabsRaw.map(function (t) {
+      return { label: t[0], href: t[1], current: t[2] ? 'page' : 'false', weight: t[2] ? 600 : 500, color: t[2] ? '#0047BB' : '#4D5762', line: t[2] ? '#0047BB' : 'transparent' };
+    });
+    var ICON = {
+      ok: 'M22 11.1V12a10 10 0 1 1-5.9-9.1 M22 4 12 14.01l-3-3',
+      warn: 'M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z M12 9v4 M12 17h.01',
+      crit: 'M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9z M12 8v4 M12 16h.01',
+      out: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M15 9l-6 6 M9 9l6 6'
+    };
+    var ST = {
+      ok: { state: 'Regolare', fg: '#1A6B4A', bg: '#E3F3EA', bar: '#2E8B62', icon: ICON.ok },
+      warn: { state: 'Attenzione', fg: '#855800', bg: '#FDF1D6', bar: '#E0A100', icon: ICON.warn },
+      crit: { state: 'Critico', fg: '#B03A0B', bg: '#FDE7DC', bar: '#E8692A', icon: ICON.crit },
+      out: { state: 'Esaurito', fg: '#A3201A', bg: '#FBE3E1', bar: '#C7322A', icon: ICON.out }
+    };
+    var raw = [
+      ['Firma elettronica', 'Nuovi Certificati FEA', '2.640', '2.500', 105.6, '0 (+140)', '17 ott 2026', '1,60', 'out', money ? 'Overage attivo: € 3,00 per certificato' : 'Overage attivo: 140 certificati oltre soglia', '#A3201A'],
+      ['Identità e verifica', 'Identificazioni Full Prospect', '4.610', '5.000', 92.2, '390', '13 nov 2026', '1,40', 'crit', 'Si esaurirà 107 giorni prima del rinnovo', '#B03A0B'],
+      ['Identità e verifica', 'Full Prospect con funnel completato', '3.320', '4.000', 83.0, '680', '6 dic 2026', '1,26', 'warn', 'Si esaurirà prima del rinnovo', '#B03A0B'],
+      ['Identità e verifica', 'Verifiche Contatti', '19.850', '25.000', 79.4, '5.150', '17 dic 2026', '1,20', 'warn', 'Si esaurirà prima del rinnovo', '#B03A0B'],
+      ['Contratti e documenti', 'Doc Composition Contratti', '3.610', '5.000', 72.2, '1.390', '11 gen 2027', '1,10', 'warn', 'Si esaurirà prima del rinnovo', '#B03A0B'],
+      ['Firma elettronica', 'Apposizioni FEA con COD', '8.920', '12.500', 71.4, '3.580', '14 gen 2027', '1,08', 'warn', 'Si esaurirà prima del rinnovo', '#B03A0B'],
+      ['Contratti e documenti', 'Contratti', '3.480', '5.000', 69.6, '1.520', '22 gen 2027', '1,06', 'ok', 'Sotto soglia, ma si esaurirà prima del rinnovo', '#B03A0B'],
+      ['Identità e verifica', 'Identificazioni Proprietarie', '1.140', '2.500', 45.6, '1.360', 'oltre rinnovo', '0,69', 'ok', 'Copertura fino a giu 2027', '#1A6B4A'],
+      ['Fatturazione', 'Fatture Elettroniche', '2.380', '6.000', 39.7, '3.620', 'oltre rinnovo', '0,60', 'ok', 'Copertura fino a ago 2027', '#1A6B4A']
+    ];
+    var services = raw.map(function (r) {
+      var s = ST[r[8]];
+      return { family: r[0], name: r[1], used: r[2], incl: r[3], pct: r[4].toFixed(1).replace('.', ',') + '%', barW: Math.min(r[4], 100) + '%', left: r[5], exhaust: r[6], pacing: r[7], state: s.state, fg: s.fg, bg: s.bg, bar: s.bar, icon: s.icon, note: r[9], noteColor: r[10] };
+    });
+    var kpis = money ? [
+      { label: 'Servizi in soglia', value: '6 di 9', sub: '1 esaurito · 1 critico · 4 in attenzione', color: '#1A1C1E' },
+      { label: 'Primo esaurimento previsto', value: '13 nov 2026', sub: 'Identificazioni Full Prospect · tra 17 giorni', color: '#B03A0B' },
+      { label: 'Overage maturato', value: '€ 420', sub: '140 Nuovi Certificati FEA oltre la quantità inclusa', color: '#1A1C1E' },
+      { label: 'Overage previsto a fine periodo', value: '€ 10.703', sub: 'al ritmo degli ultimi 30 giorni · 7 servizi oltre soglia', color: '#1A1C1E' }
+    ] : [
+      { label: 'Servizi in soglia', value: '6 di 9', sub: '1 esaurito · 1 critico · 4 in attenzione', color: '#1A1C1E' },
+      { label: 'Primo esaurimento previsto', value: '13 nov 2026', sub: 'Identificazioni Full Prospect · tra 17 giorni', color: '#B03A0B' },
+      { label: 'Servizi oltre la quantità inclusa', value: '1', sub: '140 Nuovi Certificati FEA conteggiati a consumo', color: '#1A1C1E' },
+      { label: 'Servizi oltre soglia a fine periodo', value: '7 di 9', sub: 'al ritmo degli ultimi 30 giorni', color: '#1A1C1E' }
+    ];
+    var fam = [
+      { name: 'Identità e verifica', color: '#0047BB', v: [3179, 3329, 3739, 3692, 3927, 2917, 4162, 3975] },
+      { name: 'Contratti e documenti', color: '#6FA0EE', v: [780, 817, 917, 905, 963, 715, 1021, 972] },
+      { name: 'Firma elettronica', color: '#13877E', v: [1270, 1331, 1495, 1476, 1569, 1166, 1664, 1589] },
+      { name: 'Fatturazione', color: '#E3A43A', v: [262, 274, 308, 304, 323, 240, 343, 326] }
+    ];
+    var labels = ['Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott*'];
+    var px = function (v) { return (v / 7500 * 220).toFixed(1) + 'px'; };
+    var months = labels.map(function (l, i) {
+      var t = fam[0].v[i] + fam[1].v[i] + fam[2].v[i] + fam[3].v[i];
+      return { label: l, total: t.toLocaleString('it-IT'), h: px(t), h1: px(fam[0].v[i]), h2: px(fam[1].v[i]), h3: px(fam[2].v[i]), h4: px(fam[3].v[i]) };
+    });
+    var alerts = [
+      { text: 'Apposizioni FEA con COD ha superato il 70%', date: '24 ott 2026', weight: 600, fg: ST.warn.fg, bg: ST.warn.bg, icon: ICON.warn },
+      { text: 'Identificazioni Full Prospect ha superato il 90%', date: '23 ott 2026', weight: 600, fg: ST.crit.fg, bg: ST.crit.bg, icon: ICON.crit },
+      { text: 'Doc Composition Contratti ha superato il 70%', date: '21 ott 2026', weight: 600, fg: ST.warn.fg, bg: ST.warn.bg, icon: ICON.warn },
+      { text: 'Nuovi Certificati FEA esaurito: overage attivo', date: '17 ott 2026', weight: 400, fg: ST.out.fg, bg: ST.out.bg, icon: ICON.out },
+      { text: 'Verifiche Contatti ha superato il 70%', date: '4 ott 2026', weight: 400, fg: ST.warn.fg, bg: ST.warn.bg, icon: ICON.warn }
+    ];
+    var thresholds = raw.map(function (r) { return { name: r[1], warn: 70, crit: 90 }; });
+    var recipients = [
+      { name: 'Giulia Marchetti', what: 'tutte le soglie, ordini, fatture' },
+      { name: 'Paolo Ferretti', what: 'soglie critiche, esaurimento, scadenze' },
+      { name: 'Davide Sala', what: 'soglie critiche ed esaurimento, in unità' }
+    ];
+    var IS = { paid: ['Pagata', '#E3F3EA', '#1A6B4A'], soon: ['In emissione', '#FDF1D6', '#855800'] };
+    var invoices = [
+      ['—', '31 ott 2026', 'Overage ottobre: Nuovi Certificati FEA, 140 unità', '€ 420', '30 nov 2026', 'soon', false],
+      ['—', 'all’attivazione', 'Ricarica 500 Nuovi Certificati FEA (ORD-2026-1187)', '€ 1.275', '30 gg data fattura', 'soon', false],
+      ['FT-2026-09044', '1 set 2026', 'Canone Bundle Medium · 3° trimestre (set–nov)', '€ 4.975', '30 set 2026', 'paid', true],
+      ['FT-2026-06071', '1 giu 2026', 'Canone Bundle Medium · 2° trimestre (giu–ago)', '€ 4.975', '30 giu 2026', 'paid', true],
+      ['FT-2026-03182', '1 mar 2026', 'Canone Bundle Medium · 1° trimestre (mar–mag)', '€ 4.975', '31 mar 2026', 'paid', true]
+    ].map(function (r) { var s = IS[r[5]]; return { num: r[0], date: r[1], desc: r[2], amount: r[3], due: r[4], state: s[0], bg: s[1], fg: s[2], hasDocs: r[6] }; });
+    return { navFull: P !== 'tec', navTec: P === 'tec',
+      who: WHO[P], f: f, subtabs: subtabs,
+      contractLine: money ? 'Contratto DTP-2026-0418 · canone annuo € 19.900' : 'Contratto DTP-2026-0418',
+      exportLabel: money ? 'Dati Excel' : 'Dati Excel (quantità)',
+      kpis: kpis,
+      bannerText: money ? 'Valuta una ricarica dei servizi più usati o il passaggio a un bundle superiore.' : 'Puoi segnalarlo al delegato amministrativo, che gestisce ricariche e upgrade.',
+      signal: function () { set({ signaled: true }); },
+      signalLabel: st.signaled ? 'Segnalazione inviata' : 'Segnala all’amministrativo',
+      services: services, families: fam, months: months, alerts: alerts,
+      sogliaSub: money ? 'Puoi cambiare le soglie per singolo servizio: valgono dal giorno successivo.' : 'Le soglie le imposta il delegato amministrativo; qui puoi consultarle.',
+      thresholds: thresholds, recipients: recipients, invoices: invoices
+    };
+  }
+}
+
+DC.mount(Component, {"persona": {"editor": "enum", "options": ["lr", "amm", "op", "tec"], "default": "lr"}, "$preview": {"width": 1440, "height": 2450}});
+</script>
+</body>
+</html>

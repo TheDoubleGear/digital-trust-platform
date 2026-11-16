@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qualità dei processi – Dashboard Cliente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F7FC}
+*{box-sizing:border-box}
+a{color:#0047BB}a:hover{color:#003A99}
+</style>
+<link rel="stylesheet" href="dtp-theme.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="dtp-auth.css">
+<script src="dtp-auth.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<template id="tpl">
+
+<div class="dtp-root" style="min-height: 100dvh; background: #F3F7FC; font-family: 'Inter', system-ui, sans-serif; color: #1A1C1E; font-variant-numeric: tabular-nums">
+
+<div class="dtp-projectbar" style="background: #F2F8FF; color: #1A1C1E; border-bottom: 1px solid #D9E1EC">
+<div style="max-width: 1360px; margin: 0 auto; padding: 8px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<a class="dtp-home" href="../workspace" title="Torna a Workspace / 2026" data-testid="link-home">Home</a>
+<span class="dtp-session"><span class="dtp-session-tag">Accesso demo</span><span class="dtp-session-who" data-testid="text-current-role"><span data-dtp-role></span></span><button class="dtp-logout" type="button" data-dtp-logout data-testid="button-logout">Esci</button></span>
+</div>
+</div>
+
+<header class="dtp-header" style="background: #EEDC00; border-bottom: 1px solid #D6C600">
+<div style="max-width: 1360px; margin: 0 auto; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<div>
+<div style="font-weight: 800; font-size: 21px; letter-spacing: -0.03em; line-height: 1.1; color: #0047BB">postel</div>
+<div style="font-size: 12px; color: #33383D">Digital Trust Platform</div>
+</div>
+</div>
+<nav aria-label="Pagine del portale" style="display: flex; flex-wrap: wrap; gap: 4px; flex: 1 1 420px">
+<sc-if class="dtp-navlink" value="{{navFull}}" hint-placeholder-val="{{ true }}"><a href="cliente-H-catalogo.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Catalogo e acquisti</a></sc-if>
+<sc-if class="dtp-navlink" value="{{navFull}}" hint-placeholder-val="{{ true }}"><a href="cliente-U-utenze.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Utenze e deleghe</a></sc-if>
+<a class="dtp-navlink" href="cliente-M1-panoramica.html" aria-current="page" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 600; text-decoration: none; color: #FFFFFF; background: #0047BB">Contratto e consumi</a>
+<a class="dtp-navlink" href="cliente-A-assistenza.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Assistenza</a>
+<sc-if class="dtp-navlink" value="{{navTec}}" hint-placeholder-val="{{ false }}"><a href="tecnico-D0-developer-portal.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Developer portal</a></sc-if>
+</nav>
+<a class="dtp-iconbtn" href="cliente-N-notifiche.html" aria-label="Notifiche, 3 non lette" style="position: relative; width: 44px; height: 44px; border-radius: 999px; border: 1px solid #FFFFFF; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+<span style="position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; border-radius: 9px; background: #C7322A; color: #FFFFFF; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; padding: 0 4px">3</span>
+</a>
+<div style="display: flex; align-items: center; gap: 10px">
+<div aria-hidden="true" style="width: 36px; height: 36px; border-radius: 18px; background: #0047BB; color: #FFFFFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">{{who.ini}}</div>
+<div style="line-height: 1.25">
+<div style="font-size: 14px; font-weight: 600">{{who.name}}</div>
+<div style="font-size: 12px; color: #33383D">{{who.role}} · Assicurazioni Aurora S.p.A.</div>
+</div>
+</div>
+</div>
+</header>
+
+<main class="dtp-main" style="max-width: 1360px; margin: 0 auto; padding: 24px 32px 48px; display: flex; flex-direction: column; gap: 20px">
+<nav aria-label="Sotto-viste di Contratto e consumi" style="display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid #D9E1EC">
+<sc-for list="{{subtabs}}" as="t" hint-placeholder-count="5">
+<a href="{{t.href}}" aria-current="{{t.current}}" style="padding: 12px 16px; font-size: 14px; font-weight: {{t.weight}}; text-decoration: none; color: {{t.color}}; border-bottom: 3px solid {{t.line}}; margin-bottom: -1px">{{t.label}}</a>
+</sc-for>
+</nav>
+
+<div class="dtp-hero" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div>
+<h1 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em">Qualità dei processi digitali</h1>
+<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">Onboarding, firma e fatturazione · periodo contrattuale 01 mar → 27 ott 2026</p>
+</div>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Periodo
+<select style="min-height: 44px; min-width: 210px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E"><option>Periodo contrattuale</option><option>Ultimo mese</option><option>Ultimo trimestre</option></select>
+</label>
+</div>
+
+<section aria-label="Indicatori di qualità" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="6">
+<div class="dtp-card" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; color: #4D5762; font-weight: 500">{{k.label}}</span>
+<span style="font-size: 28px; font-weight: 600; letter-spacing: -0.02em">{{k.value}}</span>
+<span style="font-size: 12px; color: #4D5762; line-height: 1.4">{{k.sub}}</span>
+</div>
+</sc-for>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<section class="dtp-card" aria-labelledby="titolo-funnel" style="flex: 999 1 600px; min-width: 0; background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 18px">
+<div>
+<h2 id="titolo-funnel" style="margin: 0; font-size: 18px; font-weight: 600">Il 52% delle identificazioni avviate arriva a un contratto firmato</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Funnel di onboarding · la perdita maggiore è tra avvio e completamento dell'identificazione</p>
+</div>
+<ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{funnel}}" as="s" hint-placeholder-count="4">
+<li style="display: flex; flex-direction: column; gap: 6px">
+<sc-if value="{{s.hasDrop}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 8px; padding-left: 12px; font-size: 12px; color: #4D5762">
+<svg width="12" height="14" viewBox="0 0 12 14" aria-hidden="true"><path d="M6 0v11M2 7l4 4 4-4" fill="none" stroke="#8792A6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span><strong style="color: #1A1C1E; font-weight: 600">{{s.conv}}</strong> prosegue · {{s.drop}} persi</span>
+</div>
+</sc-if>
+<div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap">
+<div style="flex: 1 1 360px; min-width: 0; height: 44px; background: #F3F7FC; border-radius: 6px; overflow: hidden">
+<div style="width: {{s.w}}; height: 44px; background: {{s.color}}; border-radius: 6px; display: flex; align-items: center; padding: 0 14px; color: #FFFFFF; font-size: 15px; font-weight: 600">{{s.count}}</div>
+</div>
+<span style="flex: 0 1 260px; font-size: 14px">{{s.name}} <span style="color: #4D5762">· {{s.share}}</span></span>
+</div>
+</li>
+</sc-for>
+</ol>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-ko" style="flex: 1 1 380px; background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<div>
+<h2 id="titolo-ko" style="margin: 0; font-size: 18px; font-weight: 600">Motivi di KO delle identificazioni</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">1.050 esiti negativi · il 51% dipende dal documento</p>
+</div>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px">
+<sc-for list="{{ko}}" as="k" hint-placeholder-count="5">
+<li style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; gap: 8px; font-size: 14px"><span>{{k.name}}</span><span><strong style="font-weight: 600">{{k.n}}</strong> · {{k.p}}</span></div>
+<div style="height: 10px; border-radius: 5px; background: #E4EAF2"><div style="width: {{k.w}}; height: 10px; border-radius: 5px; background: #E8692A"></div></div>
+</li>
+</sc-for>
+</ul>
+<p style="margin: 0; padding: 12px; border-radius: 6px; background: #E5EFFF; font-size: 13px; line-height: 1.45; color: #1A1C1E">Suggerimento: una guida all'inquadratura del documento lato app riduce tipicamente i KO per documento non leggibile.</p>
+</section>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px">
+<section class="dtp-card" aria-labelledby="titolo-firma" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<div>
+<h2 id="titolo-firma" style="margin: 0; font-size: 18px; font-weight: 600">Firma dei contratti</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">3.480 contratti inviati in firma con FEA</p>
+</div>
+<div role="img" aria-label="Firmati 89,2%, in attesa 3,9%, scaduti 4,1%, rifiutati 2,8%" style="display: flex; height: 18px; border-radius: 6px; overflow: hidden">
+<div style="width: 89.2%; background: #0047BB"></div>
+<div style="width: 3.9%; background: #9AA6B8; border-left: 2px solid #FFFFFF"></div>
+<div style="width: 4.1%; background: #E0A100; border-left: 2px solid #FFFFFF"></div>
+<div style="width: 2.8%; background: #C7322A; border-left: 2px solid #FFFFFF"></div>
+</div>
+<ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; font-size: 14px">
+<li style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #0047BB"></span>Firmati <strong style="font-weight: 600; margin-left: auto">3.105</strong></li>
+<li style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #9AA6B8"></span>In attesa <strong style="font-weight: 600; margin-left: auto">137</strong></li>
+<li style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #E0A100"></span>Scaduti <strong style="font-weight: 600; margin-left: auto">142</strong></li>
+<li style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #C7322A"></span>Rifiutati <strong style="font-weight: 600; margin-left: auto">96</strong></li>
+</ul>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding-top: 14px; border-top: 1px solid #EAEFF5">
+<div><dt style="font-size: 12px; color: #4D5762">Tempo mediano</dt><dd style="margin: 2px 0 0; font-size: 16px; font-weight: 600">18 min</dd></div>
+<div><dt style="font-size: 12px; color: #4D5762">Tempo medio</dt><dd style="margin: 2px 0 0; font-size: 16px; font-weight: 600">1 h 52 min</dd></div>
+<div><dt style="font-size: 12px; color: #4D5762">95° percentile</dt><dd style="margin: 2px 0 0; font-size: 16px; font-weight: 600">2,3 giorni</dd></div>
+<div><dt style="font-size: 12px; color: #4D5762">Firme per contratto</dt><dd style="margin: 2px 0 0; font-size: 16px; font-weight: 600">2,87</dd></div>
+</dl>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-trend-successo" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div>
+<h2 id="titolo-trend-successo" style="margin: 0; font-size: 18px; font-weight: 600">Il tasso di successo delle identificazioni cresce da marzo</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Esiti positivi su identificazioni concluse, per mese · da 73,1% a 79,5%</p>
+</div>
+<svg viewBox="0 0 480 200" width="100%" role="img" aria-label="Tasso di successo mensile: 73,1% a marzo, 75,1% ad agosto, 79,5% a ottobre" style="display: block; font-family: inherit">
+<line x1="40" x2="470" y1="{{t.y80}}" y2="{{t.y80}}" stroke="#EAEFF5"></line>
+<line x1="40" x2="470" y1="{{t.y76}}" y2="{{t.y76}}" stroke="#EAEFF5"></line>
+<line x1="40" x2="470" y1="{{t.y72}}" y2="{{t.y72}}" stroke="#EAEFF5"></line>
+<text x="32" y="{{t.y80t}}" text-anchor="end" font-size="11" fill="#4D5762">80%</text>
+<text x="32" y="{{t.y76t}}" text-anchor="end" font-size="11" fill="#4D5762">76%</text>
+<text x="32" y="{{t.y72t}}" text-anchor="end" font-size="11" fill="#4D5762">72%</text>
+<path d="{{t.line}}" fill="none" stroke="#0047BB" stroke-width="2.5" stroke-linejoin="round"></path>
+<circle cx="{{t.lastX}}" cy="{{t.lastY}}" r="5" fill="#0047BB" stroke="#FFFFFF" stroke-width="2"></circle>
+<text x="{{t.lastLx}}" y="{{t.lastLy}}" text-anchor="end" font-size="12" font-weight="600" fill="#1A1C1E">79,5%</text>
+<text x="{{t.firstX}}" y="{{t.firstLy}}" font-size="12" font-weight="600" fill="#1A1C1E">73,1%</text>
+<text x="{{t.x0}}" y="192" text-anchor="middle" font-size="11" fill="#4D5762">Mar</text>
+<text x="{{t.x1}}" y="192" text-anchor="middle" font-size="11" fill="#4D5762">Apr</text>
+<text x="{{t.x2}}" y="192" text-anchor="middle" font-size="11" fill="#4D5762">Mag</text>
+<text x="{{t.x3}}" y="192" text-anchor="middle" font-size="11" fill="#4D5762">Giu</text>
+<text x="{{t.x4}}" y="192" text-anchor="middle" font-size="11" fill="#4D5762">Lug</text>
+<text x="{{t.x5}}" y="192" text-anchor="middle" font-size="11" fill="#4D5762">Ago</text>
+<text x="{{t.x6}}" y="192" text-anchor="middle" font-size="11" fill="#4D5762">Set</text>
+<text x="{{t.x7}}" y="192" text-anchor="middle" font-size="11" fill="#4D5762">Ott</text>
+</svg>
+</section>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px">
+<section class="dtp-card" aria-labelledby="titolo-sdi" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<div>
+<h2 id="titolo-sdi" style="margin: 0; font-size: 18px; font-weight: 600">Fatture elettroniche e Sistema di Interscambio</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">2.380 fatture inviate · 97,6% consegnate</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+<div style="flex: 1 1 160px; display: flex; flex-direction: column; gap: 10px; font-size: 14px">
+<div style="display: flex; justify-content: space-between"><span>Consegnate</span><strong style="font-weight: 600">2.322</strong></div>
+<div style="display: flex; justify-content: space-between; color: #A3201A"><span>Scartate (1,7%)</span><strong style="font-weight: 600">41</strong></div>
+<div style="display: flex; justify-content: space-between"><span>In attesa di esito</span><strong style="font-weight: 600">17</strong></div>
+</div>
+<div style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; color: #4D5762; font-weight: 500">Motivi di scarto</span>
+<div style="display: flex; justify-content: space-between; font-size: 13px"><span>Codice destinatario non valido</span><strong style="font-weight: 600">17</strong></div>
+<div style="display: flex; justify-content: space-between; font-size: 13px"><span>Partita IVA o CF non validi</span><strong style="font-weight: 600">12</strong></div>
+<div style="display: flex; justify-content: space-between; font-size: 13px"><span>File duplicato</span><strong style="font-weight: 600">8</strong></div>
+<div style="display: flex; justify-content: space-between; font-size: 13px"><span>Altro</span><strong style="font-weight: 600">4</strong></div>
+</div>
+</div>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-uptime" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<div>
+<h2 id="titolo-uptime" style="margin: 0; font-size: 18px; font-weight: 600">Disponibilità dei servizi, ultimi 30 giorni</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Obiettivo contrattuale 99,90% · tutti i servizi nel livello di servizio</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{uptime}}" as="u" hint-placeholder-count="4">
+<div style="padding: 14px; border-radius: 6px; border: 1px solid #D9E1EC; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 13px; color: #4D5762">{{u.name}}</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6B4A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>{{u.v}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+</div>
+
+</main>
+</div>
+</template>
+<script>
+/* Mini runtime per le pagine esportate: template {{ }}, sc-for, sc-if, onClick, setState. */
+(function () {
+  var _tl = Number.prototype.toLocaleString;
+  Number.prototype.toLocaleString = function (loc, opt) {
+    if (loc === 'it-IT') opt = Object.assign({ useGrouping: 'always' }, opt || {});
+    try { return _tl.call(this, loc, opt); } catch (e) { return _tl.call(this, loc); }
+  };
+  var HOLE = /\{\{\s*([^}]+?)\s*\}\}/g, FULL = /^\{\{\s*([^}]+?)\s*\}\}$/;
+  function lookup(path, scope) {
+    path = path.trim();
+    if (path === 'true') return true; if (path === 'false') return false;
+    if (/^-?\d+(\.\d+)?$/.test(path)) return Number(path);
+    var parts = path.split('.'), v = scope;
+    for (var i = 0; i < parts.length; i++) { if (v == null) return undefined; v = v[parts[i]]; }
+    return v;
+  }
+  function interp(str, scope) {
+    return str.replace(HOLE, function (_, p) { var v = lookup(p, scope); return v == null ? '' : String(v); });
+  }
+  function renderChildren(src, dst, scope) {
+    for (var c = src.firstChild; c; c = c.nextSibling) renderNode(c, dst, scope);
+  }
+  function renderNode(node, dst, scope) {
+    if (node.nodeType === 3) { dst.appendChild(document.createTextNode(interp(node.nodeValue, scope))); return; }
+    if (node.nodeType !== 1) return;
+    var tag = node.localName;
+    if (tag === 'sc-for') {
+      var list = lookup((node.getAttribute('list') || '').replace(/^\{\{|\}\}$/g, ''), scope) || [];
+      var as = node.getAttribute('as') || 'item';
+      list.forEach(function (item, i) {
+        var s = Object.create(scope); s[as] = item; s.$index = i;
+        renderChildren(node, dst, s);
+      });
+      return;
+    }
+    if (tag === 'sc-if') {
+      var val = lookup((node.getAttribute('value') || '').replace(/^\{\{|\}\}$/g, ''), scope);
+      if (val) renderChildren(node, dst, scope);
+      return;
+    }
+    var el = node.namespaceURI === 'http://www.w3.org/2000/svg'
+      ? document.createElementNS(node.namespaceURI, node.localName) : document.createElement(node.localName);
+    for (var a = 0; a < node.attributes.length; a++) {
+      var at = node.attributes[a], name = at.name, raw = at.value;
+      if (name.indexOf('hint-') === 0) continue;
+      var m = raw.match(FULL);
+      if (m) {
+        var v = lookup(m[1], scope);
+        if (name.indexOf('on') === 0 && typeof v === 'function') { el.addEventListener(name.slice(2), v); continue; }
+        if (name === 'defaultchecked' || name === 'checked') { if (v) { el.setAttribute('checked', ''); el.checked = true; } continue; }
+        if (name === 'defaultvalue') { el.setAttribute('value', v == null ? '' : String(v)); continue; }
+        if (v == null || v === false && name.indexOf('aria-') !== 0) continue;
+        el.setAttribute(name, String(v));
+      } else if (name === 'defaultvalue') { el.setAttribute('value', raw);
+      } else if (name === 'defaultchecked') { el.setAttribute('checked', '');
+      } else { el.setAttribute(name, interp(raw, scope)); }
+    }
+    renderChildren(node.localName === 'template' ? node.content : node, el, scope);
+    dst.appendChild(el);
+  }
+  function DCLogic(props) { this.props = props || {}; this.state = null; }
+  DCLogic.prototype.setState = function (o) {
+    this.state = Object.assign({}, this.state || {}, o);
+    this.__render();
+  };
+  DCLogic.prototype.forceUpdate = function () { this.__render(); };
+  window.DCLogic = DCLogic;
+  window.DC = {
+    mount: function (Comp, meta) {
+      var props = {};
+      Object.keys(meta).forEach(function (k) { if (k[0] !== '$' && meta[k] && 'default' in meta[k]) props[k] = meta[k]['default']; });
+      /* Sessione demo: il ruolo arriva da DTPAuth; senza permesso la pagina non viene disegnata. */
+      var auth = window.DTPAuth, access = auth ? auth.enter(meta) : null;
+      if (!access) return;
+      if (meta.persona && meta.persona.options) props.persona = access.role;
+      var tpl = document.getElementById('tpl').content, root = document.getElementById('app');
+      var c = new Comp(props);
+      c.__render = function () {
+        var frag = document.createDocumentFragment();
+        renderChildren(tpl, frag, c.renderVals());
+        root.replaceChildren(frag);
+        auth.decorate(root);
+      };
+      c.__render();
+    }
+  };
+})();
+
+</script>
+<script>
+
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var P = this.props.persona;
+    var WHO = {
+      lr: { name: 'Paolo Ferretti', role: 'Legale rappresentante', ini: 'PF' },
+      amm: { name: 'Giulia Marchetti', role: 'Delegato amministrativo', ini: 'GM' },
+      op: { name: 'Davide Sala', role: 'Delegato operativo', ini: 'DS' },
+      tec: { name: 'Andrea Colombo', role: 'Delegato tecnico', ini: 'AC' }
+    };
+    var money = P === 'lr' || P === 'amm';
+    var tabsRaw = [['Panoramica', 'cliente-M1-panoramica.html'], ['Dettaglio servizio', 'cliente-M2-dettaglio.html'], ['Qualità processi', 'cliente-M3-qualita.html']];
+    if (money) { tabsRaw.push(['Fatture', 'cliente-M4-fatture.html']); tabsRaw.push(['Contratto', 'cliente-M5-contratto.html']); }
+    var subtabs = tabsRaw.map(function (t, i) {
+      var on = i === 2;
+      return { label: t[0], href: t[1], current: on ? 'page' : 'false', weight: on ? 600 : 500, color: on ? '#0047BB' : '#4D5762', line: on ? '#0047BB' : 'transparent' };
+    });
+    var kpis = [
+      { label: 'Conversione onboarding', value: '72,0%', sub: '3.320 identificazioni completate su 4.610 avviate' },
+      { label: 'Successo identificazioni', value: '76,0%', sub: 'esiti positivi su identificazioni concluse' },
+      { label: 'Tasso di firma', value: '89,2%', sub: '3.105 contratti firmati su 3.480 inviati' },
+      { label: 'Tempo medio identificazione', value: '6 min 40 s', sub: '95° percentile 14 min' },
+      { label: 'Scarto SDI', value: '1,7%', sub: '41 fatture scartate su 2.380' },
+      { label: 'Disponibilità servizio', value: '99,96%', sub: 'ultimi 30 giorni · obiettivo 99,90%' }
+    ];
+    var steps = [
+      ['Identificazioni avviate', 4610, '#0047BB'],
+      ['Identificazioni completate', 3320, '#0047BB'],
+      ['Certificato FEA emesso', 2640, '#13877E'],
+      ['Contratto firmato', 2410, '#13877E']
+    ];
+    var funnel = steps.map(function (s, i) {
+      var prev = i ? steps[i - 1][1] : null;
+      return {
+        name: s[0], count: s[1].toLocaleString('it-IT'), color: s[2],
+        w: (s[1] / 4610 * 100).toFixed(1) + '%',
+        share: (s[1] / 4610 * 100).toFixed(1).replace('.', ',') + '% delle avviate',
+        hasDrop: i > 0,
+        conv: prev ? (s[1] / prev * 100).toFixed(1).replace('.', ',') + '%' : '',
+        drop: prev ? (prev - s[1]).toLocaleString('it-IT') : ''
+      };
+    });
+    var koRaw = [['Documento non leggibile', 357], ['Selfie o liveness non superato', 252], ['Documento scaduto', 179], ['Dati non corrispondenti', 158], ['Timeout della sessione', 104]];
+    var ko = koRaw.map(function (k) {
+      return { name: k[0], n: k[1].toLocaleString('it-IT'), p: Math.round(k[1] / 1050 * 100) + '%', w: (k[1] / 357 * 100).toFixed(1) + '%' };
+    });
+    var rates = [73.1, 74.0, 74.8, 75.2, 76.4, 75.1, 78.4, 79.5];
+    var X = function (i) { return 60 + i * (400 / 7); };
+    var Y = function (v) { return 170 - (v - 70) / 12 * 150; };
+    var line = rates.map(function (r, i) { return (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(r).toFixed(1); }).join(' ');
+    var t = {
+      line: line,
+      y80: Y(80).toFixed(1), y76: Y(76).toFixed(1), y72: Y(72).toFixed(1),
+      y80t: (Y(80) + 4).toFixed(1), y76t: (Y(76) + 4).toFixed(1), y72t: (Y(72) + 4).toFixed(1),
+      lastX: X(7).toFixed(1), lastY: Y(79.5).toFixed(1), lastLx: (X(7) - 10).toFixed(1), lastLy: (Y(79.5) - 10).toFixed(1),
+      firstX: (X(0) - 4).toFixed(1), firstLy: (Y(73.1) + 22).toFixed(1),
+      x0: X(0).toFixed(1), x1: X(1).toFixed(1), x2: X(2).toFixed(1), x3: X(3).toFixed(1),
+      x4: X(4).toFixed(1), x5: X(5).toFixed(1), x6: X(6).toFixed(1), x7: X(7).toFixed(1)
+    };
+    var uptime = [
+      { name: 'Identità e verifica', v: '99,94%' },
+      { name: 'Contratti e documenti', v: '99,97%' },
+      { name: 'Firma elettronica', v: '99,96%' },
+      { name: 'Fatturazione', v: '99,99%' }
+    ];
+    return { navFull: P !== 'tec', navTec: P === 'tec', kpis: kpis, funnel: funnel, ko: ko, t: t, uptime: uptime, who: WHO[P], subtabs: subtabs };
+  }
+}
+
+DC.mount(Component, {"persona": {"editor": "enum", "options": ["lr", "amm", "op", "tec"], "default": "lr"}, "$preview": {"width": 1440, "height": 1580}});
+</script>
+</body>
+</html>

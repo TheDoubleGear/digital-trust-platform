@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vetrina servizi – Digital Trust Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dtp-acquisto.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="dtp-auth.css">
+<script src="dtp-auth.js"></script>
+</head>
+<body>
+<header class="top">
+<div class="wrap">
+<a class="brand" href="#top" aria-label="Postel Digital Trust Platform">
+<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span><b>postel</b><small>Digital Trust Platform</small></span>
+</a>
+<nav class="nav" aria-label="Sezioni della vetrina">
+<a href="#catalogo">Catalogo</a><a href="#contatti">Parla con un commerciale</a>
+</nav>
+<a class="btn btn-p" href="vetrina-V02-contratto.html">Attivazione servizio</a>
+<div class="dtp-header-session" data-dtp-publicbar><a class="dtp-home" href="../" data-testid="link-login">Accedi</a></div>
+</div>
+</header>
+
+<main id="top" class="wrap" style="padding-top:0;padding-bottom:56px;display:flex;flex-direction:column;gap:28px">
+
+<section class="hero" aria-labelledby="titolo-vetrina">
+<div style="position:relative;z-index:1">
+<span class="eyebrow">Vetrina ad accesso libero · solo consultazione</span>
+<h1 id="titolo-vetrina">Identificazione, firma e documenti digitali per la tua azienda</h1>
+<p>Consulta bundle annuali, servizi e pacchetti a quantità definita con i prezzi di listino. Quando sei pronto, avvia l'attivazione: inserisci i dati dell'azienda, scegli i servizi e ricevi il contratto da firmare.</p>
+</div>
+<ol id="come-funziona" class="steps" aria-label="Come funziona l'attivazione">
+<li><span aria-hidden="true">1</span>Inserisci i dati di azienda e legale rappresentante</li>
+<li><span aria-hidden="true">2</span>Scegli i servizi e scarica la bozza di contratto</li>
+<li><span aria-hidden="true">3</span>Firma, allega il contratto firmato e invia</li>
+<li><span aria-hidden="true">4</span>Dopo le verifiche ricevi l'e-mail di attivazione</li>
+</ol>
+</section>
+
+<section id="catalogo" aria-labelledby="titolo-cat" style="display:flex;flex-direction:column;gap:14px">
+<div class="sec-h">
+<div><h2 id="titolo-cat">Catalogo servizi e bundle</h2><p>Tutte le offerte in un unico listino. Filtra per tipo o famiglia: la scelta dei servizi avviene durante l'attivazione.</p></div>
+</div>
+<div class="toolbar" role="search">
+<label class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4D5762" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="sr">Cerca nel catalogo</span><input id="q" type="search" placeholder="Cerca un servizio" autocomplete="off"></label>
+<div class="grp" role="group" aria-label="Tipo di offerta" id="f-type"></div>
+<div class="grp" role="group" aria-label="Famiglia di servizi" id="f-fam"></div>
+<span class="count" id="count" aria-live="polite"></span>
+</div>
+<div id="results" style="display:flex;flex-direction:column;gap:28px"></div>
+</section>
+
+<section id="contatti" class="card cta-band" aria-labelledby="titolo-contatti">
+<div style="max-width:640px">
+<h2 id="titolo-contatti" style="font-size:18px">Hai trovato quello che ti serve?</h2>
+<p class="muted" style="margin:4px 0 0;font-size:14px">L'attivazione richiede pochi minuti: dati, scelta dei servizi, contratto. Se preferisci, un commerciale Postel può seguirti lungo lo stesso percorso.</p>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<a class="btn btn-p" href="vetrina-V02-contratto.html">Attivazione servizio</a>
+</div>
+</section>
+
+<footer class="foot">
+<span>Prezzi IVA esclusa, secondo il listino in vigore. Il prezzo di Enterprise è indicativo e viene confermato nel contratto.</span>
+<span style="display:flex;gap:16px"><a href="#condizioni">Condizioni generali</a><a href="#privacy">Privacy</a></span>
+</footer>
+</main>
+<script src="dtp-catalogo.js"></script>
+<script src="vetrina-V01.js"></script>
+</body>
+</html>

@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalogo e acquisti – Portale cliente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F7FC}
+*{box-sizing:border-box}
+a{color:#0047BB}a:hover{color:#003A99}
+</style>
+<link rel="stylesheet" href="dtp-theme.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="dtp-auth.css">
+<script src="dtp-auth.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<template id="tpl">
+
+<div class="dtp-root" style="min-height: 100dvh; background: #F3F7FC; font-family: 'Inter', system-ui, sans-serif; color: #1A1C1E; font-variant-numeric: tabular-nums; position: relative">
+
+<div class="dtp-projectbar" style="background: #F2F8FF; color: #1A1C1E; border-bottom: 1px solid #D9E1EC">
+<div style="max-width: 1360px; margin: 0 auto; padding: 8px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<a class="dtp-home" href="../workspace" title="Torna a Workspace / 2026" data-testid="link-home">Home</a>
+<span class="dtp-session"><span class="dtp-session-tag">Accesso demo</span><span class="dtp-session-who" data-testid="text-current-role"><span data-dtp-role></span></span><button class="dtp-logout" type="button" data-dtp-logout data-testid="button-logout">Esci</button></span>
+</div>
+</div>
+
+<header class="dtp-header" style="background: #EEDC00; border-bottom: 1px solid #D6C600">
+<div style="max-width: 1360px; margin: 0 auto; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<div>
+<div style="font-weight: 800; font-size: 21px; letter-spacing: -0.03em; line-height: 1.1; color: #0047BB">postel</div>
+<div style="font-size: 12px; color: #33383D">Digital Trust Platform</div>
+</div>
+</div>
+<nav aria-label="Pagine del portale" style="display: flex; flex-wrap: wrap; gap: 4px; flex: 1 1 420px">
+<a class="dtp-navlink" href="cliente-H-catalogo.html" aria-current="page" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 600; text-decoration: none; color: #FFFFFF; background: #0047BB">Catalogo e acquisti</a>
+<a class="dtp-navlink" href="cliente-U-utenze.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Utenze e deleghe</a>
+<a class="dtp-navlink" href="cliente-M1-panoramica.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Contratto e consumi</a>
+<a class="dtp-navlink" href="cliente-A-assistenza.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Assistenza</a>
+</nav>
+<a class="dtp-iconbtn" href="cliente-N-notifiche.html" aria-label="Notifiche, 3 non lette" style="position: relative; width: 44px; height: 44px; border-radius: 999px; border: 1px solid #FFFFFF; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+<span style="position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; border-radius: 9px; background: #C7322A; color: #FFFFFF; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; padding: 0 4px">3</span>
+</a>
+<div style="display: flex; align-items: center; gap: 10px">
+<div aria-hidden="true" style="width: 36px; height: 36px; border-radius: 18px; background: #0047BB; color: #FFFFFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">{{who.ini}}</div>
+<div style="line-height: 1.25">
+<div style="font-size: 14px; font-weight: 600">{{who.name}}</div>
+<div style="font-size: 12px; color: #33383D">{{who.role}} · Assicurazioni Aurora S.p.A.</div>
+</div>
+</div>
+</div>
+</header>
+
+<main class="dtp-main" style="max-width: 1360px; margin: 0 auto; padding: 0 32px 48px; display: flex; flex-direction: column; gap: 24px">
+
+<section class="dtp-hero dtp-hero-bleed" aria-label="Benvenuto" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+<div>
+<h1 style="margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.01em">Buongiorno, {{who.first}}</h1>
+<p style="margin: 6px 0 0; font-size: 14px; color: #4D5762">Assicurazioni Aurora S.p.A. · Bundle Medium attivo fino al 28 feb 2027 · rinnovo tra 124 giorni · dati al 27 ott 2026</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<a class="dtp-linkcard" href="cliente-M1-panoramica.html" style="display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: 6px; background: #FFFFFF; border: 1px solid #D9E1EC; text-decoration: none; color: #1A1C1E; min-width: 150px"><span style="font-size: 20px; font-weight: 600">6 di 9</span><span style="font-size: 12px; color: #4D5762">servizi in soglia</span></a>
+<a class="dtp-linkcard" href="cliente-M1-panoramica.html" style="display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: 6px; background: #FFFFFF; border: 1px solid #D9E1EC; text-decoration: none; color: #1A1C1E; min-width: 150px"><span style="font-size: 20px; font-weight: 600; color: #A3201A">1</span><span style="font-size: 12px; color: #4D5762">servizio esaurito</span></a>
+<a class="dtp-linkcard" href="#ordini" style="display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: 6px; background: #FFFFFF; border: 1px solid #D9E1EC; text-decoration: none; color: #1A1C1E; min-width: 150px"><span style="font-size: 20px; font-weight: 600">{{orderCount}}</span><span style="font-size: 12px; color: #4D5762">ordini in attivazione</span></a>
+</div>
+</section>
+
+<sc-if value="{{f.lr}}" hint-placeholder-val="{{ true }}">
+<section class="dtp-card" aria-labelledby="titolo-decidere" style="background: #FFFFFF; border: 2px solid #0047BB; border-radius: 6px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+<h2 id="titolo-decidere" style="margin: 0; font-size: 18px; font-weight: 600">Da decidere · 3</h2>
+<span style="font-size: 12px; color: #4D5762">Solo il legale rappresentante vede questo riquadro</span>
+</div>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+<sc-for list="{{decide}}" as="d" hint-placeholder-count="3">
+<li style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #EAEFF5">
+<span style="flex: none; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #E5EFFF; color: #0047BB">{{d.kind}}</span>
+<span style="flex: 1 1 360px; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 14px; font-weight: 600">{{d.what}}</strong><span style="font-size: 12px; color: #4D5762">{{d.meta}}</span></span>
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{d.act}}" style="min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid #0047BB; background: #FFFFFF; color: #0047BB; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{d.btn}}</button>
+</li>
+</sc-for>
+</ul>
+</section>
+</sc-if>
+
+<section aria-label="Avvisi" style="display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{alerts}}" as="a" hint-placeholder-count="2">
+<div role="status" style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 6px; background: {{a.bg}}; border: 1px solid {{a.border}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{a.fg}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+<p style="margin: 0; flex: 1 1 420px; font-size: 14px; line-height: 1.45; color: #2A1206"><strong style="font-weight: 600">{{a.title}}</strong> {{a.text}}</p>
+<button class="dtp-btn" type="button" onClick="{{a.act}}" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 0; background: {{a.btnBg}}; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{a.btn}}</button>
+</div>
+</sc-for>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+<section class="dtp-card" aria-labelledby="titolo-attive" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 22px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+<h2 id="titolo-attive" style="margin: 0; font-size: 18px; font-weight: 600">Le tue offerte attive</h2>
+<a href="cliente-M1-panoramica.html" style="font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 0">Consumi e soglie →</a>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: center; padding: 16px; border-radius: 6px; border: 1px solid #0047BB; background: #F2F8FF">
+<div style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 16px; font-weight: 600">Bundle Medium</span><span style="padding: 2px 8px; border-radius: 999px; background: #E3F3EA; color: #1A6B4A; font-size: 12px; font-weight: 600">Attivo</span></div>
+<span style="font-size: 13px; color: #4D5762">9 servizi inclusi · 01 mar 2026 → 28 feb 2027 · contratto DTP-2026-0418</span>
+</div>
+<sc-if value="{{f.money}}" hint-placeholder-val="{{ true }}">
+<div style="text-align: right"><div style="font-size: 18px; font-weight: 600">€ 19.900 / anno</div><div style="font-size: 12px; color: #4D5762">canone fatturato a trimestri</div></div>
+</sc-if>
+</div>
+<p style="margin: 0; font-size: 13px; color: #4D5762">Offerte singole e ricariche attive: nessuna. Tutti i servizi del catalogo sono inclusi nel tuo bundle.</p>
+</section>
+
+<section class="dtp-card" id="ordini" aria-labelledby="titolo-ordini" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 22px; display: flex; flex-direction: column; gap: 10px">
+<h2 id="titolo-ordini" style="margin: 0; font-size: 18px; font-weight: 600">{{ordersTitle}}</h2>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+<sc-for list="{{orders}}" as="o" hint-placeholder-count="2">
+<li style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #EAEFF5">
+<div style="flex: 1 1 280px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 600">{{o.what}}</span>
+<span style="font-size: 12px; color: #4D5762">{{o.meta}}</span>
+</div>
+<span style="padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: {{o.bg}}; color: {{o.fg}}">{{o.state}}</span>
+<span style="min-width: 90px; text-align: right; font-size: 14px; font-weight: 600">{{o.amount}}</span>
+</li>
+</sc-for>
+</ul>
+</section>
+</div>
+
+<aside aria-label="Riepilogo" style="flex: 1 1 340px; min-width: 0">
+<sc-if value="{{f.buy}}" hint-placeholder-val="{{ true }}">
+<section class="dtp-card" aria-labelledby="titolo-carrello" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 22px; display: flex; flex-direction: column; gap: 14px">
+<h2 id="titolo-carrello" style="margin: 0; font-size: 18px; font-weight: 600">Riepilogo ordine</h2>
+<sc-if value="{{cart.empty}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; font-size: 14px; color: #4D5762">Nessun articolo. Aggiungi una ricarica o un bundle dal catalogo qui sotto.</p>
+</sc-if>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{cart.items}}" as="c" hint-placeholder-count="1">
+<li style="display: flex; align-items: center; gap: 10px">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 600">{{c.name}}</span><span style="font-size: 12px; color: #4D5762">{{c.pack}}</span></div>
+<span style="font-size: 14px; font-weight: 600">{{c.price}}</span>
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{c.remove}}" aria-label="Rimuovi {{c.name}}" style="width: 44px; height: 44px; border-radius: 999px; border: 1px solid #D9E1EC; background: #FFFFFF; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4D5762" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+</li>
+</sc-for>
+</ul>
+<div style="display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid #EAEFF5; font-size: 15px"><span>Totale IVA esclusa</span><strong style="font-weight: 700">{{cart.total}}</strong></div>
+<label style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #1A1C1E; line-height: 1.4"><input type="checkbox" style="width: 18px; height: 18px; margin-top: 1px"> Accetto le condizioni d'uso e il listino in vigore</label>
+<button class="dtp-btn dtp-btn-p" type="button" onClick="{{cart.confirm}}" style="min-height: 48px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Conferma ordine</button>
+<sc-if value="{{cart.done}}" hint-placeholder-val="{{ false }}">
+<p role="status" style="margin: 0; padding: 10px 12px; border-radius: 6px; background: #E3F3EA; color: #1A6B4A; font-size: 13px; font-weight: 500">Ordine inviato. Lo trovi negli ordini con stato «In attivazione».</p>
+</sc-if>
+</section>
+</sc-if>
+<sc-if value="{{f.noBuy}}" hint-placeholder-val="{{ false }}">
+<section class="dtp-card" aria-labelledby="titolo-richieste" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 22px; display: flex; flex-direction: column; gap: 12px">
+<h2 id="titolo-richieste" style="margin: 0; font-size: 18px; font-weight: 600">Le tue richieste</h2>
+<p style="margin: 0; font-size: 13px; color: #4D5762; line-height: 1.45">Gli acquisti li conferma il delegato amministrativo o il legale rappresentante. Le richieste che invii arrivano a entrambi.</p>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{requests}}" as="r" hint-placeholder-count="1">
+<li style="display: flex; justify-content: space-between; gap: 8px; font-size: 14px; padding: 8px 0; border-bottom: 1px solid #EAEFF5"><span>{{r.name}}</span><span style="font-size: 12px; font-weight: 600; color: #855800">Inviata</span></li>
+</sc-for>
+</ul>
+<sc-if value="{{noRequests}}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0; font-size: 13px; color: #4D5762">Nessuna richiesta inviata.</p>
+</sc-if>
+</section>
+</sc-if>
+</aside>
+</div>
+
+<section aria-labelledby="titolo-catalogo" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div>
+<h2 id="titolo-catalogo" style="margin: 0; font-size: 22px; font-weight: 600">Catalogo</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Bundle annuali, offerte singole e ricariche dei servizi Digital Trust</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
+<div class="dtp-seg" role="group" aria-label="Tipo di offerta" style="display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: #E4EAF2">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button class="dtp-btn" type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="min-height: 40px; padding: 0 18px; border-radius: 999px; border: 0; background: {{t.bg}}; color: #1A1C1E; font: inherit; font-size: 13px; font-weight: {{t.weight}}; cursor: pointer">{{t.label}}</button>
+</sc-for>
+</div>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Famiglia di servizi
+<select style="min-height: 44px; min-width: 200px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E"><option>Tutte</option><option>Identità e verifica</option><option>Contratti e documenti</option><option>Firma elettronica</option><option>Fatturazione</option></select>
+</label>
+</div>
+</div>
+
+<div style="display: flex; gap: 12px; align-items: flex-start; padding: 14px 18px; border-radius: 6px; background: #E5EFFF; border: 1px solid #BFD6FA">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0047BB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+<p style="margin: 0; font-size: 14px; line-height: 1.5">{{advice}}</p>
+</div>
+
+<sc-if value="{{show.bundles}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+<h3 style="margin: 0; font-size: 16px; font-weight: 600">Bundle</h3>
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{toggleCompare}}" aria-expanded="{{compareOpen}}" style="min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #0047BB; cursor: pointer">{{compareLabel}}</button>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px">
+<sc-for list="{{bundles}}" as="b" hint-placeholder-count="4">
+<article class="dtp-card" style="background: #FFFFFF; border: {{b.border}}; border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 24px">
+<h4 style="margin: 0; font-size: 17px; font-weight: 600">{{b.name}}</h4>
+<sc-if value="{{b.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: {{b.badgeBg}}; color: {{b.badgeFg}}">{{b.badge}}</span></sc-if>
+</div>
+<sc-if value="{{f.money}}" hint-placeholder-val="{{ true }}">
+<div style="font-size: 22px; font-weight: 600; letter-spacing: -0.01em">{{b.price}}</div>
+</sc-if>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px">
+<sc-for list="{{b.lines}}" as="l" hint-placeholder-count="3">
+<li style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #4D5762">{{l.k}}</span><strong style="font-weight: 600">{{l.v}}</strong></li>
+</sc-for>
+</ul>
+<button class="dtp-btn" type="button" onClick="{{b.act}}" style="margin-top: auto; min-height: 44px; border-radius: 999px; border: 1px solid {{b.btnBorder}}; background: {{b.btnBg}}; color: {{b.btnFg}}; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{b.btn}}</button>
+</article>
+</sc-for>
+</div>
+<sc-if value="{{compareOpen}}" hint-placeholder-val="{{ false }}">
+<div class="dtp-card" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 18px; overflow-x: auto">
+<div role="table" aria-label="Confronto delle quantità annue per bundle" style="min-width: 820px; font-size: 13px">
+<div role="row" style="display: grid; grid-template-columns: 2.2fr repeat(5, minmax(0, 1fr)); color: #4D5762; font-size: 12px; border-bottom: 1px solid #D9E1EC; text-align: right">
+<span role="columnheader" style="padding: 10px; text-align: left">Servizio (unità / anno)</span>
+<span role="columnheader" style="padding: 10px">Base</span>
+<span role="columnheader" style="padding: 10px; color: #0047BB; font-weight: 600">Medium (tuo)</span>
+<span role="columnheader" style="padding: 10px">Pro</span>
+<span role="columnheader" style="padding: 10px">Enterprise</span>
+<span role="columnheader" style="padding: 10px; color: #1A1C1E; font-weight: 600">Tuo consumo previsto</span>
+</div>
+<sc-for list="{{compare}}" as="r" hint-placeholder-count="9">
+<div role="row" style="display: grid; grid-template-columns: 2.2fr repeat(5, minmax(0, 1fr)); border-bottom: 1px solid #EAEFF5; text-align: right">
+<span role="rowheader" style="padding: 10px; text-align: left; font-weight: 500">{{r.name}}</span>
+<span role="cell" style="padding: 10px">{{r.s}}</span>
+<span role="cell" style="padding: 10px; background: #F2F8FF; font-weight: 600">{{r.b}}</span>
+<span role="cell" style="padding: 10px">{{r.p}}</span>
+<span role="cell" style="padding: 10px">{{r.e}}</span>
+<span role="cell" style="padding: 10px; font-weight: 600; color: {{r.fcColor}}">{{r.fc}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{show.singles}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<h3 style="margin: 0; font-size: 16px; font-weight: 600">Offerte singole e ricariche</h3>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px">
+<sc-for list="{{singles}}" as="s" hint-placeholder-count="9">
+<article class="dtp-card" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<span style="font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #4D5762; font-weight: 600">{{s.family}}</span>
+<sc-if value="{{s.reco}}" hint-placeholder-val="{{ false }}"><span style="padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #FDE7DC; color: #B03A0B">Consigliato</span></sc-if>
+</div>
+<h4 style="margin: 0; font-size: 15px; font-weight: 600; line-height: 1.3; min-height: 40px">{{s.name}}</h4>
+<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #4D5762"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{s.dot}}"></span>Incluso nel bundle · {{s.state}}</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{s.packs}}" as="k" hint-placeholder-count="2">
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; border: 1px solid #DDE4EE">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 14px; font-weight: 600">Ricarica {{k.qty}}</span><span style="font-size: 12px; color: #4D5762">{{k.sub}}</span></div>
+<button class="dtp-btn" type="button" onClick="{{k.act}}" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid {{k.btnBorder}}; background: {{k.btnBg}}; color: {{k.btnFg}}; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{k.btn}}</button>
+</div>
+</sc-for>
+</div>
+</article>
+</sc-for>
+</div>
+</div>
+</sc-if>
+</section>
+
+<footer style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 12px; color: #4D5762; padding-top: 8px">
+<span>Prezzi IVA esclusa, secondo il listino in vigore. Le ricariche valgono fino al termine del periodo contrattuale.</span>
+<span style="display: flex; gap: 16px"><a href="#condizioni">Condizioni d'uso</a><a href="cliente-A-assistenza.html">Assistenza</a></span>
+</footer>
+</main>
+<sc-if value="{{ent.open}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 50; overflow-y: auto; background: rgba(11, 31, 77, 0.55); display: flex; justify-content: center; align-items: flex-start; padding: 40px 16px">
+<div class="dtp-dialog" role="dialog" aria-modal="true" aria-labelledby="titolo-enterprise" style="width: 100%; max-width: 760px; background: #FFFFFF; border-radius: 6px; padding: 28px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 12px 40px rgba(11, 31, 77, 0.25)">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px">
+<div>
+<h2 id="titolo-enterprise" style="margin: 0; font-size: 22px; font-weight: 600">Componi il tuo bundle Enterprise</h2>
+<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">Scegli i servizi da includere e le quantità annue. Puoi escludere un servizio portandolo a zero.</p>
+</div>
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{ent.close}}" aria-label="Chiudi" style="width: 44px; height: 44px; border-radius: 999px; border: 1px solid #D9E1EC; background: #FFFFFF; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A1C1E" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+</div>
+<div role="table" aria-label="Servizi e quantità del bundle Enterprise" style="font-size: 14px">
+<div role="row" style="display: grid; grid-template-columns: 2fr 1.4fr 0.9fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid #D9E1EC; color: #4D5762; font-size: 12px">
+<span role="columnheader">Servizio</span><span role="columnheader">Quantità annua</span><span role="columnheader" style="text-align: right">Importo indicativo</span>
+</div>
+<sc-for list="{{ent.rows}}" as="r" hint-placeholder-count="9">
+<div role="row" style="display: grid; grid-template-columns: 2fr 1.4fr 0.9fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EAEFF5; align-items: center; opacity: {{r.op}}">
+<span role="cell" style="display: flex; flex-direction: column; gap: 1px"><span style="font-weight: 600">{{r.name}}</span><span style="font-size: 12px; color: #4D5762">{{r.unit}}</span></span>
+<span role="cell" style="display: flex; align-items: center; gap: 8px">
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{r.dec}}" aria-label="Riduci {{r.name}}" style="width: 40px; height: 40px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 18px; cursor: pointer">−</button>
+<span style="min-width: 76px; text-align: center; font-weight: 600">{{r.qty}}</span>
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{r.inc}}" aria-label="Aumenta {{r.name}}" style="width: 40px; height: 40px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 18px; cursor: pointer">+</button>
+</span>
+<span role="cell" style="text-align: right; font-weight: 600">{{r.amount}}</span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 13px; color: #4D5762">Canone annuo indicativo · {{ent.count}} servizi inclusi</span>
+<strong style="font-size: 24px; font-weight: 600">{{ent.total}}</strong>
+</div>
+<div style="display: flex; gap: 8px">
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{ent.close}}" style="min-height: 48px; padding: 0 22px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600; color: #1A1C1E; cursor: pointer">Annulla</button>
+<button class="dtp-btn dtp-btn-p" type="button" onClick="{{ent.confirm}}" style="min-height: 48px; padding: 0 22px; border-radius: 999px; border: 0; background: #0047BB; font: inherit; font-size: 15px; font-weight: 600; color: #FFFFFF; cursor: pointer">Conferma e aggiungi al riepilogo</button>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+</div>
+</template>
+<script>
+/* Mini runtime per le pagine esportate: template {{ }}, sc-for, sc-if, onClick, setState. */
+(function () {
+  var _tl = Number.prototype.toLocaleString;
+  Number.prototype.toLocaleString = function (loc, opt) {
+    if (loc === 'it-IT') opt = Object.assign({ useGrouping: 'always' }, opt || {});
+    try { return _tl.call(this, loc, opt); } catch (e) { return _tl.call(this, loc); }
+  };
+  var HOLE = /\{\{\s*([^}]+?)\s*\}\}/g, FULL = /^\{\{\s*([^}]+?)\s*\}\}$/;
+  function lookup(path, scope) {
+    path = path.trim();
+    if (path === 'true') return true; if (path === 'false') return false;
+    if (/^-?\d+(\.\d+)?$/.test(path)) return Number(path);
+    var parts = path.split('.'), v = scope;
+    for (var i = 0; i < parts.length; i++) { if (v == null) return undefined; v = v[parts[i]]; }
+    return v;
+  }
+  function interp(str, scope) {
+    return str.replace(HOLE, function (_, p) { var v = lookup(p, scope); return v == null ? '' : String(v); });
+  }
+  function renderChildren(src, dst, scope) {
+    for (var c = src.firstChild; c; c = c.nextSibling) renderNode(c, dst, scope);
+  }
+  function renderNode(node, dst, scope) {
+    if (node.nodeType === 3) { dst.appendChild(document.createTextNode(interp(node.nodeValue, scope))); return; }
+    if (node.nodeType !== 1) return;
+    var tag = node.localName;
+    if (tag === 'sc-for') {
+      var list = lookup((node.getAttribute('list') || '').replace(/^\{\{|\}\}$/g, ''), scope) || [];
+      var as = node.getAttribute('as') || 'item';
+      list.forEach(function (item, i) {
+        var s = Object.create(scope); s[as] = item; s.$index = i;
+        renderChildren(node, dst, s);
+      });
+      return;
+    }
+    if (tag === 'sc-if') {
+      var val = lookup((node.getAttribute('value') || '').replace(/^\{\{|\}\}$/g, ''), scope);
+      if (val) renderChildren(node, dst, scope);
+      return;
+    }
+    var el = node.namespaceURI === 'http://www.w3.org/2000/svg'
+      ? document.createElementNS(node.namespaceURI, node.localName) : document.createElement(node.localName);
+    for (var a = 0; a < node.attributes.length; a++) {
+      var at = node.attributes[a], name = at.name, raw = at.value;
+      if (name.indexOf('hint-') === 0) continue;
+      var m = raw.match(FULL);
+      if (m) {
+        var v = lookup(m[1], scope);
+        if (name.indexOf('on') === 0 && typeof v === 'function') { el.addEventListener(name.slice(2), v); continue; }
+        if (name === 'defaultchecked' || name === 'checked') { if (v) { el.setAttribute('checked', ''); el.checked = true; } continue; }
+        if (name === 'defaultvalue') { el.setAttribute('value', v == null ? '' : String(v)); continue; }
+        if (v == null || v === false && name.indexOf('aria-') !== 0) continue;
+        el.setAttribute(name, String(v));
+      } else if (name === 'defaultvalue') { el.setAttribute('value', raw);
+      } else if (name === 'defaultchecked') { el.setAttribute('checked', '');
+      } else { el.setAttribute(name, interp(raw, scope)); }
+    }
+    renderChildren(node.localName === 'template' ? node.content : node, el, scope);
+    dst.appendChild(el);
+  }
+  function DCLogic(props) { this.props = props || {}; this.state = null; }
+  DCLogic.prototype.setState = function (o) {
+    this.state = Object.assign({}, this.state || {}, o);
+    this.__render();
+  };
+  DCLogic.prototype.forceUpdate = function () { this.__render(); };
+  window.DCLogic = DCLogic;
+  window.DC = {
+    mount: function (Comp, meta) {
+      var props = {};
+      Object.keys(meta).forEach(function (k) { if (k[0] !== '$' && meta[k] && 'default' in meta[k]) props[k] = meta[k]['default']; });
+      /* Sessione demo: il ruolo arriva da DTPAuth; senza permesso la pagina non viene disegnata. */
+      var auth = window.DTPAuth, access = auth ? auth.enter(meta) : null;
+      if (!access) return;
+      if (meta.persona && meta.persona.options) props.persona = access.role;
+      var tpl = document.getElementById('tpl').content, root = document.getElementById('app');
+      var c = new Comp(props);
+      c.__render = function () {
+        var frag = document.createDocumentFragment();
+        renderChildren(tpl, frag, c.renderVals());
+        root.replaceChildren(frag);
+        auth.decorate(root);
+      };
+      c.__render();
+    }
+  };
+})();
+
+</script>
+<script>
+
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var P = this.props.persona;
+    var set = function (o) { self.setState(o); };
+    var WHO = {
+      lr: { name: 'Paolo Ferretti', first: 'Paolo', role: 'Legale rappresentante', ini: 'PF' },
+      amm: { name: 'Giulia Marchetti', first: 'Giulia', role: 'Delegato amministrativo', ini: 'GM' },
+      op: { name: 'Davide Sala', first: 'Davide', role: 'Delegato operativo', ini: 'DS' }
+    };
+    var buy = P !== 'op', money = P !== 'op';
+    var eur = function (n) { return '€ ' + n.toLocaleString('it-IT', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); };
+    var cartIds = st.cart || ['fp-2500'];
+    var reqs = st.requests || [];
+    var addReq = function (name) { if (reqs.indexOf(name) < 0) set({ requests: reqs.concat([name]) }); };
+    var add = function (id) { if (cartIds.indexOf(id) < 0) set({ cart: cartIds.concat([id]), done: false }); };
+    var DOT = { out: '#C7322A', crit: '#E8692A', warn: '#E0A100', ok: '#2E8B62' };
+    var STATE = { out: 'esaurito', crit: 'critico', warn: 'in attenzione', ok: 'regolare' };
+    var S = [
+      ['cert', 'Firma elettronica', 'Nuovi Certificati FEA', 'out', true, [[500, 1275], [1000, 2550]]],
+      ['fp', 'Identità e verifica', 'Identificazioni Full Prospect', 'crit', true, [[1000, 1020], [2500, 2550]]],
+      ['fun', 'Identità e verifica', 'Full Prospect con funnel completato', 'warn', false, [[1000, 680], [2500, 1700]]],
+      ['ver', 'Identità e verifica', 'Verifiche Contatti', 'warn', false, [[10000, 425], [25000, 1000]]],
+      ['doc', 'Contratti e documenti', 'Doc Composition Contratti', 'warn', false, [[1000, 170], [2500, 425]]],
+      ['app', 'Firma elettronica', 'Apposizioni FEA con COD', 'warn', false, [[5000, 640], [12500, 1600]]],
+      ['con', 'Contratti e documenti', 'Contratti', 'ok', false, [[1000, 425], [2500, 1060]]],
+      ['pro', 'Identità e verifica', 'Identificazioni Proprietarie', 'ok', false, [[500, 385], [1000, 765]]],
+      ['fat', 'Fatturazione', 'Fatture Elettroniche', 'ok', false, [[2000, 170], [6000, 480]]]
+    ];
+    var catalog = {};
+    var singles = S.map(function (s) {
+      return {
+        family: s[1], name: s[2], reco: s[4], dot: DOT[s[3]], state: STATE[s[3]],
+        packs: s[5].map(function (k) {
+          var id = s[0] + '-' + k[0];
+          var label = s[2];
+          catalog[id] = { name: label, pack: 'Ricarica ' + k[0].toLocaleString('it-IT') + ' unità', price: k[1] };
+          var inCart = cartIds.indexOf(id) >= 0, requested = reqs.indexOf(label + ' · ' + k[0].toLocaleString('it-IT')) >= 0;
+          var btn = buy ? (inCart ? 'Aggiunto' : 'Aggiungi') : (requested ? 'Richiesta inviata' : 'Richiedi');
+          var active = buy ? inCart : requested;
+          return {
+            qty: k[0].toLocaleString('it-IT'),
+            sub: money ? eur(k[1]) + ' · ' + (k[1] / k[0]).toLocaleString('it-IT', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' € per unità' : 'valida fino al 28 feb 2027',
+            btn: btn,
+            btnBg: active ? '#E5EFFF' : '#FFFFFF', btnFg: '#0047BB', btnBorder: active ? '#0047BB' : '#B8C2CF',
+            act: function () { if (buy) add(id); else addReq(label + ' · ' + k[0].toLocaleString('it-IT')); }
+          };
+        })
+      };
+    });
+    catalog['prof'] = { name: 'Upgrade a bundle Pro', pack: 'dal prossimo rinnovo o subito, pro rata', price: 45000 };
+    if (st.entItem) catalog['ent'] = st.entItem;
+    var ES = [['Nuovi Certificati FEA', 3.00, 2500], ['Apposizioni FEA con COD', 0.15, 12500], ['Identificazioni Full Prospect', 1.20, 5000], ['Full Prospect con funnel completato', 0.80, 4000], ['Identificazioni Proprietarie', 0.90, 2500], ['Verifiche Contatti', 0.05, 25000], ['Doc Composition Contratti', 0.20, 5000], ['Contratti', 0.50, 5000], ['Fatture Elettroniche', 0.10, 6000]];
+    var eq = st.entQty || [7500, 25000, 10000, 8000, 2500, 50000, 10000, 10000, 6000];
+    var D = 0.8;
+    var eRows = ES.map(function (s, i) {
+      var q = eq[i];
+      return { name: s[0], qty: q ? q.toLocaleString('it-IT') : 'Escluso', op: q ? 1 : 0.55,
+        unit: (s[1] * D).toLocaleString('it-IT', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' € per unità · passo ' + s[2].toLocaleString('it-IT'),
+        amount: q ? eur(Math.round(q * s[1] * D)) : '—',
+        dec: function () { var n = eq.slice(); n[i] = Math.max(0, q - s[2]); set({ entQty: n }); },
+        inc: function () { var n = eq.slice(); n[i] = q + s[2]; set({ entQty: n }); } };
+    });
+    var eTot = ES.reduce(function (a, s, i) { return a + Math.round(eq[i] * s[1] * D); }, 0);
+    var eCount = eq.filter(function (q) { return q > 0; }).length;
+    var ent = { open: !!st.entOpen, rows: eRows, total: eur(eTot) + ' / anno', count: eCount,
+      close: function () { set({ entOpen: false }); },
+      confirm: function () { set({ entOpen: false, done: false, entItem: { name: 'Bundle Enterprise personalizzato', pack: eCount + ' servizi · quantità personalizzate · dal prossimo rinnovo', price: eTot }, cart: cartIds.filter(function (x) { return x !== 'prof' && x !== 'ent'; }).concat(['ent']) }); } };
+    var items = cartIds.filter(function (id) { return catalog[id]; }).map(function (id) {
+      var c = catalog[id];
+      return { name: c.name, pack: c.pack, price: eur(c.price), remove: function () { set({ cart: cartIds.filter(function (x) { return x !== id; }) }); } };
+    });
+    var total = cartIds.reduce(function (a, id) { return a + (catalog[id] ? catalog[id].price : 0); }, 0);
+    var placed = st.placed || [];
+    var cart = {
+      items: items, empty: items.length === 0, total: eur(total), done: !!st.done,
+      confirm: function () {
+        if (!items.length) return;
+        var names = cartIds.filter(function (id) { return catalog[id]; }).map(function (id) { return catalog[id].name + ' · ' + catalog[id].pack.toLowerCase(); });
+        set({ placed: placed.concat([{ what: names.join(' + '), total: total }]), cart: [], done: true });
+      }
+    };
+    var orders = placed.map(function (o, i) {
+      return { what: o.what, meta: 'ORD-2026-' + (1201 + i) + ' · oggi · ordinato da ' + WHO[P].name, state: 'In attivazione', bg: '#FDF1D6', fg: '#855800', amount: money ? eur(o.total) : '' };
+    }).reverse().concat([
+      { what: 'Ricarica 500 Nuovi Certificati FEA', meta: 'ORD-2026-1187 · 24 ott 2026 · ordinato da Giulia Marchetti', state: 'In attivazione', bg: '#FDF1D6', fg: '#855800', amount: money ? '€ 1.275' : '' },
+      { what: 'Bundle Medium · rinnovo annuale', meta: 'ORD-2026-0311 · 1 mar 2026 · firmato da Paolo Ferretti', state: 'Attivo', bg: '#E3F3EA', fg: '#1A6B4A', amount: money ? '€ 19.900' : '' }
+    ]);
+    if (P === 'op') {
+      orders = reqs.map(function (r) { return { what: r, meta: 'richiesta inviata oggi a G. Marchetti e P. Ferretti', state: 'Richiesta', bg: '#E5EFFF', fg: '#0047BB', amount: '' }; }).concat(orders);
+    }
+    var alerts = [
+      {
+        title: 'Nuovi Certificati FEA esaurito dal 17 ott.',
+        text: money ? 'L’overage è attivo a € 3,00 per certificato; una ricarica da 500 è già in attivazione.' : 'Oltre la quantità inclusa i certificati sono conteggiati a consumo; una ricarica è già in attivazione.',
+        bg: '#FBE3E1', border: '#F2BDB8', fg: '#A3201A', btnBg: '#A3201A',
+        btn: buy ? 'Aggiungi ricarica 1.000' : 'Segnala all’amministrativo',
+        act: function () { if (buy) add('cert-1000'); else addReq('Nuovi Certificati FEA · 1.000'); }
+      },
+      {
+        title: 'Identificazioni Full Prospect si esaurirà il 13 nov,',
+        text: money ? '107 giorni prima del rinnovo: al ritmo attuale l’overage previsto è € 3.006.' : '107 giorni prima del rinnovo: al ritmo attuale serviranno circa 2.500 identificazioni in più.',
+        bg: '#FDE7DC', border: '#F3C2A8', fg: '#B03A0B', btnBg: '#B03A0B',
+        btn: buy ? 'Aggiungi ricarica 2.500' : 'Segnala all’amministrativo',
+        act: function () { if (buy) add('fp-2500'); else addReq('Identificazioni Full Prospect · 2.500'); }
+      }
+    ];
+    var tab = st.tab || 'all';
+    var tabs = [['all', 'Tutte'], ['bundle', 'Bundle'], ['single', 'Offerte singole e ricariche']].map(function (t) {
+      var on = t[0] === tab;
+      return { label: t[1], pressed: on ? 'true' : 'false', bg: on ? '#FFFFFF' : 'transparent', weight: on ? 600 : 500, pick: function () { set({ tab: t[0] }); } };
+    });
+    var B = [
+      ['Base', 4900, ['1.000', '500', '2.500'], 'Disponibile al rinnovo', 'low'],
+      ['Medium', 19900, ['5.000', '2.500', '12.500'], 'Il tuo bundle', 'cur'],
+      ['Pro', 64900, ['20.000', '10.000', '50.000'], buy ? 'Passa a Pro' : 'Richiedi upgrade', 'up'],
+      ['Enterprise', null, ['a scelta', 'a scelta', 'a scelta'], buy ? 'Componi il tuo bundle' : 'Richiedi informazioni', 'ent']
+    ];
+    var bundles = B.map(function (b) {
+      var cur = b[4] === 'cur', low = b[4] === 'low';
+      return {
+        name: b[0], price: b[1] ? eur(b[1]) + ' / anno' : 'Su misura',
+        hasBadge: cur, badge: 'Attuale', badgeBg: '#E5EFFF', badgeFg: '#0047BB',
+        border: cur ? '2px solid #0047BB' : '1px solid #D9E1EC',
+        lines: [{ k: 'Identificazioni Full Prospect', v: b[2][0] }, { k: 'Nuovi Certificati FEA', v: b[2][1] }, { k: 'Apposizioni FEA con COD', v: b[2][2] }],
+        btn: b[3],
+        btnBg: (cur || low) ? '#F3F7FC' : (buy ? '#0047BB' : '#FFFFFF'),
+        btnFg: (cur || low) ? '#4D5762' : (buy ? '#FFFFFF' : '#0047BB'),
+        btnBorder: (cur || low) ? '#DDE4EE' : (buy ? '#0047BB' : '#B8C2CF'),
+        act: function () { if (b[4] === 'up') { if (buy) add('prof'); else addReq('Upgrade a Pro'); } if (b[4] === 'ent') { if (buy) set({ entOpen: true }); else addReq('Informazioni su Enterprise'); } }
+      };
+    });
+    var cmpRaw = [
+      ['Verifiche Contatti', 5000, 25000, 100000, 500000, 32307],
+      ['Identificazioni Full Prospect', 1000, 5000, 20000, 100000, 7505],
+      ['Full Prospect con funnel completato', 800, 4000, 16000, 80000, 5402],
+      ['Identificazioni Proprietarie', 500, 2500, 10000, 50000, 1857],
+      ['Contratti', 1000, 5000, 20000, 100000, 5659],
+      ['Doc Composition Contratti', 1000, 5000, 20000, 100000, 5871],
+      ['Nuovi Certificati FEA', 500, 2500, 10000, 50000, 4302],
+      ['Apposizioni FEA con COD', 2500, 12500, 50000, 250000, 14514],
+      ['Fatture Elettroniche', 1200, 6000, 24000, 120000, 3869]
+    ];
+    var n = function (x) { return x.toLocaleString('it-IT'); };
+    var compare = cmpRaw.map(function (r) {
+      return { name: r[0], s: n(r[1]), b: n(r[2]), p: n(r[3]), e: n(r[4]), fc: n(r[5]), fcColor: r[5] > r[2] ? '#B03A0B' : '#1A6B4A' };
+    });
+    var compareOpen = !!st.compare;
+    return { ent: ent,
+      who: WHO[P],
+      f: { buy: buy, noBuy: !buy, money: money, lr: P === 'lr' },
+      decide: [
+        { kind: 'Richiesta', what: 'Davide Sala chiede una ricarica di 2.500 Identificazioni Full Prospect', meta: 'oggi · delegato operativo · al ritmo attuale il servizio si esaurisce il 13 nov', btn: 'Aggiungi al riepilogo', act: function () { add('fp-2500'); } },
+        { kind: 'Rinnovo', what: 'Decidi sul rinnovo del contratto entro il 30 nov 2026', meta: 'scadenza 28 feb 2027 · overage previsto con il bundle attuale € 10.703', btn: 'Confronta i bundle', act: function () { set({ compare: true, tab: 'all' }); } },
+        { kind: 'Condizioni', what: 'Nuove condizioni generali in vigore dal 1 dic 2026', meta: 'da accettare prima del prossimo acquisto', btn: 'Leggi e accetta', act: function () {} }
+      ],
+      alerts: alerts, orders: orders, orderCount: 1 + placed.length,
+      ordersTitle: P === 'op' ? 'Ordini e richieste' : 'Ordini recenti',
+      cart: cart, requests: reqs.map(function (r) { return { name: r }; }), noRequests: reqs.length === 0,
+      tabs: tabs, show: { bundles: tab !== 'single', singles: tab !== 'bundle' },
+      advice: money
+        ? 'Per il tuo consumo previsto conviene ricaricare i servizi in esaurimento: passare a Pro costerebbe € 45.000 in più all’anno, contro € 10.703 di overage previsto con il bundle attuale.'
+        : 'Per il consumo previsto conviene ricaricare i servizi in esaurimento piuttosto che cambiare bundle. Le richieste che invii arrivano al delegato amministrativo.',
+      bundles: bundles, compare: compare, compareOpen: compareOpen,
+      compareLabel: compareOpen ? 'Chiudi il confronto' : 'Confronta i bundle',
+      toggleCompare: function () { set({ compare: !compareOpen }); },
+      singles: singles
+    };
+  }
+}
+
+DC.mount(Component, {"persona": {"editor": "enum", "options": ["lr", "amm", "op"], "default": "lr"}, "$preview": {"width": 1440, "height": 2850}});
+</script>
+</body>
+</html>

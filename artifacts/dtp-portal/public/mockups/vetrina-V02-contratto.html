@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attivazione servizio – Digital Trust Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dtp-acquisto.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="dtp-auth.css">
+<script src="dtp-auth.js"></script>
+</head>
+<body>
+<header class="top">
+<div class="wrap" style="max-width:1180px;justify-content:space-between">
+<a class="brand" href="vetrina-V01-catalogo.html" aria-label="Torna alla vetrina Postel">
+<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span><b>postel</b><small>Digital Trust Platform · Attivazione servizio</small></span>
+</a>
+<a href="vetrina-V01-catalogo.html" style="font-size:14px;font-weight:600;text-decoration:none;padding:12px 0">Torna alla vetrina</a>
+<div class="dtp-header-session" data-dtp-publicbar><a class="dtp-home" href="../" data-testid="link-login">Accedi</a></div>
+</div>
+</header>
+
+<main class="wrap" style="max-width:1180px;padding-top:24px;padding-bottom:56px;display:flex;flex-direction:column;gap:18px">
+
+<div class="demo" role="note">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+<span><strong>Prototipo dimostrativo.</strong> Usa solo dati di prova. Nessun file viene caricato, nessuna e-mail viene inviata e nessuna verifica viene eseguita; non viene creato alcun account. I dati restano solo in memoria in questa scheda: ricaricando la pagina la bozza si azzera.</span>
+</div>
+
+<ol class="stepper" id="stepper" aria-label="Passi dell'attivazione"></ol>
+
+<div class="layout layout-single" id="activation-layout">
+<div style="min-width:0;display:flex;flex-direction:column;gap:18px">
+
+<!-- PASSO 1 -->
+<section class="card panel" id="s1" aria-labelledby="t1">
+<div><h1 id="t1" tabindex="-1">Dati dell'azienda e del legale rappresentante</h1>
+<p class="lead">Questi dati compaiono nella bozza di contratto. Tutti i campi sono obbligatori. In questa fase non è richiesta alcuna identificazione: identità e poteri di firma vengono controllati dopo l'invio del contratto firmato.</p></div>
+<div class="info" id="demo-prefill" hidden>Dati fittizi precompilati temporaneamente per esplorare il percorso. Puoi modificarli oppure proseguire subito ai servizi.</div>
+<div class="errsum" id="errsum" role="alert" tabindex="-1" hidden></div>
+<form id="f1" novalidate style="display:flex;flex-direction:column;gap:22px">
+<fieldset><legend>Azienda</legend><div class="fgrid">
+<div class="f wide"><label for="ragione">Ragione sociale <i aria-hidden="true">*</i></label><input id="ragione" name="ragione" autocomplete="organization" required><span class="err" id="ragione-e"></span></div>
+<div class="f"><label for="piva">Partita IVA <i aria-hidden="true">*</i></label><input id="piva" name="piva" inputmode="numeric" maxlength="13" aria-describedby="piva-h" required><span class="hint" id="piva-h">11 cifre, con o senza prefisso IT</span><span class="err" id="piva-e"></span></div>
+<div class="f"><label for="sdi">Codice destinatario SdI <i aria-hidden="true">*</i></label><input id="sdi" name="sdi" maxlength="7" aria-describedby="sdi-h" required><span class="hint" id="sdi-h">7 caratteri alfanumerici</span><span class="err" id="sdi-e"></span></div>
+<div class="f wide"><label for="sede">Sede legale <i aria-hidden="true">*</i></label><input id="sede" name="sede" autocomplete="street-address" aria-describedby="sede-h" required><span class="hint" id="sede-h">Indirizzo, CAP e comune</span><span class="err" id="sede-e"></span></div>
+<div class="f wide"><label for="pec">PEC aziendale <i aria-hidden="true">*</i></label><input id="pec" name="pec" type="email" required><span class="err" id="pec-e"></span></div>
+</div></fieldset>
+<fieldset><legend>Legale rappresentante</legend><div class="fgrid">
+<div class="f"><label for="nome">Nome <i aria-hidden="true">*</i></label><input id="nome" name="nome" autocomplete="given-name" required><span class="err" id="nome-e"></span></div>
+<div class="f"><label for="cognome">Cognome <i aria-hidden="true">*</i></label><input id="cognome" name="cognome" autocomplete="family-name" required><span class="err" id="cognome-e"></span></div>
+<div class="f"><label for="cf">Codice fiscale <i aria-hidden="true">*</i></label><input id="cf" name="cf" maxlength="16" autocapitalize="characters" required><span class="err" id="cf-e"></span></div>
+<div class="f"><label for="tel">Cellulare <i aria-hidden="true">*</i></label><input id="tel" name="tel" type="tel" autocomplete="tel" required><span class="err" id="tel-e"></span></div>
+<div class="f wide"><label for="email">E-mail <i aria-hidden="true">*</i></label><input id="email" name="email" type="email" autocomplete="email" aria-describedby="email-h" required><span class="hint" id="email-h">Qui riceverai l'e-mail di attivazione al termine delle verifiche.</span><span class="err" id="email-e"></span></div>
+</div></fieldset>
+<fieldset><legend>Password del futuro account</legend>
+<p class="muted" style="margin:-4px 0 12px;font-size:13px" id="pw-note">Servirà per accedere all'area clienti dopo l'attivazione. Almeno 10 caratteri, con una lettera maiuscola, una minuscola e un numero. Nel prototipo la password viene solo controllata e poi cancellata dai campi: non viene salvata né inviata.</p>
+<div class="fgrid">
+<div class="f"><label for="pw">Password <i aria-hidden="true">*</i></label><input id="pw" type="password" autocomplete="new-password" aria-describedby="pw-note"><span class="err" id="pw-e"></span></div>
+<div class="f"><label for="pw2">Conferma password <i aria-hidden="true">*</i></label><input id="pw2" type="password" autocomplete="new-password"><span class="err" id="pw2-e"></span></div>
+</div>
+<div class="okbox" id="pw-ok" hidden style="margin-top:12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>Password valida e confermata. È stata rimossa dai campi per sicurezza; non serve reinserirla, a meno che tu non voglia cambiarla.</span></div>
+</fieldset>
+<div class="actions"><a class="btn btn-o" href="vetrina-V01-catalogo.html">Annulla</a><button class="btn btn-p btn-lg" type="submit">Continua con la scelta dei servizi</button></div>
+</form>
+</section>
+
+<!-- PASSO 2 -->
+<section class="card panel" id="s2" aria-labelledby="t2" hidden>
+<div><h1 id="t2" tabindex="-1">Scegli i servizi</h1><p class="lead">Aggiungi un bundle, componi Enterprise o scegli pacchetti singoli. Puoi includere un solo bundle per contratto.</p></div>
+<div id="cat"></div>
+<div class="actions"><button type="button" class="btn btn-o" data-go="1">Indietro ai dati</button><button type="button" class="btn btn-p btn-lg" id="buy">Acquista</button></div>
+</section>
+
+<!-- PASSO 3 -->
+<section class="card panel" id="s3" aria-labelledby="t3" hidden>
+<div><h1 id="t3" tabindex="-1">Contratto</h1><p class="lead">Scarica la bozza generata con i tuoi dati e i servizi scelti, firmala con il tuo strumento di firma e allega il file firmato.</p></div>
+<div id="contract"></div>
+<div class="actions"><button type="button" class="btn btn-o" data-go="2" id="back3">Indietro ai servizi</button><button type="button" class="btn btn-p btn-lg" id="submit">Invia la richiesta di attivazione</button></div>
+</section>
+
+<!-- STATO FINALE -->
+<section class="card panel" id="done" aria-labelledby="t4" hidden></section>
+</div>
+
+<aside class="card side" aria-labelledby="t-side" id="side" hidden></aside>
+</div>
+</main>
+<div id="dlg-root"></div>
+<script src="dtp-catalogo.js"></script>
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="dtp-contract-pdf.js"></script>
+<script src="vetrina-V02.js"></script>
+</body>
+</html>

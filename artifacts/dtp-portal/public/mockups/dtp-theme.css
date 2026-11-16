@@ -1,0 +1,134 @@
+/* Tema condiviso delle 17 dashboard con runtime sc-for/sc-if (H, U, M1-M5, A, N, PS01, PS02, D0, O1-O5).
+   Direzione visiva: testata gialla, blu istituzionale #0047BB, superfici bianche su fondo azzurro chiaro,
+   pulsanti a pillola, schede con angoli da 6px e ombra leggera.
+   I colori di base sono negli stili inline dei template; qui vivono stati interattivi, ombre,
+   blocchi "hero" e adattamenti responsive. Gli !important servono solo dove va superato uno stile inline. */
+:root{
+  --dtp-blue:#0047BB;--dtp-blue-d:#003A99;--dtp-blue-l:#E5EFFF;--dtp-pale:#F2F8FF;
+  --dtp-yellow:#EEDC00;--dtp-yellow-b:#FFEC00;--dtp-ink:#1A1C1E;--dtp-mut:#4D5762;
+  --dtp-line:#D9E1EC;--dtp-field:#B8C2CF;--dtp-bg:#F3F7FC;
+  --dtp-shadow:0 1px 2px rgba(11,31,77,.06),0 6px 18px rgba(11,31,77,.06);
+  --dtp-shadow-h:0 2px 4px rgba(11,31,77,.08),0 12px 28px rgba(11,31,77,.10);
+  --dtp-ring:0 0 0 3px rgba(0,71,187,.22);
+}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--dtp-ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:#FFEC00;color:#0B2A5B}
+#app code,#app pre,#app kbd,#app samp{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+
+/* Fuoco da tastiera: sempre visibile, giallo sulle superfici blu */
+#app a:focus-visible,#app button:focus-visible,#app [tabindex]:focus-visible,#app summary:focus-visible{outline:3px solid var(--dtp-blue);outline-offset:2px}
+#app .dtp-sidenav a:focus-visible,#app .dtp-hero a:focus-visible,#app .dtp-hero button:focus-visible{outline-color:var(--dtp-yellow-b)}
+#app .dtp-header a:focus-visible,#app .dtp-header button:focus-visible{outline-color:#0B2A5B}
+
+/* Titoli */
+#app h1{letter-spacing:-0.02em!important;font-weight:700!important}
+#app h2,#app h3,#app h4{letter-spacing:-0.01em}
+
+/* Barra di progetto (anteprima per persona) */
+.dtp-projectbar{font-size:12px}
+.dtp-home{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 16px;border:1px solid #0047BB;border-radius:999px;background:#FFFFFF;color:#0047BB;font-size:13px;font-weight:600;text-decoration:none;transition:background .15s,color .15s}
+.dtp-home:hover{background:#E5EFFF;color:#003A99}
+.dtp-home:focus-visible{outline:3px solid #0047BB;outline-offset:2px}
+
+/* Testata gialla */
+.dtp-header{position:relative;z-index:5}
+.dtp-navlink{transition:background-color .15s ease,color .15s ease}
+.dtp-navlink:not([aria-current="page"]):hover{background:rgba(255,255,255,.62);color:#0B2A5B!important}
+.dtp-navlink:not([aria-current="page"]):active{background:#FFFFFF}
+.dtp-navlink[aria-current="page"]:hover{background:var(--dtp-blue-d)!important}
+.dtp-iconbtn{transition:box-shadow .15s ease,transform .15s ease;box-shadow:0 1px 2px rgba(11,31,77,.12)}
+.dtp-iconbtn:hover{box-shadow:0 0 0 3px rgba(0,71,187,.25)}
+.dtp-iconbtn:active{transform:scale(.96)}
+
+/* Pulsanti a pillola */
+.dtp-btn,.dtp-chip{transition:box-shadow .15s ease,transform .12s ease,border-color .15s ease;-webkit-tap-highlight-color:transparent;line-height:1.2}
+.dtp-btn:hover{box-shadow:inset 0 0 0 999px rgba(0,71,187,.08)}
+.dtp-btn:active{transform:translateY(1px);box-shadow:inset 0 0 0 999px rgba(0,71,187,.16)}
+.dtp-btn-p:hover{box-shadow:inset 0 0 0 999px rgba(0,20,70,.18)}
+.dtp-btn-p:active{box-shadow:inset 0 0 0 999px rgba(0,20,70,.32)}
+.dtp-btn-o:hover{border-color:var(--dtp-blue)!important}
+.dtp-btn-t:hover{text-decoration:underline;text-underline-offset:3px}
+.dtp-chip:hover{box-shadow:inset 0 0 0 999px rgba(0,71,187,.07)}
+.dtp-chip:active{transform:translateY(1px)}
+.dtp-chip[aria-pressed="true"]:hover{box-shadow:inset 0 0 0 999px rgba(0,20,70,.16)}
+.dtp-seg button{transition:background-color .15s ease}
+#app button:disabled,#app button[aria-disabled="true"],#app a[aria-disabled="true"]{opacity:.5;cursor:not-allowed!important;box-shadow:none!important;transform:none!important}
+#app button[role="switch"]{transition:background-color .18s ease}
+#app button[role="switch"]:hover{box-shadow:0 0 0 3px rgba(0,71,187,.16)}
+
+/* Campi dei moduli */
+#app input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),#app select,#app textarea{background-color:#FFFFFF;color:var(--dtp-ink);transition:border-color .15s ease,box-shadow .15s ease}
+#app input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):hover,#app select:hover,#app textarea:hover{border-color:#6B7785!important}
+#app input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,#app select:focus,#app textarea:focus{outline:0;border-color:var(--dtp-blue)!important;box-shadow:var(--dtp-ring)}
+#app input:disabled,#app select:disabled,#app textarea:disabled{background-color:#EAEFF5;color:#6B7785;cursor:not-allowed}
+#app input[aria-invalid="true"],#app textarea[aria-invalid="true"]{border-color:#A3201A!important;background-color:#FFF8F7}
+#app input::placeholder,#app textarea::placeholder{color:#6B7785;opacity:1}
+#app input[type="checkbox"],#app input[type="radio"],#app input[type="range"]{accent-color:var(--dtp-blue);cursor:pointer}
+#app input[type="checkbox"]:focus-visible,#app input[type="radio"]:focus-visible,#app input[type="range"]:focus-visible{outline:3px solid var(--dtp-blue);outline-offset:2px}
+#app select{cursor:pointer}
+
+/* Schede bianche */
+.dtp-card{box-shadow:var(--dtp-shadow)}
+.dtp-linkcard,.dtp-cardbtn{transition:box-shadow .18s ease,transform .18s ease,border-color .18s ease}
+.dtp-linkcard:hover,.dtp-cardbtn:hover{box-shadow:var(--dtp-shadow-h);transform:translateY(-2px);border-color:#9DBDF2!important}
+.dtp-linkcard:active,.dtp-cardbtn:active{transform:translateY(0)}
+.dtp-dialog{box-shadow:0 24px 60px rgba(11,31,77,.30)!important;animation:dtp-rise .22s ease both}
+.dtp-code{box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+
+/* Blocco titolo blu */
+.dtp-hero{background:var(--dtp-blue);color:#FFFFFF;border-radius:6px;padding:26px 28px;position:relative}
+.dtp-hero.dtp-hero-bleed{border-radius:0;padding:34px 0 36px;box-shadow:0 0 0 100vmax var(--dtp-blue);clip-path:inset(0 -100vmax)}
+.dtp-hero>div:first-child>h1,.dtp-hero>h1{color:#FFFFFF!important;font-size:30px!important;line-height:1.15}
+.dtp-hero>div:first-child>p,.dtp-hero>p{color:#E6EFFF!important;font-size:15px!important;line-height:1.5;margin-top:8px!important}
+.dtp-hero>span:first-child{color:var(--dtp-yellow-b)!important}
+.dtp-hero>label{color:#FFFFFF!important}
+.dtp-hero .dtp-btn-p{background:#FFFFFF!important;color:var(--dtp-blue)!important}
+.dtp-hero .dtp-btn-p:hover{box-shadow:inset 0 0 0 999px rgba(0,71,187,.10)}
+.dtp-hero .dtp-btn-o{border-color:#FFFFFF!important;color:var(--dtp-blue)!important}
+.dtp-hero .dtp-btn-t{color:#FFFFFF!important}
+.dtp-hero .dtp-linkcard{border-color:#FFFFFF!important;box-shadow:0 2px 10px rgba(0,20,70,.22)}
+.dtp-hero .dtp-linkcard:hover{box-shadow:0 0 0 3px var(--dtp-yellow-b),0 8px 22px rgba(0,20,70,.28)}
+.dtp-hero input,.dtp-hero select{border-color:#FFFFFF!important}
+.dtp-hero input:focus,.dtp-hero select:focus{box-shadow:0 0 0 3px var(--dtp-yellow-b)!important}
+
+/* Barra laterale blu della console Postel */
+.dtp-sidelink{transition:background-color .15s ease,color .15s ease}
+.dtp-sidenav .dtp-sidelink:not([aria-current="page"]):hover{background:rgba(255,255,255,.14)!important}
+.dtp-sidenav .dtp-sidelink:not([aria-current="page"]):active{background:rgba(255,255,255,.24)!important}
+.dtp-sidenav .dtp-sidelink[aria-current="page"]{box-shadow:inset 4px 0 0 var(--dtp-yellow-b)}
+#app nav:not(.dtp-sidenav) .dtp-sidelink:hover{background-color:var(--dtp-pale)}
+
+/* Tabelle dense: righe leggibili, scorrimento orizzontale dentro la scheda */
+#app [role="table"] [role="row"]{transition:background-color .12s ease}
+#app [role="table"] [role="row"]:not(:has([role="columnheader"])):hover{background-color:#F7FAFF}
+#app [role="columnheader"]{font-weight:600}
+#app [style*="overflow-x: auto"]{scrollbar-width:thin;scrollbar-color:#B8C2CF transparent;-webkit-overflow-scrolling:touch}
+
+/* Collegamenti testuali */
+#app a{text-underline-offset:3px}
+#app main a:not([class]):hover{text-decoration-thickness:2px}
+
+@keyframes dtp-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Responsive */
+@media (max-width:900px){
+  .dtp-sidenav{flex-basis:100%!important;padding:14px!important;gap:14px!important}
+  .dtp-sidenav>div:last-child{margin-top:0!important}
+}
+@media (max-width:720px){
+  #app main{padding-left:16px!important;padding-right:16px!important}
+  .dtp-header>div,.dtp-projectbar>div{padding-left:16px!important;padding-right:16px!important;gap:12px!important}
+  .dtp-header nav{flex-basis:100%!important;order:5;flex-wrap:nowrap!important;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+  .dtp-header nav::-webkit-scrollbar{display:none}
+  .dtp-navlink{white-space:nowrap;flex:none}
+  .dtp-hero{padding:20px 18px}
+  .dtp-hero.dtp-hero-bleed{padding:24px 0 26px}
+  .dtp-hero>div:first-child>h1,.dtp-hero>h1{font-size:25px!important}
+  .dtp-dialog{padding:20px!important}
+  #app nav[aria-label^="Sezioni del developer"]{flex-basis:100%!important;border-right:0!important;border-bottom:1px solid var(--dtp-line)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .dtp-linkcard:hover,.dtp-cardbtn:hover,.dtp-btn:active,.dtp-chip:active{transform:none!important}
+}

@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notifiche – Portale cliente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F7FC}
+*{box-sizing:border-box}
+a{color:#0047BB}a:hover{color:#003A99}
+</style>
+<link rel="stylesheet" href="dtp-theme.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="dtp-auth.css">
+<script src="dtp-auth.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<template id="tpl">
+
+<div class="dtp-root" style="min-height: 100dvh; background: #F3F7FC; font-family: 'Inter', system-ui, sans-serif; color: #1A1C1E; font-variant-numeric: tabular-nums">
+
+<div class="dtp-projectbar" style="background: #F2F8FF; color: #1A1C1E; border-bottom: 1px solid #D9E1EC">
+<div style="max-width: 1360px; margin: 0 auto; padding: 8px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<a class="dtp-home" href="../workspace" title="Torna a Workspace / 2026" data-testid="link-home">Home</a>
+<span class="dtp-session"><span class="dtp-session-tag">Accesso demo</span><span class="dtp-session-who" data-testid="text-current-role"><span data-dtp-role></span></span><button class="dtp-logout" type="button" data-dtp-logout data-testid="button-logout">Esci</button></span>
+</div>
+</div>
+
+<header class="dtp-header" style="background: #EEDC00; border-bottom: 1px solid #D6C600">
+<div style="max-width: 1360px; margin: 0 auto; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<div>
+<div style="font-weight: 800; font-size: 21px; letter-spacing: -0.03em; line-height: 1.1; color: #0047BB">postel</div>
+<div style="font-size: 12px; color: #33383D">Digital Trust Platform</div>
+</div>
+</div>
+<nav aria-label="Pagine del portale" style="display: flex; flex-wrap: wrap; gap: 4px; flex: 1 1 420px">
+<sc-if class="dtp-navlink" value="{{navFull}}" hint-placeholder-val="{{ true }}"><a href="cliente-H-catalogo.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Catalogo e acquisti</a></sc-if>
+<sc-if class="dtp-navlink" value="{{navFull}}" hint-placeholder-val="{{ true }}"><a href="cliente-U-utenze.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Utenze e deleghe</a></sc-if>
+<a class="dtp-navlink" href="cliente-M1-panoramica.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Contratto e consumi</a>
+<a class="dtp-navlink" href="cliente-A-assistenza.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Assistenza</a>
+<sc-if class="dtp-navlink" value="{{navTec}}" hint-placeholder-val="{{ false }}"><a href="tecnico-D0-developer-portal.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Developer portal</a></sc-if>
+</nav>
+<a class="dtp-iconbtn" href="cliente-N-notifiche.html" aria-label="Notifiche, 3 non lette" style="position: relative; width: 44px; height: 44px; border-radius: 999px; border: 1px solid #FFFFFF; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+<span style="position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; border-radius: 9px; background: #C7322A; color: #FFFFFF; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; padding: 0 4px">3</span>
+</a>
+<div style="display: flex; align-items: center; gap: 10px">
+<div aria-hidden="true" style="width: 36px; height: 36px; border-radius: 18px; background: #0047BB; color: #FFFFFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">{{who.ini}}</div>
+<div style="line-height: 1.25">
+<div style="font-size: 14px; font-weight: 600">{{who.name}}</div>
+<div style="font-size: 12px; color: #33383D">{{who.role}} · Assicurazioni Aurora S.p.A.</div>
+</div>
+</div>
+</div>
+</header>
+
+<main class="dtp-main" style="max-width: 1360px; margin: 0 auto; padding: 0 32px 48px; display: flex; flex-direction: column; gap: 20px">
+
+<div class="dtp-hero dtp-hero-bleed" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div>
+<h1 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em">Notifiche</h1>
+<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">{{unread}} da leggere · scegli su quali canali ricevere ciascun avviso e verifica che sia stato consegnato.</p>
+</div>
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{readAll}}" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1A1C1E; cursor: pointer">Segna tutte come lette</button>
+</div>
+
+<nav aria-label="Sezioni delle notifiche" style="display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid #D9E1EC">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="padding: 12px 16px; border: 0; background: transparent; font: inherit; font-size: 14px; font-weight: {{t.weight}}; color: {{t.color}}; border-bottom: 3px solid {{t.line}}; margin-bottom: -1px; cursor: pointer">{{t.label}}</button>
+</sc-for>
+</nav>
+
+<sc-if value="{{is.inbox}}" hint-placeholder-val="{{ true }}">
+<section class="dtp-card" aria-labelledby="titolo-centro" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<h2 id="titolo-centro" style="margin: 0; font-size: 18px; font-weight: 600">Centro notifiche</h2>
+<div role="group" aria-label="Filtra per argomento" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="6">
+<button class="dtp-chip" type="button" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}" style="min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid {{f.border}}; background: {{f.bg}}; color: {{f.fg}}; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{f.label}}</button>
+</sc-for>
+</div>
+</div>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+<sc-for list="{{items}}" as="n" hint-placeholder-count="6">
+<li style="display: flex; gap: 14px; align-items: flex-start; padding: 14px 12px; border-bottom: 1px solid #EAEFF5; background: {{n.rowBg}}; border-radius: 6px">
+<span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 6px; background: {{n.bg}}; display: flex; align-items: center; justify-content: center; flex: 0 0 36px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{n.fg}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{n.icon}}"></path></svg></span>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 3px">
+<span style="font-size: 14px; font-weight: {{n.weight}}">{{n.title}}</span>
+<span style="font-size: 13px; color: #3A424C; line-height: 1.45">{{n.text}}</span>
+<span style="font-size: 12px; color: #4D5762">{{n.when}} · {{n.channels}}</span>
+</div>
+<a href="{{n.href}}" style="font-size: 13px; font-weight: 600; text-decoration: none; padding: 6px 0; white-space: nowrap">{{n.cta}}</a>
+</li>
+</sc-for>
+</ul>
+</section>
+</sc-if>
+
+<sc-if value="{{is.prefs}}" hint-placeholder-val="{{ false }}">
+<section class="dtp-card" aria-labelledby="titolo-pref" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div>
+<h2 id="titolo-pref" style="margin: 0; font-size: 18px; font-weight: 600">Preferenze di canale</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762; line-height: 1.45">Valgono per le tue notifiche. Gli avvisi in-app sono sempre attivi; i canali contrassegnati come obbligatori non si possono disattivare. {{prefNote}}</p>
+</div>
+<div style="overflow-x: auto">
+<div role="table" aria-label="Canali per evento" style="min-width: 860px; font-size: 13px">
+<div role="row" style="display: grid; grid-template-columns: 2.6fr repeat(4, 1fr); gap: 12px; padding: 10px 12px; border-bottom: 1px solid #D9E1EC; color: #4D5762; font-weight: 500">
+<span role="columnheader">Evento</span><span role="columnheader" style="text-align: center">E-mail</span><span role="columnheader" style="text-align: center">PEC</span><span role="columnheader" style="text-align: center">SMS</span><span role="columnheader" style="text-align: center">In-app</span>
+</div>
+<sc-for list="{{prefs}}" as="r" hint-placeholder-count="8">
+<div role="row" style="display: grid; grid-template-columns: 2.6fr repeat(4, 1fr); gap: 12px; padding: 8px 12px; border-bottom: 1px solid #EAEFF5; align-items: center">
+<span role="rowheader" style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 14px">{{r.name}}</span><span style="color: #4D5762">{{r.group}}</span></span>
+<sc-for list="{{r.cells}}" as="c" hint-placeholder-count="4">
+<span role="cell" style="display: flex; justify-content: center">
+<button type="button" role="switch" aria-checked="{{c.on}}" aria-label="{{c.aria}}" onClick="{{c.toggle}}" style="width: 52px; height: 32px; border-radius: 16px; border: 0; background: {{c.track}}; position: relative; cursor: {{c.cursor}}; opacity: {{c.op}}"><span aria-hidden="true" style="position: absolute; top: 4px; left: {{c.knob}}; width: 24px; height: 24px; border-radius: 12px; background: #FFFFFF"></span></button>
+</span>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</div>
+<p style="margin: 0; font-size: 12px; color: #4D5762; line-height: 1.5">I testi dei messaggi seguono i modelli definiti da Postel. Destinatari e soglie degli avvisi di consumo si gestiscono in Contratto e consumi › Panoramica.</p>
+</section>
+</sc-if>
+
+<sc-if value="{{is.log}}" hint-placeholder-val="{{ false }}">
+<section class="dtp-card" aria-labelledby="titolo-esiti" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div>
+<h2 id="titolo-esiti" style="margin: 0; font-size: 18px; font-weight: 600">Esiti di consegna</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">{{logNote}}</p>
+</div>
+<div style="overflow-x: auto">
+<div role="table" aria-label="Esiti di consegna" style="min-width: 900px; font-size: 13px">
+<div role="row" style="display: grid; grid-template-columns: 1.1fr 2fr 1.6fr 0.8fr 1.4fr; gap: 12px; padding: 10px 12px; border-bottom: 1px solid #D9E1EC; color: #4D5762; font-weight: 500">
+<span role="columnheader">Data e ora</span><span role="columnheader">Evento</span><span role="columnheader">Destinatario</span><span role="columnheader">Canale</span><span role="columnheader">Esito</span>
+</div>
+<sc-for list="{{log}}" as="l" hint-placeholder-count="6">
+<div role="row" style="display: grid; grid-template-columns: 1.1fr 2fr 1.6fr 0.8fr 1.4fr; gap: 12px; padding: 12px; border-bottom: 1px solid #EAEFF5; align-items: center">
+<span role="cell">{{l.when}}</span><span role="cell" style="font-weight: 600">{{l.event}}</span><span role="cell" style="color: #3A424C">{{l.to}}</span><span role="cell">{{l.ch}}</span>
+<span role="cell"><span style="display: inline-block; padding: 3px 10px; border-radius: 999px; background: {{l.bg}}; color: {{l.fg}}; font-size: 12px; font-weight: 600">{{l.state}}</span></span>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+</sc-if>
+
+</main>
+</div>
+</template>
+<script>
+/* Mini runtime per le pagine esportate: template {{ }}, sc-for, sc-if, onClick, setState. */
+(function () {
+  var _tl = Number.prototype.toLocaleString;
+  Number.prototype.toLocaleString = function (loc, opt) {
+    if (loc === 'it-IT') opt = Object.assign({ useGrouping: 'always' }, opt || {});
+    try { return _tl.call(this, loc, opt); } catch (e) { return _tl.call(this, loc); }
+  };
+  var HOLE = /\{\{\s*([^}]+?)\s*\}\}/g, FULL = /^\{\{\s*([^}]+?)\s*\}\}$/;
+  function lookup(path, scope) {
+    path = path.trim();
+    if (path === 'true') return true; if (path === 'false') return false;
+    if (/^-?\d+(\.\d+)?$/.test(path)) return Number(path);
+    var parts = path.split('.'), v = scope;
+    for (var i = 0; i < parts.length; i++) { if (v == null) return undefined; v = v[parts[i]]; }
+    return v;
+  }
+  function interp(str, scope) {
+    return str.replace(HOLE, function (_, p) { var v = lookup(p, scope); return v == null ? '' : String(v); });
+  }
+  function renderChildren(src, dst, scope) {
+    for (var c = src.firstChild; c; c = c.nextSibling) renderNode(c, dst, scope);
+  }
+  function renderNode(node, dst, scope) {
+    if (node.nodeType === 3) { dst.appendChild(document.createTextNode(interp(node.nodeValue, scope))); return; }
+    if (node.nodeType !== 1) return;
+    var tag = node.localName;
+    if (tag === 'sc-for') {
+      var list = lookup((node.getAttribute('list') || '').replace(/^\{\{|\}\}$/g, ''), scope) || [];
+      var as = node.getAttribute('as') || 'item';
+      list.forEach(function (item, i) {
+        var s = Object.create(scope); s[as] = item; s.$index = i;
+        renderChildren(node, dst, s);
+      });
+      return;
+    }
+    if (tag === 'sc-if') {
+      var val = lookup((node.getAttribute('value') || '').replace(/^\{\{|\}\}$/g, ''), scope);
+      if (val) renderChildren(node, dst, scope);
+      return;
+    }
+    var el = node.namespaceURI === 'http://www.w3.org/2000/svg'
+      ? document.createElementNS(node.namespaceURI, node.localName) : document.createElement(node.localName);
+    for (var a = 0; a < node.attributes.length; a++) {
+      var at = node.attributes[a], name = at.name, raw = at.value;
+      if (name.indexOf('hint-') === 0) continue;
+      var m = raw.match(FULL);
+      if (m) {
+        var v = lookup(m[1], scope);
+        if (name.indexOf('on') === 0 && typeof v === 'function') { el.addEventListener(name.slice(2), v); continue; }
+        if (name === 'defaultchecked' || name === 'checked') { if (v) { el.setAttribute('checked', ''); el.checked = true; } continue; }
+        if (name === 'defaultvalue') { el.setAttribute('value', v == null ? '' : String(v)); continue; }
+        if (v == null || v === false && name.indexOf('aria-') !== 0) continue;
+        el.setAttribute(name, String(v));
+      } else if (name === 'defaultvalue') { el.setAttribute('value', raw);
+      } else if (name === 'defaultchecked') { el.setAttribute('checked', '');
+      } else { el.setAttribute(name, interp(raw, scope)); }
+    }
+    renderChildren(node.localName === 'template' ? node.content : node, el, scope);
+    dst.appendChild(el);
+  }
+  function DCLogic(props) { this.props = props || {}; this.state = null; }
+  DCLogic.prototype.setState = function (o) {
+    this.state = Object.assign({}, this.state || {}, o);
+    this.__render();
+  };
+  DCLogic.prototype.forceUpdate = function () { this.__render(); };
+  window.DCLogic = DCLogic;
+  window.DC = {
+    mount: function (Comp, meta) {
+      var props = {};
+      Object.keys(meta).forEach(function (k) { if (k[0] !== '$' && meta[k] && 'default' in meta[k]) props[k] = meta[k]['default']; });
+      /* Sessione demo: il ruolo arriva da DTPAuth; senza permesso la pagina non viene disegnata. */
+      var auth = window.DTPAuth, access = auth ? auth.enter(meta) : null;
+      if (!access) return;
+      if (meta.persona && meta.persona.options) props.persona = access.role;
+      var tpl = document.getElementById('tpl').content, root = document.getElementById('app');
+      var c = new Comp(props);
+      c.__render = function () {
+        var frag = document.createDocumentFragment();
+        renderChildren(tpl, frag, c.renderVals());
+        root.replaceChildren(frag);
+        auth.decorate(root);
+      };
+      c.__render();
+    }
+  };
+})();
+
+</script>
+<script>
+
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var set = function (o) { self.setState(o); };
+    var P = this.props.persona;
+    var WHO = {
+      lr: { name: 'Paolo Ferretti', role: 'Legale rappresentante', ini: 'PF' },
+      amm: { name: 'Giulia Marchetti', role: 'Delegato amministrativo', ini: 'GM' },
+      op: { name: 'Davide Sala', role: 'Delegato operativo', ini: 'DS' },
+      tec: { name: 'Andrea Colombo', role: 'Delegato tecnico', ini: 'AC' }
+    };
+    var tab = st.tab || 'inbox';
+    var tabs = [['inbox', 'Centro notifiche'], ['prefs', 'Preferenze di canale'], ['log', 'Esiti di consegna']].map(function (t) {
+      var on = t[0] === tab;
+      return { label: t[1], pressed: on ? 'true' : 'false', weight: on ? 600 : 500, color: on ? '#0047BB' : '#4D5762', line: on ? '#0047BB' : 'transparent', pick: function () { set({ tab: t[0] }); } };
+    });
+    var money = P === 'lr' || P === 'amm';
+    var I = {
+      soglia: 'M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z M12 9v4 M12 17h.01',
+      contratto: 'M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z M14 3v6h6 M9 15l2 2 4-4',
+      fattura: 'M4 3h16v18l-3-2-3 2-2-2-2 2-3-2-3 2z M8 8h8 M8 12h8',
+      delega: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M19 8v6 M22 11h-6',
+      ticket: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z',
+      tec: 'M15 7a4 4 0 1 1-3.9 4.9L3 20v-3h3v-3h3l2.1-2.1A4 4 0 0 1 15 7z'
+    };
+    var C = { soglia: ['#FDE7DC', '#B03A0B'], contratto: ['#E5EFFF', '#0047BB'], fattura: ['#E5EFFF', '#0047BB'], delega: ['#E5EFFF', '#0047BB'], ticket: ['#FDF1D6', '#855800'], tec: ['#FDF1D6', '#855800'] };
+    var readAll = !!st.readAll;
+    var N = [
+      ['soglia', 'Identificazioni Full Prospect in soglia critica', 'Consumato il 92,2% della quantità inclusa; esaurimento previsto il 13 nov.', 'oggi 08:00', 'e-mail, in-app', 'cliente-M1-panoramica.html', 'Vedi i consumi', true, ['lr', 'amm', 'op', 'tec']],
+      ['contratto', 'Richiesta di modifica da autorizzare', 'Giulia Marchetti chiede l\'upgrade a Pro dal prossimo rinnovo.', 'oggi 09:14', 'e-mail, in-app', 'cliente-M5-contratto.html', 'Apri la richiesta', true, ['lr']],
+      ['contratto', 'Upgrade a Pro: in attesa di presa visione', 'La tua richiesta RM-014 è stata inviata a Paolo Ferretti.', 'oggi 09:14', 'in-app', 'cliente-M5-contratto.html', 'Apri la richiesta', true, ['amm']],
+      ['ticket', 'Aggiornamento sulla richiesta TCK-20418', 'La richiesta è passata agli specialisti Postel.', 'oggi 11:20', 'e-mail, in-app', 'cliente-A-assistenza.html', 'Apri la richiesta', false, ['lr', 'op']],
+      ['tec', 'Credenziale di produzione in scadenza', 'Il segreto dell\'applicazione «Portale web» scade il 30 nov 2026.', 'ieri 09:00', 'e-mail, in-app', 'tecnico-D0-developer-portal.html', 'Apri il developer portal', true, ['tec', 'lr']],
+      ['fattura', 'Nuova fattura disponibile', 'Overage di ottobre, € 420, scadenza 30 nov 2026. Accettata dal Sistema di Interscambio.', '2 nov', 'e-mail, PEC, in-app', 'cliente-M4-fatture.html', 'Vedi e paga', false, ['lr', 'amm']],
+      ['contratto', 'Decisione sul rinnovo entro il 30 nov', 'Il contratto scade il 28 feb 2027.', '1 nov', 'e-mail, PEC, in-app', 'cliente-M5-contratto.html', 'Vai al contratto', false, ['lr', 'amm']],
+      ['delega', 'Delega tecnica attiva', 'Andrea Colombo ha firmato l\'accettazione della delega tecnica.', '28 ott', 'e-mail, in-app', 'cliente-U-utenze.html', 'Vai alle deleghe', false, ['lr', 'tec']]
+    ];
+    var F = st.f || 'all';
+    var groups = [['all', 'Tutte'], ['unread', 'Da leggere'], ['soglia', 'Consumi'], ['contratto', 'Contratto'], ['fattura', 'Fatture'], ['ticket', 'Assistenza']].filter(function (g) { return money || g[0] !== 'fattura'; });
+    var filters = groups.map(function (g) { var on = g[0] === F; return { label: g[1], pressed: on ? 'true' : 'false', bg: on ? '#0047BB' : '#FFFFFF', fg: on ? '#FFFFFF' : '#1A1C1E', border: on ? '#0047BB' : '#B8C2CF', pick: function () { set({ f: g[0] }); } }; });
+    var mine = N.filter(function (n) { return n[8].indexOf(P) >= 0; });
+    var unreadCount = readAll ? 0 : mine.filter(function (n) { return n[7]; }).length;
+    var items = mine.filter(function (n) { return F === 'all' || (F === 'unread' ? (n[7] && !readAll) : n[0] === F); }).map(function (n) {
+      var unread = n[7] && !readAll, c = C[n[0]];
+      return { title: n[1], text: n[2], when: n[3], channels: n[4], href: n[5], cta: n[6], icon: I[n[0]], bg: c[0], fg: c[1], weight: unread ? 700 : 500, rowBg: unread ? '#F2F8FF' : 'transparent' };
+    });
+    var EV = [
+      ['Soglia di attenzione superata', 'Consumi', [1, 0, 0, 1], [0, 0, 0, 1], ['lr', 'amm', 'op', 'tec']],
+      ['Soglia critica o servizio esaurito', 'Consumi', [1, 0, 1, 1], [0, 0, 0, 1], ['lr', 'amm', 'op', 'tec']],
+      ['Esaurimento previsto prima del rinnovo', 'Consumi', [1, 0, 0, 1], [0, 0, 0, 1], ['lr', 'amm']],
+      ['Nuova fattura disponibile', 'Fatture', [1, 1, 0, 1], [0, 0, 0, 1], ['lr', 'amm']],
+      ['Fattura in scadenza o sollecito', 'Fatture', [1, 1, 0, 1], [0, 1, 0, 1], ['lr', 'amm']],
+      ['Richiesta di modifica del contratto', 'Contratto', [1, 0, 0, 1], [0, 0, 0, 1], ['lr', 'amm']],
+      ['Scadenza del contratto e finestra di preavviso', 'Contratto', [1, 1, 0, 1], [0, 1, 0, 1], ['lr', 'amm']],
+      ['Nomina, modifica o revoca di una delega', 'Deleghe', [1, 0, 0, 1], [1, 0, 0, 1], ['lr', 'amm', 'op', 'tec']],
+      ['Aggiornamento di una richiesta di assistenza', 'Assistenza', [1, 0, 0, 1], [0, 0, 0, 1], ['lr', 'amm', 'op', 'tec']],
+      ['Credenziali in scadenza o passaggio in produzione', 'Developer portal', [1, 0, 0, 1], [0, 0, 0, 1], ['lr', 'tec']],
+      ['Variazione delle condizioni generali', 'Contratto', [1, 1, 0, 1], [0, 1, 0, 1], ['lr']]
+    ];
+    var ov = st.ov || {};
+    var CH = ['E-mail', 'PEC', 'SMS', 'In-app'];
+    var prefs = EV.filter(function (e) { return e[4].indexOf(P) >= 0; }).map(function (e, ei) {
+      return { name: e[0], group: e[1], cells: CH.map(function (ch, ci) {
+        var key = e[0] + '|' + ci, locked = e[3][ci] === 1 || ci === 3;
+        var on = locked ? true : (ov[key] != null ? ov[key] : e[2][ci] === 1);
+        return { on: on ? 'true' : 'false', aria: ch + ' per ' + e[0] + (locked ? ', obbligatorio' : ''), track: on ? (locked ? '#8792A6' : '#0047BB') : '#B8C2CF', knob: on ? '24px' : '4px', cursor: locked ? 'not-allowed' : 'pointer', op: locked ? 0.8 : 1,
+          toggle: function () { if (locked) return; var n = {}; for (var k in ov) n[k] = ov[k]; n[key] = !on; set({ ov: n }); } };
+      }) };
+    });
+    var LS = { ok: ['Consegnato', '#E3F3EA', '#1A6B4A'], read: ['Letto', '#E3F3EA', '#1A6B4A'], ko: ['Non consegnato · casella piena', '#FBE3E1', '#A3201A'], wait: ['In consegna', '#FDF1D6', '#855800'] };
+    var LOG = [
+      ['oggi 09:14', 'Richiesta di modifica da autorizzare', 'Paolo Ferretti · p.ferretti@aurora.example', 'E-mail', 'read', ['lr']],
+      ['oggi 08:00', 'Soglia critica · Full Prospect', 'Giulia Marchetti · g.marchetti@aurora.example', 'E-mail', 'ok', ['lr', 'amm']],
+      ['oggi 08:00', 'Soglia critica · Full Prospect', 'Giulia Marchetti · +39 3•• ••• ••18', 'SMS', 'ok', ['lr', 'amm']],
+      ['oggi 08:00', 'Soglia critica · Full Prospect', 'Davide Sala · d.sala@aurora.example', 'E-mail', 'ko', ['lr', 'op']],
+      ['ieri 09:00', 'Credenziale di produzione in scadenza', 'Andrea Colombo · a.colombo@aurora.example', 'E-mail', 'read', ['lr', 'tec']],
+      ['2 nov 10:02', 'Nuova fattura disponibile', 'amministrazione@pec.aurora.example', 'PEC', 'ok', ['lr', 'amm']],
+      ['oggi 15:30', 'Aggiornamento richiesta TCK-20418', 'Davide Sala · in-app', 'In-app', 'wait', ['lr', 'op']]
+    ];
+    var log = LOG.filter(function (l) { return l[5].indexOf(P) >= 0; }).map(function (l) { var s = LS[l[4]]; return { when: l[0], event: l[1], to: l[2], ch: l[3], state: s[0], bg: s[1], fg: s[2] }; });
+    return {
+      who: WHO[P], navFull: P !== 'tec', navTec: P === 'tec',
+      tabs: tabs, is: { inbox: tab === 'inbox', prefs: tab === 'prefs', log: tab === 'log' },
+      unread: unreadCount, readAll: function () { set({ readAll: true }); },
+      filters: filters, items: items, prefs: prefs, log: log,
+      prefNote: P === 'lr' ? 'Come legale rappresentante ricevi anche gli avvisi delle funzioni che non hai delegato.' : '',
+      logNote: P === 'lr' ? 'Invii a tutte le utenze della tua azienda negli ultimi 30 giorni.' : 'Invii verso di te negli ultimi 30 giorni.'
+    };
+  }
+}
+
+DC.mount(Component, {"persona": {"editor": "enum", "options": ["lr", "amm", "op", "tec"], "default": "lr"}, "$preview": {"width": 1440, "height": 1500}});
+</script>
+</body>
+</html>

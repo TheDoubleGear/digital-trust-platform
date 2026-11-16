@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fatture – Portale cliente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F7FC}
+*{box-sizing:border-box}
+a{color:#0047BB}a:hover{color:#003A99}
+</style>
+<link rel="stylesheet" href="dtp-theme.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="dtp-auth.css">
+<script src="dtp-auth.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<template id="tpl">
+
+<div class="dtp-root" style="min-height: 100dvh; background: #F3F7FC; font-family: 'Inter', system-ui, sans-serif; color: #1A1C1E; font-variant-numeric: tabular-nums">
+
+<div class="dtp-projectbar" style="background: #F2F8FF; color: #1A1C1E; border-bottom: 1px solid #D9E1EC">
+<div style="max-width: 1360px; margin: 0 auto; padding: 8px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<a class="dtp-home" href="../workspace" title="Torna a Workspace / 2026" data-testid="link-home">Home</a>
+<span class="dtp-session"><span class="dtp-session-tag">Accesso demo</span><span class="dtp-session-who" data-testid="text-current-role"><span data-dtp-role></span></span><button class="dtp-logout" type="button" data-dtp-logout data-testid="button-logout">Esci</button></span>
+</div>
+</div>
+
+<header class="dtp-header" style="background: #EEDC00; border-bottom: 1px solid #D6C600">
+<div style="max-width: 1360px; margin: 0 auto; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<div>
+<div style="font-weight: 800; font-size: 21px; letter-spacing: -0.03em; line-height: 1.1; color: #0047BB">postel</div>
+<div style="font-size: 12px; color: #33383D">Digital Trust Platform</div>
+</div>
+</div>
+<nav aria-label="Pagine del portale" style="display: flex; flex-wrap: wrap; gap: 4px; flex: 1 1 420px">
+<a class="dtp-navlink" href="cliente-H-catalogo.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Catalogo e acquisti</a>
+<a class="dtp-navlink" href="cliente-U-utenze.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Utenze e deleghe</a>
+<a class="dtp-navlink" href="cliente-M1-panoramica.html" aria-current="page" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 600; text-decoration: none; color: #FFFFFF; background: #0047BB">Contratto e consumi</a>
+<a class="dtp-navlink" href="cliente-A-assistenza.html" style="padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none; color: #33383D">Assistenza</a>
+</nav>
+<a class="dtp-iconbtn" href="cliente-N-notifiche.html" aria-label="Notifiche, 3 non lette" style="position: relative; width: 44px; height: 44px; border-radius: 999px; border: 1px solid #FFFFFF; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+<span style="position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; border-radius: 9px; background: #C7322A; color: #FFFFFF; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; padding: 0 4px">3</span>
+</a>
+<div style="display: flex; align-items: center; gap: 10px">
+<div aria-hidden="true" style="width: 36px; height: 36px; border-radius: 18px; background: #0047BB; color: #FFFFFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">{{who.ini}}</div>
+<div style="line-height: 1.25">
+<div style="font-size: 14px; font-weight: 600">{{who.name}}</div>
+<div style="font-size: 12px; color: #33383D">{{who.role}} · Assicurazioni Aurora S.p.A.</div>
+</div>
+</div>
+</div>
+</header>
+
+<main class="dtp-main" style="max-width: 1360px; margin: 0 auto; padding: 24px 32px 48px; display: flex; flex-direction: column; gap: 20px">
+
+<nav aria-label="Sotto-viste di Contratto e consumi" style="display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid #D9E1EC">
+<sc-for list="{{subtabs}}" as="t" hint-placeholder-count="5">
+<a href="{{t.href}}" aria-current="{{t.current}}" style="padding: 12px 16px; font-size: 14px; font-weight: {{t.weight}}; text-decoration: none; color: {{t.color}}; border-bottom: 3px solid {{t.line}}; margin-bottom: -1px">{{t.label}}</a>
+</sc-for>
+</nav>
+
+<sc-if value="{{noMoney}}" hint-placeholder-val="{{ false }}">
+<section class="dtp-card" role="note" aria-labelledby="titolo-nonvisibile" style="background: #FFFFFF; border: 1px dashed #9AA6B8; border-radius: 6px; padding: 32px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
+<h1 id="titolo-nonvisibile" style="margin: 0; font-size: 20px; font-weight: 600">Le fatture non sono visibili per il delegato operativo</h1>
+<p style="margin: 0; font-size: 14px; color: #4D5762; line-height: 1.5; max-width: 640px">Per ruolo il delegato operativo lavora sulle quantità e non vede importi, ordini e fatture: la scheda «Fatture» non compare nel suo menu. Per le fatture rivolgiti al delegato amministrativo o al legale rappresentante.</p>
+<a href="cliente-M1-panoramica.html" style="font-size: 14px; font-weight: 600; text-decoration: none; padding: 10px 0">Torna alla panoramica →</a>
+</section>
+</sc-if>
+
+<sc-if value="{{money}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 20px">
+
+<div class="dtp-hero" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div>
+<h1 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em">Fatture</h1>
+<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">Contratto DTP-2026-0418 · canone a trimestri anticipati, overage a fine mese, ricariche all'attivazione</p>
+</div>
+<button class="dtp-btn dtp-btn-o" type="button" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1A1C1E; cursor: pointer">Scarica tutte (ZIP)</button>
+</div>
+
+<form aria-label="Filtri" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end">
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Periodo
+<select style="min-height: 44px; min-width: 210px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E"><option>Periodo contrattuale</option><option>Anno 2026</option><option>Ultimo trimestre</option></select>
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Tipo
+<select style="min-height: 44px; min-width: 170px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E"><option>Tutti</option><option>Canone</option><option>Overage</option><option>Ricarica</option></select>
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Stato
+<select style="min-height: 44px; min-width: 170px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E"><option>Tutti</option><option>Pagata</option><option>Da pagare</option><option>Scaduta</option><option>In emissione</option></select>
+</label>
+</form>
+
+<section aria-label="Riepilogo" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px">
+<sc-for list="{{tiles}}" as="k" hint-placeholder-count="4">
+<div class="dtp-card" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; color: #4D5762; font-weight: 500">{{k.label}}</span>
+<span style="font-size: 28px; font-weight: 600; letter-spacing: -0.02em; color: {{k.color}}">{{k.value}}</span>
+<span style="font-size: 13px; color: #4D5762">{{k.sub}}</span>
+</div>
+</sc-for>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-elenco" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<h2 id="titolo-elenco" style="margin: 0; font-size: 18px; font-weight: 600">Elenco fatture</h2>
+<div style="overflow-x: auto">
+<div role="table" aria-label="Elenco fatture" style="min-width: 1100px; font-size: 13px">
+<div role="row" style="display: grid; grid-template-columns: 1.1fr 0.8fr 0.7fr 2.2fr 0.8fr 0.9fr 1.1fr 0.9fr 1.3fr; color: #4D5762; font-size: 12px; border-bottom: 1px solid #D9E1EC">
+<span role="columnheader" style="padding: 10px">Numero</span>
+<span role="columnheader" style="padding: 10px">Data</span>
+<span role="columnheader" style="padding: 10px">Tipo</span>
+<span role="columnheader" style="padding: 10px">Descrizione</span>
+<span role="columnheader" style="padding: 10px; text-align: right">Importo</span>
+<span role="columnheader" style="padding: 10px">Scadenza</span>
+<span role="columnheader" style="padding: 10px">Stato</span>
+<span role="columnheader" style="padding: 10px">Esito SdI</span>
+<span role="columnheader" style="padding: 10px">Documenti e pagamento</span>
+</div>
+<sc-for list="{{invoices}}" as="i" hint-placeholder-count="5">
+<div role="row" style="display: grid; grid-template-columns: 1.1fr 0.8fr 0.7fr 2.2fr 0.8fr 0.9fr 1.1fr 0.9fr 1.3fr; align-items: center; border-bottom: 1px solid #EAEFF5">
+<span role="rowheader" style="padding: 10px; font-weight: 600">{{i.num}}</span>
+<span role="cell" style="padding: 10px">{{i.date}}</span>
+<span role="cell" style="padding: 10px">{{i.type}}</span>
+<span role="cell" style="padding: 10px">{{i.desc}}</span>
+<span role="cell" style="padding: 10px; text-align: right; font-weight: 600">{{i.amount}}</span>
+<span role="cell" style="padding: 10px">{{i.due}}</span>
+<span role="cell" style="padding: 10px"><span style="display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: {{i.bg}}; color: {{i.fg}}">{{i.state}}</span></span>
+<span role="cell" style="padding: 10px; font-size: 12px; color: {{i.sdiFg}}">{{i.sdi}}</span>
+<span role="cell" style="padding: 6px 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<sc-if value="{{i.hasDocs}}" hint-placeholder-val="{{ true }}"><a href="#pdf" style="font-size: 13px; font-weight: 600; text-decoration: none; padding: 8px 0">PDF</a><a href="#xml" style="font-size: 13px; font-weight: 600; text-decoration: none; padding: 8px 0">XML</a></sc-if>
+<sc-if value="{{i.noDocs}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: #4D5762; padding: 8px 0">non ancora emessa</span></sc-if>
+<sc-if value="{{i.hasAct}}" hint-placeholder-val="{{ false }}"><button class="dtp-btn dtp-btn-p" type="button" onClick="{{i.act}}" style="min-height: 36px; padding: 0 16px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{i.actLabel}}</button></sc-if>
+</span>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-pagamento" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div>
+<h2 id="titolo-pagamento" style="margin: 0; font-size: 18px; font-weight: 600">Pagamenti e solleciti</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Nessun addebito automatico: ogni fattura si approva e si paga dopo l'emissione, anche per il primo contratto, i rinnovi e gli upgrade.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px">
+<div style="border: 1px solid #D9E1EC; border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 600">Metodi di pagamento</span>
+<span style="font-size: 13px; color: #3A424C; line-height: 1.5">Pagamento online con carta, singolo per fattura, oppure bonifico sull'IBAN indicato in fattura ([IBAN POSTEL]) con il numero fattura in causale.</span>
+</div>
+<div style="border: 1px solid #D9E1EC; border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 600">Solleciti</span>
+<span style="font-size: 13px; color: #3A424C; line-height: 1.5">{{reminder}}</span>
+<span style="font-size: 12px; color: #4D5762">Regole di sollecito: [DA DEFINIRE]</span>
+</div>
+<div style="border: 1px solid #D9E1EC; border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 600">Ricevute</span>
+<sc-for list="{{receipts}}" as="r" hint-placeholder-count="3">
+<a href="#ricevuta" style="font-size: 13px; text-decoration: none; padding: 4px 0">{{r.label}}</a>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-overage" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div>
+<h2 id="titolo-overage" style="margin: 0; font-size: 18px; font-weight: 600">Overage: € 420 maturati finora, € 10.703 previsti a fine periodo</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Unità oltre la quantità inclusa per servizio · previsione al ritmo degli ultimi 30 giorni, senza ricariche</p>
+</div>
+<a class="dtp-btn dtp-btn-p" href="cliente-H-catalogo.html" style="min-height: 44px; padding: 0 20px; border-radius: 999px; background: #0047BB; color: #FFFFFF; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Riduci l'overage con le ricariche</a>
+</div>
+<div style="overflow-x: auto">
+<div role="table" aria-label="Dettaglio overage per servizio" style="min-width: 900px; font-size: 13px">
+<div role="row" style="display: grid; grid-template-columns: 2.4fr 1fr 1fr 1fr 1.1fr 1.1fr; color: #4D5762; font-size: 12px; border-bottom: 1px solid #D9E1EC; text-align: right">
+<span role="columnheader" style="padding: 10px; text-align: left">Servizio</span>
+<span role="columnheader" style="padding: 10px">Prezzo overage</span>
+<span role="columnheader" style="padding: 10px">Unità oltre soglia oggi</span>
+<span role="columnheader" style="padding: 10px">Maturato</span>
+<span role="columnheader" style="padding: 10px">Unità previste a fine periodo</span>
+<span role="columnheader" style="padding: 10px">Overage previsto</span>
+</div>
+<sc-for list="{{overage}}" as="o" hint-placeholder-count="9">
+<div role="row" style="display: grid; grid-template-columns: 2.4fr 1fr 1fr 1fr 1.1fr 1.1fr; border-bottom: 1px solid #EAEFF5; text-align: right">
+<span role="rowheader" style="padding: 10px; text-align: left; font-weight: 500">{{o.name}}</span>
+<span role="cell" style="padding: 10px; color: #4D5762">{{o.price}}</span>
+<span role="cell" style="padding: 10px">{{o.now}}</span>
+<span role="cell" style="padding: 10px; font-weight: 600">{{o.nowEur}}</span>
+<span role="cell" style="padding: 10px">{{o.fc}}</span>
+<span role="cell" style="padding: 10px; font-weight: 600; color: {{o.fcColor}}">{{o.fcEur}}</span>
+</div>
+</sc-for>
+<div role="row" style="display: grid; grid-template-columns: 2.4fr 1fr 1fr 1fr 1.1fr 1.1fr; text-align: right; font-weight: 700">
+<span role="rowheader" style="padding: 12px 10px; text-align: left">Totale</span>
+<span role="cell" style="padding: 12px 10px"></span>
+<span role="cell" style="padding: 12px 10px"></span>
+<span role="cell" style="padding: 12px 10px">€ 420</span>
+<span role="cell" style="padding: 12px 10px"></span>
+<span role="cell" style="padding: 12px 10px; color: #B03A0B">€ 10.703</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</sc-if>
+
+</main>
+</div>
+</template>
+<script>
+/* Mini runtime per le pagine esportate: template {{ }}, sc-for, sc-if, onClick, setState. */
+(function () {
+  var _tl = Number.prototype.toLocaleString;
+  Number.prototype.toLocaleString = function (loc, opt) {
+    if (loc === 'it-IT') opt = Object.assign({ useGrouping: 'always' }, opt || {});
+    try { return _tl.call(this, loc, opt); } catch (e) { return _tl.call(this, loc); }
+  };
+  var HOLE = /\{\{\s*([^}]+?)\s*\}\}/g, FULL = /^\{\{\s*([^}]+?)\s*\}\}$/;
+  function lookup(path, scope) {
+    path = path.trim();
+    if (path === 'true') return true; if (path === 'false') return false;
+    if (/^-?\d+(\.\d+)?$/.test(path)) return Number(path);
+    var parts = path.split('.'), v = scope;
+    for (var i = 0; i < parts.length; i++) { if (v == null) return undefined; v = v[parts[i]]; }
+    return v;
+  }
+  function interp(str, scope) {
+    return str.replace(HOLE, function (_, p) { var v = lookup(p, scope); return v == null ? '' : String(v); });
+  }
+  function renderChildren(src, dst, scope) {
+    for (var c = src.firstChild; c; c = c.nextSibling) renderNode(c, dst, scope);
+  }
+  function renderNode(node, dst, scope) {
+    if (node.nodeType === 3) { dst.appendChild(document.createTextNode(interp(node.nodeValue, scope))); return; }
+    if (node.nodeType !== 1) return;
+    var tag = node.localName;
+    if (tag === 'sc-for') {
+      var list = lookup((node.getAttribute('list') || '').replace(/^\{\{|\}\}$/g, ''), scope) || [];
+      var as = node.getAttribute('as') || 'item';
+      list.forEach(function (item, i) {
+        var s = Object.create(scope); s[as] = item; s.$index = i;
+        renderChildren(node, dst, s);
+      });
+      return;
+    }
+    if (tag === 'sc-if') {
+      var val = lookup((node.getAttribute('value') || '').replace(/^\{\{|\}\}$/g, ''), scope);
+      if (val) renderChildren(node, dst, scope);
+      return;
+    }
+    var el = node.namespaceURI === 'http://www.w3.org/2000/svg'
+      ? document.createElementNS(node.namespaceURI, node.localName) : document.createElement(node.localName);
+    for (var a = 0; a < node.attributes.length; a++) {
+      var at = node.attributes[a], name = at.name, raw = at.value;
+      if (name.indexOf('hint-') === 0) continue;
+      var m = raw.match(FULL);
+      if (m) {
+        var v = lookup(m[1], scope);
+        if (name.indexOf('on') === 0 && typeof v === 'function') { el.addEventListener(name.slice(2), v); continue; }
+        if (name === 'defaultchecked' || name === 'checked') { if (v) { el.setAttribute('checked', ''); el.checked = true; } continue; }
+        if (name === 'defaultvalue') { el.setAttribute('value', v == null ? '' : String(v)); continue; }
+        if (v == null || v === false && name.indexOf('aria-') !== 0) continue;
+        el.setAttribute(name, String(v));
+      } else if (name === 'defaultvalue') { el.setAttribute('value', raw);
+      } else if (name === 'defaultchecked') { el.setAttribute('checked', '');
+      } else { el.setAttribute(name, interp(raw, scope)); }
+    }
+    renderChildren(node.localName === 'template' ? node.content : node, el, scope);
+    dst.appendChild(el);
+  }
+  function DCLogic(props) { this.props = props || {}; this.state = null; }
+  DCLogic.prototype.setState = function (o) {
+    this.state = Object.assign({}, this.state || {}, o);
+    this.__render();
+  };
+  DCLogic.prototype.forceUpdate = function () { this.__render(); };
+  window.DCLogic = DCLogic;
+  window.DC = {
+    mount: function (Comp, meta) {
+      var props = {};
+      Object.keys(meta).forEach(function (k) { if (k[0] !== '$' && meta[k] && 'default' in meta[k]) props[k] = meta[k]['default']; });
+      /* Sessione demo: il ruolo arriva da DTPAuth; senza permesso la pagina non viene disegnata. */
+      var auth = window.DTPAuth, access = auth ? auth.enter(meta) : null;
+      if (!access) return;
+      if (meta.persona && meta.persona.options) props.persona = access.role;
+      var tpl = document.getElementById('tpl').content, root = document.getElementById('app');
+      var c = new Comp(props);
+      c.__render = function () {
+        var frag = document.createDocumentFragment();
+        renderChildren(tpl, frag, c.renderVals());
+        root.replaceChildren(frag);
+        auth.decorate(root);
+      };
+      c.__render();
+    }
+  };
+})();
+
+</script>
+<script>
+
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var P = this.props.persona;
+    var WHO = {
+      lr: { name: 'Paolo Ferretti', role: 'Legale rappresentante', ini: 'PF' },
+      amm: { name: 'Giulia Marchetti', role: 'Delegato amministrativo', ini: 'GM' },
+      op: { name: 'Davide Sala', role: 'Delegato operativo', ini: 'DS' }
+    };
+    var money = P !== 'op';
+    var approved = !!st.approved, paid = !!st.paid;
+    var tabsRaw = [['Panoramica', 'cliente-M1-panoramica.html'], ['Dettaglio servizio', 'cliente-M2-dettaglio.html'], ['Qualità processi', 'cliente-M3-qualita.html']];
+    if (money) { tabsRaw.push(['Fatture', 'cliente-M4-fatture.html']); tabsRaw.push(['Contratto', 'cliente-M5-contratto.html']); }
+    var subtabs = tabsRaw.map(function (t, i) {
+      var on = money && i === 3;
+      return { label: t[0], href: t[1], current: on ? 'page' : 'false', weight: on ? 600 : 500, color: on ? '#0047BB' : '#4D5762', line: on ? '#0047BB' : 'transparent' };
+    });
+    var tiles = [
+      { label: 'Fatturato nel periodo', value: '€ 15.345', sub: '3 fatture di canone e 1 di overage', color: '#1A1C1E' },
+      { label: 'Da pagare', value: paid ? '€ 0' : '€ 420', sub: paid ? 'pagamento ricevuto, in riconciliazione' : 'overage di ottobre · scadenza 30 nov 2026', color: paid ? '#1A6B4A' : '#B03A0B' },
+      { label: 'In emissione', value: '€ 1.275', sub: 'ricarica 500 Nuovi Certificati FEA', color: '#855800' },
+      { label: 'Prossima fattura di canone', value: '1 dic 2026', sub: '€ 4.975 · 4° trimestre (dic–feb)', color: '#1A1C1E' }
+    ];
+    var IS = { paid: ['Pagata', '#E3F3EA', '#1A6B4A'], soon: ['In emissione', '#FDF1D6', '#855800'], topay: ['Da approvare', '#FDE7DC', '#B03A0B'], approved: ['Approvata, da pagare', '#FDF1D6', '#855800'], recon: ['Pagata · in riconciliazione', '#E5EFFF', '#0047BB'] };
+    var invoices = [
+      ['FT-2026-11012', '2 nov 2026', 'Overage', 'Overage ottobre: Nuovi Certificati FEA, 140 unità × € 3,00', '€ 420', '30 nov 2026', paid ? 'recon' : (approved ? 'approved' : 'topay'), true],
+      ['—', 'all’attivazione', 'Ricarica', 'Ricarica 500 Nuovi Certificati FEA (ORD-2026-1187)', '€ 1.275', '30 gg data fattura', 'soon', false],
+      ['FT-2026-09044', '1 set 2026', 'Canone', 'Canone Bundle Medium · 3° trimestre (set–nov)', '€ 4.975', '30 set 2026', 'paid', true],
+      ['FT-2026-06071', '1 giu 2026', 'Canone', 'Canone Bundle Medium · 2° trimestre (giu–ago)', '€ 4.975', '30 giu 2026', 'paid', true],
+      ['FT-2026-03182', '1 mar 2026', 'Canone', 'Canone Bundle Medium · 1° trimestre (mar–mag)', '€ 4.975', '31 mar 2026', 'paid', true]
+    ].map(function (r) { var s = IS[r[6]], k = r[6]; return { num: r[0], date: r[1], type: r[2], desc: r[3], amount: r[4], due: r[5], state: s[0], bg: s[1], fg: s[2], hasDocs: r[7], noDocs: !r[7],
+      sdi: r[7] ? 'Consegnata' : '—', sdiFg: r[7] ? '#1A6B4A' : '#4D5762',
+      hasAct: k === 'topay' || k === 'approved', actLabel: k === 'topay' ? 'Approva' : 'Paga',
+      act: function () { if (k === 'topay') self.setState({ approved: true }); else self.setState({ paid: true }); } }; });
+    var n = function (x) { return x ? x.toLocaleString('it-IT') : '—'; };
+    var eur = function (x) { return x ? '€ ' + x.toLocaleString('it-IT') : '—'; };
+    var overage = [
+      ['Nuovi Certificati FEA', '€ 3,00', 140, 420, 1802, 5405],
+      ['Identificazioni Full Prospect', '€ 1,20', 0, 0, 2505, 3006],
+      ['Full Prospect con funnel completato', '€ 0,80', 0, 0, 1402, 1122],
+      ['Verifiche Contatti', '€ 0,05', 0, 0, 7307, 365],
+      ['Contratti', '€ 0,50', 0, 0, 659, 329],
+      ['Apposizioni FEA con COD', '€ 0,15', 0, 0, 2014, 302],
+      ['Doc Composition Contratti', '€ 0,20', 0, 0, 871, 174],
+      ['Identificazioni Proprietarie', '€ 0,90', 0, 0, 0, 0],
+      ['Fatture Elettroniche', '€ 0,10', 0, 0, 0, 0]
+    ].map(function (r) { return { name: r[0], price: r[1], now: n(r[2]), nowEur: eur(r[3]), fc: n(r[4]), fcEur: eur(r[5]), fcColor: r[5] >= 1000 ? '#B03A0B' : '#1A1C1E' }; });
+    return { reminder: paid ? 'Nessun sollecito: tutte le fatture emesse risultano pagate.' : 'Nessun sollecito aperto. La fattura FT-2026-11012 scade il 30 nov 2026.', receipts: (paid ? [{ label: 'Ricevuta FT-2026-11012 · oggi' }] : []).concat([{ label: 'Ricevuta FT-2026-09044 · 28 set 2026' }, { label: 'Ricevuta FT-2026-06071 · 27 giu 2026' }, { label: 'Ricevuta FT-2026-03182 · 29 mar 2026' }]), who: WHO[P], subtabs: subtabs, money: money, noMoney: !money, tiles: tiles, invoices: invoices, overage: overage };
+  }
+}
+
+DC.mount(Component, {"persona": {"editor": "enum", "options": ["lr", "amm", "op"], "default": "lr"}, "$preview": {"width": 1440, "height": 1950}});
+</script>
+</body>
+</html>

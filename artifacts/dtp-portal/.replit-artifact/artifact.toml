@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Digital Trust Platform"
+description = "Prototipo navigabile della Digital Trust Platform: portale self-service per i clienti e console operativa Postel, costruito a partire dai mockup HTML forniti."
+version = "1.0.0"
+id = "artifacts/dtp-portal"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21197
+
+[services.development]
+run = "pnpm --filter @workspace/dtp-portal run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/dtp-portal", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/dtp-portal/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21197"
+BASE_PATH = "/"

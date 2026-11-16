@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PS-02 Soglie e notifiche – Primo setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F7FC}
+*{box-sizing:border-box}
+a{color:#0047BB}a:hover{color:#003A99}
+</style>
+<link rel="stylesheet" href="dtp-theme.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="stylesheet" href="dtp-auth.css">
+<script src="dtp-auth.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<template id="tpl">
+
+<div class="dtp-root" style="min-height: 100dvh; background: #F3F7FC; font-family: 'Inter', system-ui, sans-serif; color: #1A1C1E; font-variant-numeric: tabular-nums">
+
+<div class="dtp-projectbar" style="background: #F2F8FF; color: #1A1C1E; border-bottom: 1px solid #D9E1EC">
+<div style="max-width: 1360px; margin: 0 auto; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<a class="dtp-home" href="../workspace" title="Torna a Workspace / 2026" data-testid="link-home">Home</a>
+<span class="dtp-session-tag">Primo setup · solo per il legale rappresentante, una sola volta, dopo il primo accesso</span>
+<span class="dtp-session"><span class="dtp-session-tag">Accesso demo</span><span class="dtp-session-who" data-testid="text-current-role"><span data-dtp-role></span></span><button class="dtp-logout" type="button" data-dtp-logout data-testid="button-logout">Esci</button></span>
+</div>
+</div>
+
+<header class="dtp-header" style="background: #EEDC00; border-bottom: 1px solid #D6C600">
+<div style="max-width: 1360px; margin: 0 auto; padding: 10px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 24px; justify-content: space-between">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<div>
+<div style="font-weight: 800; font-size: 21px; letter-spacing: -0.03em; line-height: 1.1; color: #0047BB">postel</div>
+<div style="font-size: 12px; color: #33383D">Digital Trust Platform · configurazione iniziale</div>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<div aria-hidden="true" style="width: 36px; height: 36px; border-radius: 18px; background: #0047BB; color: #FFFFFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">PF</div>
+<div style="line-height: 1.25">
+<div style="font-size: 14px; font-weight: 600">Paolo Ferretti</div>
+<div style="font-size: 12px; color: #33383D">Legale rappresentante · Assicurazioni Aurora S.p.A.</div>
+</div>
+</div>
+</div>
+</header>
+
+<main class="dtp-main" style="max-width: 1180px; margin: 0 auto; padding: 32px 32px 48px; display: flex; flex-direction: column; gap: 24px">
+
+<ol aria-label="Passi del primo setup" style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px">
+<li><a href="cliente-PS01-delegati.html" style="display: flex; align-items: center; gap: 12px; min-height: 72px; padding: 12px 14px; border-radius: 6px; border: 1px solid #D9E1EC; background: #FFFFFF; color: #1A1C1E; text-decoration: none"><span style="flex: none; width: 32px; height: 32px; border-radius: 16px; background: #1A6B4A; color: #FFFFFF; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center">✓</span><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; font-weight: 700; color: #4D5762; letter-spacing: 0.05em">PS-01</span><strong style="font-size: 15px; font-weight: 600">Delegati</strong><span style="font-size: 12px; color: #4D5762">chi ti affianca e con quali poteri</span></span></a></li>
+<li><div aria-current="step" style="display: flex; align-items: center; gap: 12px; min-height: 72px; padding: 12px 14px; border-radius: 6px; border: 1px solid #0047BB; background: #F2F8FF; color: #1A1C1E; text-decoration: none"><span style="flex: none; width: 32px; height: 32px; border-radius: 16px; background: #0047BB; color: #FFFFFF; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center">2</span><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; font-weight: 700; color: #4D5762; letter-spacing: 0.05em">PS-02</span><strong style="font-size: 15px; font-weight: 600">Soglie e notifiche</strong><span style="font-size: 12px; color: #4D5762">quando e come essere avvisati</span></span></div></li>
+</ol>
+
+<div class="dtp-hero">
+<span style="font-size: 12px; font-weight: 700; color: #0047BB; text-transform: uppercase; letter-spacing: 0.06em">Passo 2 di 2 · PS-02</span>
+<h1 style="margin: 4px 0 0; font-size: 28px; font-weight: 600; letter-spacing: -0.01em">Quando e come vuoi essere avvisato</h1>
+<p style="margin: 8px 0 0; font-size: 15px; color: #4D5762; line-height: 1.55; max-width: 820px">Imposta le soglie di consumo dei servizi del contratto e decidi chi riceve ciascun avviso. Potrai modificare tutto in seguito da «Contratto e consumi».</p>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+<div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+
+<section class="dtp-card" aria-labelledby="titolo-soglie" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<div>
+<h2 id="titolo-soglie" style="margin: 0; font-size: 18px; font-weight: 600">Soglie di consumo</h2>
+<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">Percentuale della quantità inclusa oltre la quale scatta l'avviso</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px">
+<label style="display: flex; flex-direction: column; gap: 8px; padding: 16px; border: 1px solid #F3D48A; background: #FFFBF0; border-radius: 6px">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600"><span style="width: 10px; height: 10px; border-radius: 5px; background: #E0A100"></span>Soglia di attenzione</span>
+<span style="font-size: 13px; color: #4D5762; line-height: 1.4">Avviso informativo: il servizio sta consumando una parte rilevante della quantità inclusa.</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 15px"><input type="number" defaultValue="70" min="10" max="99" style="width: 96px; min-height: 44px; padding: 0 10px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 16px"> %</span>
+</label>
+<label style="display: flex; flex-direction: column; gap: 8px; padding: 16px; border: 1px solid #F3C2A8; background: #FFF6F1; border-radius: 6px">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600"><span style="width: 10px; height: 10px; border-radius: 5px; background: #E8692A"></span>Soglia critica</span>
+<span style="font-size: 13px; color: #4D5762; line-height: 1.4">Avviso da gestire: il servizio è vicino all'esaurimento, valutare una ricarica.</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 15px"><input type="number" defaultValue="90" min="10" max="99" style="width: 96px; min-height: 44px; padding: 0 10px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 16px"> %</span>
+</label>
+</div>
+<p style="margin: 0; font-size: 13px; color: #4D5762">Indipendentemente dalle soglie, riceverai sempre un avviso quando un servizio si esaurisce o quando è previsto in esaurimento prima del rinnovo.</p>
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{toggleCustom}}" aria-expanded="{{customOpen}}" style="align-self: flex-start; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #0047BB; cursor: pointer">{{customLabel}}</button>
+<sc-if value="{{customOpen}}" hint-placeholder-val="{{ false }}">
+<div style="overflow-x: auto">
+<div role="table" aria-label="Soglie per servizio" style="min-width: 640px; font-size: 13px">
+<div role="row" style="display: grid; grid-template-columns: 2.4fr 1.2fr 1fr 1fr; color: #4D5762; font-size: 12px; border-bottom: 1px solid #D9E1EC">
+<span role="columnheader" style="padding: 8px 10px">Servizio</span>
+<span role="columnheader" style="padding: 8px 10px; text-align: right">Quantità inclusa</span>
+<span role="columnheader" style="padding: 8px 10px">Attenzione</span>
+<span role="columnheader" style="padding: 8px 10px">Critica</span>
+</div>
+<sc-for list="{{services}}" as="s" hint-placeholder-count="9">
+<div role="row" style="display: grid; grid-template-columns: 2.4fr 1.2fr 1fr 1fr; align-items: center; border-bottom: 1px solid #EAEFF5">
+<span role="rowheader" style="padding: 6px 10px; font-weight: 500">{{s.name}}</span>
+<span role="cell" style="padding: 6px 10px; text-align: right; color: #4D5762">{{s.q}}</span>
+<span role="cell" style="padding: 6px 10px"><input type="number" aria-label="Soglia di attenzione {{s.name}}" defaultValue="70" style="width: 72px; min-height: 38px; padding: 0 8px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px"> %</span>
+<span role="cell" style="padding: 6px 10px"><input type="number" aria-label="Soglia critica {{s.name}}" defaultValue="90" style="width: 72px; min-height: 38px; padding: 0 8px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px"> %</span>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-destinatari" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div>
+<h2 id="titolo-destinatari" style="margin: 0; font-size: 18px; font-weight: 600">Chi riceve gli avvisi via email</h2>
+<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">Proposta basata sulle deleghe del passo precedente. Tutti gli avvisi restano comunque visibili nel portale.</p>
+</div>
+<div style="overflow-x: auto">
+<div role="table" aria-label="Destinatari degli avvisi" style="min-width: 680px; font-size: 14px">
+<div role="row" style="display: grid; grid-template-columns: 2.4fr 1fr 1fr 1fr; border-bottom: 1px solid #D9E1EC; font-size: 12px; color: #4D5762">
+<span role="columnheader" style="padding: 10px">Avviso</span>
+<span role="columnheader" style="padding: 10px; text-align: center">Tu<br>legale rappresentante</span>
+<span role="columnheader" style="padding: 10px; text-align: center">Delegato amministrativo<br>invito in preparazione</span>
+<span role="columnheader" style="padding: 10px; text-align: center">Delegato operativo<br>invito in preparazione</span>
+</div>
+<sc-for list="{{events}}" as="e" hint-placeholder-count="7">
+<div role="row" style="display: grid; grid-template-columns: 2.4fr 1fr 1fr 1fr; align-items: center; border-bottom: 1px solid #EAEFF5">
+<span role="rowheader" style="padding: 10px; display: flex; flex-direction: column; gap: 2px"><strong style="font-weight: 600">{{e.name}}</strong><span style="font-size: 12px; color: #4D5762">{{e.sub}}</span></span>
+<span role="cell" style="padding: 10px; display: flex; justify-content: center"><input type="checkbox" aria-label="{{e.name}}: legale rappresentante" defaultChecked="{{e.lr}}" style="width: 20px; height: 20px"></span>
+<span role="cell" style="padding: 10px; display: flex; justify-content: center"><input type="checkbox" aria-label="{{e.name}}: delegato amministrativo" defaultChecked="{{e.amm}}" style="width: 20px; height: 20px"></span>
+<span role="cell" style="padding: 10px; display: flex; justify-content: center"><sc-if value="{{e.opAllowed}}" hint-placeholder-val="{{ true }}"><input type="checkbox" aria-label="{{e.name}}: delegato operativo" defaultChecked="{{e.op}}" style="width: 20px; height: 20px"></sc-if><sc-if value="{{e.opNo}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: #4D5762">non previsto</span></sc-if></span>
+</div>
+</sc-for>
+</div>
+</div>
+<p style="margin: 0; font-size: 13px; color: #4D5762">Il delegato operativo riceve solo avvisi sui consumi, espressi in quantità: per ruolo non vede importi, ordini e fatture.</p>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-preferenze" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<h2 id="titolo-preferenze" style="margin: 0; font-size: 18px; font-weight: 600">Preferenze di comunicazione</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px">
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500">Indirizzo per le comunicazioni amministrative<input type="email" placeholder="amministrazione@azienda.it" style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px"><span style="font-size: 12px; color: #4D5762; font-weight: 400">riceve fatture e comunicazioni sul contratto</span></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500">Lingua delle notifiche<select style="min-height: 44px; padding: 0 10px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px"><option>Italiano</option><option>English</option></select></label>
+</div>
+<label style="display: flex; align-items: flex-start; gap: 10px; min-height: 44px; font-size: 14px; line-height: 1.45"><input type="checkbox" defaultChecked="{{ true }}" style="width: 18px; height: 18px; margin-top: 2px"> Riepilogo settimanale dei consumi via email, il lunedì mattina</label>
+<label style="display: flex; align-items: flex-start; gap: 10px; min-height: 44px; font-size: 14px; line-height: 1.45"><input type="checkbox" style="width: 18px; height: 18px; margin-top: 2px"> Raggruppa gli avvisi di attenzione in un unico messaggio giornaliero</label>
+</section>
+</div>
+
+<aside aria-labelledby="titolo-anteprima" style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+<h2 id="titolo-anteprima" style="margin: 0; font-size: 15px; font-weight: 600; color: #4D5762">Anteprima di un avviso</h2>
+<div class="dtp-card" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; overflow: hidden">
+<div style="padding: 12px 16px; border-bottom: 1px solid #EAEFF5; font-size: 12px; color: #4D5762; display: flex; flex-direction: column; gap: 2px"><span>Da: Digital Trust Platform · Postel</span><span style="color: #1A1C1E; font-weight: 600; font-size: 14px">Un servizio ha superato la soglia critica</span></div>
+<div style="padding: 16px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; line-height: 1.5">
+<span style="display: inline-flex; align-self: flex-start; padding: 3px 9px; border-radius: 999px; background: #FDE7DC; color: #B03A0B; font-size: 12px; font-weight: 600">Critico</span>
+<span><strong style="font-weight: 600">Identificazioni Full Prospect</strong> ha raggiunto il 90% della quantità inclusa. Al ritmo attuale si esaurirà prima del rinnovo.</span>
+<span style="display: inline-flex; align-self: flex-start; min-height: 40px; align-items: center; padding: 0 14px; border-radius: 6px; background: #0047BB; color: #FFFFFF; font-size: 13px; font-weight: 600">Valuta una ricarica</span>
+</div>
+</div>
+<p style="margin: 0; font-size: 12px; color: #4D5762; line-height: 1.5">Gli avvisi contengono solo dati aggregati del contratto, mai dati degli utenti finali.</p>
+</aside>
+</div>
+
+<section class="dtp-card" aria-labelledby="titolo-riepilogo" style="background: #FFFFFF; border: 2px solid #0047BB; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<h2 id="titolo-riepilogo" style="margin: 0; font-size: 18px; font-weight: 600">Riepilogo della configurazione</h2>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px">
+<div><dt style="font-size: 12px; color: #4D5762; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em">Delegati · PS-01</dt><dd style="margin: 4px 0 0; font-size: 14px; line-height: 1.45">Amministrativo e operativo: invito in partenza. Tecnico: gestito da te.</dd></div>
+<div><dt style="font-size: 12px; color: #4D5762; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em">Soglie e notifiche · PS-02</dt><dd style="margin: 4px 0 0; font-size: 14px; line-height: 1.45">{{summarySoglie}}</dd></div>
+</dl>
+<p style="margin: 0; font-size: 13px; color: #4D5762; line-height: 1.5">Concludendo, firmi gli atti di delega, gli inviti partono e accedi alla homepage. Il primo setup non sarà più disponibile: potrai modificare le deleghe da «Utenze e deleghe» e le soglie da «Contratto e consumi».</p>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-top: 8px; border-top: 1px solid #D9E1EC">
+<a class="dtp-btn dtp-btn-o" href="cliente-PS01-delegati.html" style="min-height: 48px; padding: 0 22px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; color: #1A1C1E; font-size: 15px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Indietro</a>
+<a class="dtp-btn dtp-btn-p" href="cliente-H-catalogo.html" data-dtp-setup="complete" data-testid="link-setup-complete" style="min-height: 48px; padding: 0 26px; border-radius: 999px; background: #0047BB; color: #FFFFFF; font-size: 15px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Concludi e vai alla homepage</a>
+</div>
+
+</main>
+</div>
+</template>
+<script>
+/* Mini runtime per le pagine esportate: template {{ }}, sc-for, sc-if, onClick, setState. */
+(function () {
+  var _tl = Number.prototype.toLocaleString;
+  Number.prototype.toLocaleString = function (loc, opt) {
+    if (loc === 'it-IT') opt = Object.assign({ useGrouping: 'always' }, opt || {});
+    try { return _tl.call(this, loc, opt); } catch (e) { return _tl.call(this, loc); }
+  };
+  var HOLE = /\{\{\s*([^}]+?)\s*\}\}/g, FULL = /^\{\{\s*([^}]+?)\s*\}\}$/;
+  function lookup(path, scope) {
+    path = path.trim();
+    if (path === 'true') return true; if (path === 'false') return false;
+    if (/^-?\d+(\.\d+)?$/.test(path)) return Number(path);
+    var parts = path.split('.'), v = scope;
+    for (var i = 0; i < parts.length; i++) { if (v == null) return undefined; v = v[parts[i]]; }
+    return v;
+  }
+  function interp(str, scope) {
+    return str.replace(HOLE, function (_, p) { var v = lookup(p, scope); return v == null ? '' : String(v); });
+  }
+  function renderChildren(src, dst, scope) {
+    for (var c = src.firstChild; c; c = c.nextSibling) renderNode(c, dst, scope);
+  }
+  function renderNode(node, dst, scope) {
+    if (node.nodeType === 3) { dst.appendChild(document.createTextNode(interp(node.nodeValue, scope))); return; }
+    if (node.nodeType !== 1) return;
+    var tag = node.localName;
+    if (tag === 'sc-for') {
+      var list = lookup((node.getAttribute('list') || '').replace(/^\{\{|\}\}$/g, ''), scope) || [];
+      var as = node.getAttribute('as') || 'item';
+      list.forEach(function (item, i) {
+        var s = Object.create(scope); s[as] = item; s.$index = i;
+        renderChildren(node, dst, s);
+      });
+      return;
+    }
+    if (tag === 'sc-if') {
+      var val = lookup((node.getAttribute('value') || '').replace(/^\{\{|\}\}$/g, ''), scope);
+      if (val) renderChildren(node, dst, scope);
+      return;
+    }
+    var el = node.namespaceURI === 'http://www.w3.org/2000/svg'
+      ? document.createElementNS(node.namespaceURI, node.localName) : document.createElement(node.localName);
+    for (var a = 0; a < node.attributes.length; a++) {
+      var at = node.attributes[a], name = at.name, raw = at.value;
+      if (name.indexOf('hint-') === 0) continue;
+      var m = raw.match(FULL);
+      if (m) {
+        var v = lookup(m[1], scope);
+        if (name.indexOf('on') === 0 && typeof v === 'function') { el.addEventListener(name.slice(2), v); continue; }
+        if (name === 'defaultchecked' || name === 'checked') { if (v) { el.setAttribute('checked', ''); el.checked = true; } continue; }
+        if (name === 'defaultvalue') { el.setAttribute('value', v == null ? '' : String(v)); continue; }
+        if (v == null || v === false && name.indexOf('aria-') !== 0) continue;
+        el.setAttribute(name, String(v));
+      } else if (name === 'defaultvalue') { el.setAttribute('value', raw);
+      } else if (name === 'defaultchecked') { el.setAttribute('checked', '');
+      } else { el.setAttribute(name, interp(raw, scope)); }
+    }
+    renderChildren(node.localName === 'template' ? node.content : node, el, scope);
+    dst.appendChild(el);
+  }
+  function DCLogic(props) { this.props = props || {}; this.state = null; }
+  DCLogic.prototype.setState = function (o) {
+    this.state = Object.assign({}, this.state || {}, o);
+    this.__render();
+  };
+  DCLogic.prototype.forceUpdate = function () { this.__render(); };
+  window.DCLogic = DCLogic;
+  window.DC = {
+    mount: function (Comp, meta) {
+      var props = {};
+      Object.keys(meta).forEach(function (k) { if (k[0] !== '$' && meta[k] && 'default' in meta[k]) props[k] = meta[k]['default']; });
+      /* Sessione demo: il ruolo arriva da DTPAuth; senza permesso la pagina non viene disegnata. */
+      var auth = window.DTPAuth, access = auth ? auth.enter(meta) : null;
+      if (!access) return;
+      if (meta.persona && meta.persona.options) props.persona = access.role;
+      var tpl = document.getElementById('tpl').content, root = document.getElementById('app');
+      var c = new Comp(props);
+      c.__render = function () {
+        var frag = document.createDocumentFragment();
+        renderChildren(tpl, frag, c.renderVals());
+        root.replaceChildren(frag);
+        auth.decorate(root);
+      };
+      c.__render();
+    }
+  };
+})();
+
+</script>
+<script>
+
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var open = !!st.custom;
+    var services = [
+      ['Verifiche Contatti', '25.000'], ['Identificazioni Full Prospect', '5.000'], ['Full Prospect con funnel completato', '4.000'],
+      ['Identificazioni Proprietarie', '2.500'], ['Contratti', '5.000'], ['Doc Composition Contratti', '5.000'],
+      ['Nuovi Certificati FEA', '2.500'], ['Apposizioni FEA con COD', '12.500'], ['Fatture Elettroniche', '6.000']
+    ].map(function (s) { return { name: s[0], q: s[1] }; });
+    var events = [
+      ['Soglia di attenzione superata', 'per singolo servizio', false, true, false, true],
+      ['Soglia critica superata o servizio esaurito', 'per singolo servizio', true, true, true, true],
+      ['Esaurimento previsto prima del rinnovo', 'calcolato sul ritmo recente', true, true, false, true],
+      ['Richieste di acquisto dei delegati', 'inviate dal delegato operativo', true, true, false, false],
+      ['Ordini confermati, attivati o bloccati', 'ricariche, offerte, cambi di bundle', true, true, false, false],
+      ['Fatture emesse', 'canone, overage, ricariche', false, true, false, false],
+      ['Scadenza del contratto', 'entro le finestre di preavviso', true, true, false, false]
+    ].map(function (e) { return { name: e[0], sub: e[1], lr: e[2], amm: e[3], op: e[4], opAllowed: e[5], opNo: !e[5] }; });
+    return {
+      services: services, events: events, customOpen: open,
+      summarySoglie: open ? 'Soglie personalizzate per singolo servizio; riepilogo settimanale attivo.' : 'Attenzione 70%, critica 90% per tutti i servizi; riepilogo settimanale attivo.',
+      customLabel: open ? 'Usa le stesse soglie per tutti i servizi' : 'Personalizza le soglie per singolo servizio',
+      toggleCustom: function () { self.setState({ custom: !open }); }
+    };
+  }
+}
+
+
+DC.mount(Component, {"$preview": {"width": 1440, "height": 2150}});
+</script>
+</body>
+</html>
