@@ -64,3 +64,6 @@ Thumbs.db
 *.key
 /zipFile.zip
 /attached_assets/
+
+# IDE - Visual Studio
+.vs/
