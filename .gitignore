@@ -67,3 +67,6 @@ Thumbs.db
 
 # IDE - Visual Studio
 .vs/
+
+# Login demo solo per l'anteprima locale
+/artifacts/dtp-portal/public/index.html
