@@ -285,6 +285,34 @@
 
   /* Dopo ogni render: mostra il ruolo corrente e segna i collegamenti che il ruolo non può aprire. */
   api.decorate = function (scope) {
+    /* Ogni render ricrea il template: integra i controlli nella navigazione
+       prima che venga mostrata, senza cambiare sessione o gestori di uscita. */
+    var bar = scope.querySelector('.dtp-projectbar');
+    var sidebar = scope.querySelector('.dtp-sidenav');
+    var header = scope.querySelector('.dtp-header > div:not(.dtp-projectbar)');
+    if (bar && (sidebar || header)) {
+      var home = bar.querySelector('[data-testid="link-home"]');
+      var logout = bar.querySelector('[data-dtp-logout]');
+      if (home && logout) {
+        home.textContent = 'Workspace';
+        if (sidebar) {
+          var actions = el('div', { 'class': 'dtp-sidebar-actions' });
+          actions.appendChild(home);
+          actions.appendChild(logout);
+          sidebar.appendChild(actions);
+        } else {
+          header.classList.add('dtp-client-header');
+          home.classList.add('dtp-workspace-link');
+          header.prepend(home);
+          var identity = header.lastElementChild;
+          var account = el('div', { 'class': 'dtp-client-account' });
+          if (identity && identity !== home) account.appendChild(identity);
+          account.appendChild(logout);
+          header.appendChild(account);
+        }
+        bar.remove();
+      }
+    }
     var role = getRole(), setup = getSetup(), i;
     var tags = scope.querySelectorAll('[data-dtp-role]');
     for (i = 0; i < tags.length; i++) tags[i].textContent = role ? ROLES[role].label : '';
