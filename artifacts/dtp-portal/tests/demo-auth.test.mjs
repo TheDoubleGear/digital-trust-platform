@@ -169,7 +169,22 @@ test('pagine reali: ogni ruolo vede la propria vista oppure viene reindirizzato 
         continue;
       }
       assert.equal(p.nav.length, 0);
-      assert.equal(p.app.querySelector('[data-testid="text-current-role"]').textContent, A.ROLES[role].label, f + ' / ' + role);
+      assert.equal(p.app.querySelector('.dtp-projectbar'), null, f + ' barra separata rimossa');
+      const home = p.app.querySelector('[data-testid="link-home"]');
+      const logout = p.app.querySelector('[data-dtp-logout]');
+      assert.equal(home.textContent, 'Workspace');
+      assert.equal(home.getAttribute('href'), '../workspace');
+      assert.equal(p.app.querySelectorAll('[data-dtp-logout]').length, 1);
+      if (f.startsWith('postel-')) {
+        const actions = p.app.querySelector('.dtp-sidebar-actions');
+        assert.equal(actions.parentElement, p.app.querySelector('.dtp-sidenav'));
+        assert.equal(actions.firstElementChild, home);
+        assert.equal(actions.lastElementChild, logout);
+      } else {
+        const header = p.app.querySelector('.dtp-header > div');
+        assert.equal(header.firstElementChild, home);
+        assert.equal(header.lastElementChild.lastElementChild, logout);
+      }
       assert.ok(p.app.querySelector('[data-dtp-logout]'), f + ' ha Esci');
       assert.equal(p.app.querySelector('a.dtp-home').getAttribute('href'), '../workspace', f);
       assert.equal(p.app.querySelectorAll('.dtp-projectbar .dtp-chip').length, 0, f + ' senza selettore di persona');
