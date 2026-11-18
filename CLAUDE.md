@@ -10,12 +10,31 @@ Per avvio, comandi, stack e note tecniche dettagliate vedi anche `README.md` e `
 ## Regole di lavoro
 
 - Lavora sempre e soltanto sulla versione attuale del progetto. Confronti con versioni precedenti solo se richiesti.
-- Questo repository è la fonte di verità del mockup. Le modifiche si fanno su Replit, che si sincronizza su GitHub;
-  prima di intervenire recupera l'ultima versione del ramo `main`.
+- Questo repository è la fonte di verità del mockup, anche per la grafica. Le modifiche arrivano da Claude Code
+  e da Replit, che si sincronizza su GitHub; prima di intervenire recupera l'ultima versione del ramo `main`.
 - Interfaccia, testi e documentazione in italiano, con registro professionale.
 - I segnaposto come `[DA DEFINIRE]`, `[IBAN POSTEL]` o `[TESTO DA FORNIRE E APPROVARE A CURA DI POSTEL]`
   indicano decisioni ancora aperte: non sostituirli con valori inventati.
 - Mantieni ben visibile la dicitura "Prototipo dimostrativo" e non presentare mai il login come un sistema di sicurezza.
+
+## Flusso di lavoro
+
+L'analisi funzionale si svolge in una sessione separata di Claude, che cura i tre documenti di analisi.
+Questa sessione di Claude Code implementa sul repository.
+
+| Attività | Chi la svolge |
+|---|---|
+| Analisi e cambi dei requisiti | Sessione di analisi: aggiorna i documenti e prepara le istruzioni per Claude Code |
+| Design di nuove pagine | Sessione di analisi, partendo dallo stile del sito attuale |
+| Rielaborazione grafica di pagine esistenti | Claude Code |
+| Implementazione di requisiti e nuove pagine | Claude Code, seguendo le istruzioni ricevute |
+
+- La fonte grafica è solo il sito in questo repository: non esistono altre copie del mockup da tenere allineate.
+- Non cambiare di tua iniziativa flussi, ruoli, permessi, regole di business o contenuti funzionali: se una richiesta
+  li tocca senza istruzioni dalla sessione di analisi, segnalalo prima di procedere.
+- Le rielaborazioni grafiche non devono alterare comportamento e contenuti funzionali delle pagine.
+- A fine lavoro riepiloga schermate e file modificati, così la sessione di analisi può verificare l'allineamento
+  con i documenti.
 
 ## Struttura
 
