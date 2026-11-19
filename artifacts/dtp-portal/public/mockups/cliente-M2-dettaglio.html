@@ -15,6 +15,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
+<script src="dtp-catalogo.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -191,8 +192,8 @@ a{color:#0047BB}a:hover{color:#003A99}
 <p style="margin: 0; font-size: 13px; color: #4D5762; line-height: 1.5">Confronto tra l'aumento della quantità configurata e l'overage previsto al ritmo attuale.</p>
 <dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 12px; border-radius: 6px; background: #F3F7FC">
 <div><dt style="font-size: 12px; color: #4D5762">Upgrade proposto</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">+3.000 · da 5.000 a 8.000</dd></div>
-<div><dt style="font-size: 12px; color: #4D5762">Prezzo dell'upgrade</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">€ 3.600</dd></div>
-<div><dt style="font-size: 12px; color: #4D5762">Overage previsto senza upgrade</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">€ 3.006 · 2.505 unità</dd></div>
+<div><dt style="font-size: 12px; color: #4D5762">Prezzo dell'upgrade</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">{{upPrice}}</dd></div>
+<div><dt style="font-size: 12px; color: #4D5762">Overage previsto senza upgrade</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">{{fpOv}} · 2.505 unità</dd></div>
 <div><dt style="font-size: 12px; color: #4D5762">Copertura con l'upgrade</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600; color: #1A6B4A">fino al rinnovo · residuo ≈ 495</dd></div>
 </dl>
 <a class="dtp-btn dtp-btn-p" href="cliente-H-catalogo.html" style="min-height: 44px; border-radius: 999px; background: #0047BB; color: #FFFFFF; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center">Vai al catalogo</a>
@@ -449,11 +450,13 @@ class Component extends DCLogic {
       prev = avg;
       return row;
     }).reverse();
+    var fpOvEur = DTP.esempio.overage().filter(function (o) { return o.id === 'fp'; })[0].fineEur;
     return { navFull: P !== 'tec', navTec: P === 'tec',
+      upPrice: DTP.eur(DTP.esempio.prezzoUpgrade('fp', 3000)), fpOv: DTP.eur(fpOvEur),
       c: c, tabs: tabs, daily: daily, monthly: monthly, who: WHO[P], subtabs: subtabs,
       money: money, noMoney: !money,
       unitLine: money ? 'Identità e verifica · unità: identificazione avviata · overage € 1,20 / unità' : 'Identità e verifica · unità: identificazione avviata',
-      ovVal: money ? '€ 3.006' : '2.505 unità',
+      ovVal: money ? DTP.eur(fpOvEur) : '2.505 unità',
       ovSub: money ? '2.505 unità oltre soglia a fine periodo' : 'oltre la quantità inclusa a fine periodo',
       signal: function () { self.setState({ signaled: true }); },
       signalLabel: st.signaled ? 'Segnalazione inviata' : 'Segnala all’amministrativo'

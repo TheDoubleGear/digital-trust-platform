@@ -412,7 +412,7 @@ class Component extends DCLogic {
       ['ORD-2026-1179', 'Banca Levante S.p.A.', 'Modifica dell’offerta: 3 servizi aggiunti', '20 ott 2026', 'cfg', 7, 'F. Moro'],
       ['CTR-2026-0532', 'Studio Notarile Ricci', 'Nuovo contratto: 3 servizi configurati', '22 ott 2026', 'test', 5, 'C. Ferri'],
       ['ORD-2026-1187', 'Assicurazioni Aurora S.p.A.', 'Upgrade +500 Nuovi Certificati FEA', '24 ott 2026', 'act', 3, 'C. Ferri'],
-      ['ORD-2026-1190', 'Logistica Adriatica S.r.l.', 'Upgrade a Medium', '26 ott 2026', 'todo', 1, '—']
+      ['ORD-2026-1190', 'Logistica Adriatica S.r.l.', 'Upgrade Verifiche Contatti: +10.000 unità', '26 ott 2026', 'todo', 1, '—']
     ].map(function (r) {
       var a = AS[r[4]], urgent = r[4] === 'block' || r[4] === 'todo';
       return { id: r[0], client: r[1], offer: r[2], date: r[3], state: a[0], bg: a[1], fg: a[2], days: r[5], dayColor: r[5] > 10 ? '#A3201A' : '#1A1C1E', owner: r[6], btn: a[3], btnBg: urgent ? '#0047BB' : '#FFFFFF', btnFg: urgent ? '#FFFFFF' : '#1A1C1E', btnBorder: urgent ? '#0047BB' : '#B8C2CF' };

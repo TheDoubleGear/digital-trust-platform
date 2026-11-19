@@ -15,6 +15,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
+<script src="dtp-catalogo.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -431,8 +432,8 @@ class Component extends DCLogic {
     var kpis = money ? [
       { label: 'Servizi in soglia', value: '6 di 9', sub: '1 esaurito · 1 critico · 4 in attenzione', color: '#1A1C1E' },
       { label: 'Primo esaurimento previsto', value: '13 nov 2026', sub: 'Identificazioni Full Prospect · tra 17 giorni', color: '#B03A0B' },
-      { label: 'Overage maturato', value: '€ 420', sub: '140 Nuovi Certificati FEA oltre la quantità inclusa', color: '#1A1C1E' },
-      { label: 'Overage previsto a fine periodo', value: '€ 10.703', sub: 'al ritmo degli ultimi 30 giorni · 7 servizi oltre soglia', color: '#1A1C1E' }
+      { label: 'Overage maturato', value: DTP.eur(DTP.esempio.overageOra()), sub: '140 Nuovi Certificati FEA oltre la quantità inclusa', color: '#1A1C1E' },
+      { label: 'Overage previsto a fine periodo', value: DTP.eur(DTP.esempio.overageTotale()), sub: 'al ritmo degli ultimi 30 giorni · 7 servizi oltre soglia', color: '#1A1C1E' }
     ] : [
       { label: 'Servizi in soglia', value: '6 di 9', sub: '1 esaurito · 1 critico · 4 in attenzione', color: '#1A1C1E' },
       { label: 'Primo esaurimento previsto', value: '13 nov 2026', sub: 'Identificazioni Full Prospect · tra 17 giorni', color: '#B03A0B' },
@@ -466,15 +467,16 @@ class Component extends DCLogic {
     ];
     var IS = { paid: ['Pagata', '#E3F3EA', '#1A6B4A'], soon: ['In emissione', '#FDF1D6', '#855800'] };
     var invoices = [
-      ['—', '31 ott 2026', 'Overage ottobre: Nuovi Certificati FEA, 140 unità', '€ 420', '30 nov 2026', 'soon', false],
-      ['—', 'all’attivazione', 'Upgrade +500 Nuovi Certificati FEA (ORD-2026-1187)', '€ 1.500', '30 gg data fattura', 'soon', false],
-      ['FT-2026-09044', '1 set 2026', 'Canone periodico · 3° trimestre (set–nov)', '€ 4.975', '30 set 2026', 'paid', true],
-      ['FT-2026-06071', '1 giu 2026', 'Canone periodico · 2° trimestre (giu–ago)', '€ 4.975', '30 giu 2026', 'paid', true],
-      ['FT-2026-03182', '1 mar 2026', 'Canone periodico · 1° trimestre (mar–mag)', '€ 4.975', '31 mar 2026', 'paid', true]
+      ['—', '31 ott 2026', 'Overage ottobre: Nuovi Certificati FEA, 140 unità', DTP.eur(DTP.esempio.overageOra()), '30 nov 2026', 'soon', false],
+      ['—', 'all’attivazione', 'Upgrade +500 Nuovi Certificati FEA (ORD-2026-1187)', DTP.eur(DTP.esempio.upgradeInCorsoPrezzo()), '30 gg data fattura', 'soon', false],
+      ['FT-2026-09044', '1 set 2026', 'Componente variabile · 3° trimestre (set–nov)', DTP.eur(DTP.esempio.trimestre()), '30 set 2026', 'paid', true],
+      ['FT-2026-06071', '1 giu 2026', 'Componente variabile · 2° trimestre (giu–ago)', DTP.eur(DTP.esempio.trimestre()), '30 giu 2026', 'paid', true],
+      ['FT-2026-03182', '1 mar 2026', 'Componente variabile · 1° trimestre (mar–mag)', DTP.eur(DTP.esempio.trimestre()), '31 mar 2026', 'paid', true],
+      ['FT-2026-03181', '1 mar 2026', 'Canone periodico · contratto 2026/27 · periodicità ' + DTP.periodicita, DTP.eur(DTP.esempio.contratto().canone), '31 mar 2026', 'paid', true]
     ].map(function (r) { var s = IS[r[5]]; return { num: r[0], date: r[1], desc: r[2], amount: r[3], due: r[4], state: s[0], bg: s[1], fg: s[2], hasDocs: r[6] }; });
     return { navFull: P !== 'tec', navTec: P === 'tec',
       who: WHO[P], f: f, subtabs: subtabs,
-      contractLine: money ? 'Contratto DTP-2026-0418 · valore annuo € 19.900' : 'Contratto DTP-2026-0418',
+      contractLine: money ? 'Contratto DTP-2026-0418 · valore annuo ' + DTP.eur(DTP.esempio.contratto().totale) : 'Contratto DTP-2026-0418',
       exportLabel: money ? 'Dati Excel' : 'Dati Excel (quantità)',
       kpis: kpis,
       bannerText: money ? 'Valuta un upgrade delle quantità dei servizi più usati.' : 'Puoi segnalarlo al delegato amministrativo, che gestisce upgrade e modifiche dell’offerta.',

@@ -115,7 +115,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <span style="font-size: 13px; color: #4D5762">01 mar 2026 → 28 feb 2027 · contratto DTP-2026-0418</span>
 </div>
 <sc-if value="{{f.money}}" hint-placeholder-val="{{ true }}">
-<div style="text-align: right"><div style="font-size: 18px; font-weight: 600">€ 19.900 / anno</div><div style="font-size: 12px; color: #4D5762">valore del contratto · canone periodico e componente variabile</div></div>
+<div style="text-align: right"><div style="font-size: 18px; font-weight: 600">{{contractValue}} / anno</div><div style="font-size: 12px; color: #4D5762">valore del contratto · canone periodico e componente variabile</div></div>
 </sc-if>
 </div>
 <p style="margin: 0; font-size: 13px; color: #4D5762">Ogni aumento di quantità o variazione dei servizi è un upgrade o una modifica dell'offerta e del contratto.</p>
@@ -348,24 +348,22 @@ class Component extends DCLogic {
     var add = function (id) { if (cartIds.indexOf(id) < 0) set({ cart: cartIds.concat([id]), done: false }); };
     var DOT = { out: '#C7322A', crit: '#E8692A', warn: '#E0A100', ok: '#2E8B62', off: '#9AA6B8' };
     var STATE = { out: 'esaurito', crit: 'critico', warn: 'in attenzione', ok: 'regolare' };
-    /* Offerta configurata del cliente: [id, quantità configurata, stato consumi, consumo previsto a fine periodo] */
-    var CFG = [
-      ['cert', 2500, 'out', 4302], ['fp', 5000, 'crit', 7505], ['fun', 4000, 'warn', 5402], ['ver', 25000, 'warn', 32307],
-      ['doc', 5000, 'warn', 5871], ['app', 12500, 'warn', 14514], ['con', 5000, 'ok', 5659], ['pro', 2500, 'ok', 1857], ['fat', 6000, 'ok', 3869]
-    ];
+    /* Offerta configurata e consumi del cliente di esempio: fonte unica in dtp-catalogo.js (DTP.esempio). */
+    var E = C.esempio;
+    var CFG = Object.keys(E.config);
     var conf = {};
-    CFG.forEach(function (c) { conf[c[0]] = { qty: c[1], state: c[2], fc: c[3] }; });
+    CFG.forEach(function (id) { var k = E.consumi[id]; conf[id] = { qty: E.config[id], state: k[2], fc: k[1] }; });
     /* Upgrade proposto: quantità mancante arrotondata al passo del servizio, prezzo ricalcolato e overage evitato. */
     var up = {};
     C.services.forEach(function (sv) {
       var c = conf[sv.id];
       if (!c) { up[sv.id] = { add: sv.step, reco: false }; return; }
-      var gap = c.fc - c.qty, reco = gap > 0 && c.state !== 'ok';
+      var gap = c.fc - c.qty, reco = gap > 0;
       var addQ = reco ? Math.ceil(gap / sv.step) * sv.step : sv.step;
       up[sv.id] = { add: addQ, reco: reco, price: Math.round(addQ * sv.unit * 100) / 100, overage: reco ? Math.round(gap * sv.unit * 100) / 100 : 0,
         from: c.qty, to: c.qty + addQ };
     });
-    var ovTot = C.services.reduce(function (a, sv) { return a + (up[sv.id].overage || 0); }, 0);
+    var ovTot = E.overageTotale();
     var upName = function (id) { var sv = C.byId(id); return 'Upgrade ' + sv.name + ' · +' + n(up[id].add); };
     var catalog = {};
     C.services.forEach(function (sv) {
@@ -415,8 +413,8 @@ class Component extends DCLogic {
     var orders = placed.map(function (o, i) {
       return { what: o.what, meta: 'ORD-2026-' + (1201 + i) + ' · oggi · avviata da ' + WHO[P].name, state: 'In attivazione', bg: '#FDF1D6', fg: '#855800', amount: money ? eur(o.total) : '' };
     }).reverse().concat([
-      { what: 'Upgrade Nuovi Certificati FEA · +500 unità', meta: 'ORD-2026-1187 · 24 ott 2026 · avviato da Giulia Marchetti', state: 'In attivazione', bg: '#FDF1D6', fg: '#855800', amount: money ? '€ 1.500' : '' },
-      { what: 'Offerta componibile · rinnovo annuale · 9 servizi', meta: 'ORD-2026-0311 · 1 mar 2026 · firmato da Paolo Ferretti', state: 'Attivo', bg: '#E3F3EA', fg: '#1A6B4A', amount: money ? '€ 19.900' : '' }
+      { what: 'Upgrade Nuovi Certificati FEA · +500 unità', meta: 'ORD-2026-1187 · 24 ott 2026 · avviato da Giulia Marchetti', state: 'In attivazione', bg: '#FDF1D6', fg: '#855800', amount: money ? eur(E.upgradeInCorsoPrezzo()) : '' },
+      { what: 'Offerta componibile · rinnovo annuale · 9 servizi', meta: 'ORD-2026-0311 · 1 mar 2026 · firmato da Paolo Ferretti', state: 'Attivo', bg: '#E3F3EA', fg: '#1A6B4A', amount: money ? eur(E.contratto().totale) : '' }
     ]);
     if (P === 'op') {
       orders = reqs.map(function (r) { return { what: r, meta: 'richiesta inviata oggi a G. Marchetti e P. Ferretti', state: 'Richiesta', bg: '#E5EFFF', fg: '#0047BB', amount: '' }; }).concat(orders);
@@ -444,7 +442,7 @@ class Component extends DCLogic {
     var famOpts = [{ v: 'all', label: 'Tutte' }].concat(C.families.map(function (f) { return { v: f, label: f }; })).map(function (o) { o.sel = o.v === fam; return o; });
     return {
       who: WHO[P],
-      svcCount: CFG.length,
+      svcCount: CFG.length, contractValue: eur(E.contratto().totale),
       f: { buy: buy, noBuy: !buy, money: money, lr: P === 'lr' },
       decide: [
         { kind: 'Richiesta', what: 'Davide Sala chiede un upgrade di ' + n(up.fp.add) + ' Identificazioni Full Prospect', meta: 'oggi · delegato operativo · al ritmo attuale il servizio si esaurisce il 13 nov', btn: 'Aggiungi al riepilogo', act: function () { add('fp'); } },
