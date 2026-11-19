@@ -4,6 +4,15 @@
 (function () {
   var D = window.DTP, e = D.esc, $ = function (id) { return document.getElementById(id); };
   var FIELDS = ['ragione', 'piva', 'sdi', 'sede', 'pec', 'nome', 'cognome', 'cf', 'tel', 'email'];
+  var COMPANY = ['ragione', 'piva', 'sdi', 'sede', 'pec'];
+  /* Modalità assistita (O2-09): riconosciuta dalla sessione demo del commerciale. Il commerciale compila
+     configurazione, sconto entro soglia e dati dell'azienda e genera il codice; contratto firmato e invio
+     restano al legale rappresentante. Il nome è quello dimostrativo del commerciale C/C1 nella console Postel. */
+  var AUTH = window.DTPAuth;
+  var ASSIST = !!(AUTH && typeof AUTH.getRole === 'function' && AUTH.getRole() === 'com');
+  var COMMERCIALE = 'Marco Rinaldi';
+  var CLIENTE = '';
+  try { CLIENTE = (new URLSearchParams(window.location.search).get('cliente') || '').trim().slice(0, 120); } catch (x) {}
   var MAX = 10 * 1024 * 1024;
   var CODE_KEY = 'dtp-demo-config-codes';
   var CODE_RE = /^DTP-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
@@ -25,7 +34,8 @@
     step: 1, qty: {}, configured: false, autoAdded: [], code: null, codeErr: '', restored: '',
     data: null, pwOk: false, dirty: false,
     contract: null, downloaded: false, downloadErr: '', file: null, fileErr: '', acks: [false, false, false], invalidNote: false,
-    submitted: false, ref: null
+    submitted: false, ref: null,
+    sconto: 0, scontoErr: '', origin: null, scontoLost: 0, azienda: null
   };
 
   /* ---------- carrello e dipendenze ---------- */
@@ -35,7 +45,8 @@
     });
   }
   function quote() { return D.price(S.qty); }
-  function total() { return quote().totale; }
+  function scontato() { return D.applySconto(quote(), S.sconto); }
+  function total() { return scontato().totale.netto; }
   // Servizi nel carrello che richiedono il servizio id.
   function requiredBy(id) {
     return D.services.filter(function (s) { return S.qty[s.id] > 0 && s.deps.indexOf(id) >= 0; }).map(function (s) { return s.name; });
@@ -54,6 +65,12 @@
     if (S.contract || S.downloaded || S.file) S.invalidNote = true;
     S.contract = null; S.downloaded = false; S.downloadErr = ''; S.file = null; S.fileErr = ''; S.acks = [false, false, false];
   }
+  /* Il legale rappresentante che cambia la configurazione predisposta dal commerciale perde lo sconto:
+     lo sconto vale per la configurazione del codice, che si può ripristinare reinserendolo. */
+  function cartEdited() {
+    if (!ASSIST && S.sconto) { S.scontoLost = S.sconto; S.sconto = 0; }
+    cartChanged();
+  }
   function cartChanged() {
     S.dirty = true; S.configured = false; S.restored = '';
     if (S.code) S.code.stale = true;
@@ -70,10 +87,17 @@
   function generateCode() {
     S.codeErr = '';
     if (!items().length) { S.code = null; S.codeErr = 'Aggiungi almeno un servizio prima di generare il codice.'; render(); return; }
+    if (S.scontoErr) { S.code = null; S.codeErr = 'Correggi lo sconto prima di generare il codice: ' + S.scontoErr; render(); return; }
     try {
       var all = readCodes(), code = newCode();
       while (all[code]) code = newCode();
-      all[code] = { qty: JSON.parse(JSON.stringify(S.qty)), at: new Date().toISOString() };
+      var rec = { qty: JSON.parse(JSON.stringify(S.qty)), at: new Date().toISOString() };
+      /* Il codice del commerciale porta con sé sconto, origine e, se compilati, i dati dell'azienda. */
+      var by = ASSIST ? { commerciale: COMMERCIALE, cliente: CLIENTE } : S.origin;
+      if (by) { rec.origine = 'Commerciale'; rec.commerciale = by.commerciale; if (by.cliente) rec.cliente = by.cliente; }
+      if (by && S.sconto > 0) rec.sconto = S.sconto;
+      if (ASSIST && S.azienda) rec.azienda = JSON.parse(JSON.stringify(S.azienda));
+      all[code] = rec;
       localStorage.setItem(CODE_KEY, JSON.stringify(all));
       S.code = { value: code, stale: false };
     } catch (err) {
@@ -98,6 +122,15 @@
     Object.keys(saved.qty || {}).forEach(function (id) { if (D.byId(id) && saved.qty[id] > 0) q[id] = saved.qty[id]; });
     S.qty = q; S.autoAdded = [];
     cartChanged();
+    var sc = D.checkSconto(saved.commerciale && saved.sconto > 0 ? String(saved.sconto) : '');
+    S.sconto = sc.ok ? sc.value : 0; S.scontoErr = ''; S.scontoLost = 0;
+    S.origin = saved.commerciale ? { commerciale: String(saved.commerciale), cliente: saved.cliente ? String(saved.cliente) : '', sconto: S.sconto, code: v } : null;
+    if (ASSIST) { $('sconto').value = S.sconto ? D.num(S.sconto) : ''; setScontoMsg(); }
+    if (saved.azienda && typeof saved.azienda === 'object') {
+      COMPANY.forEach(function (f) { if (typeof saved.azienda[f] === 'string') { $(f).value = saved.azienda[f]; fieldError(f, ''); } });
+      if (S.data) { S.data = null; invalidate(); }
+      if (ASSIST) { S.azienda = {}; COMPANY.forEach(function (f) { S.azienda[f] = val(f); }); }
+    }
     S.restored = v; S.code = null;
     $('code-in').value = '';
     render();
@@ -128,7 +161,9 @@
     if (!/^\+?[\d\s]+$/.test(v.tel) || digits.length < 9 || digits.length > 15) er.tel = 'Inserisci un numero di cellulare valido.';
     if (!EM.test(v.email)) er.email = 'Inserisci un indirizzo e-mail valido.';
     var pw = $('pw').value, pw2 = $('pw2').value;
-    if (!(S.pwOk && !pw && !pw2)) {
+    if (ASSIST) {
+      Object.keys(er).forEach(function (k) { if (COMPANY.indexOf(k) < 0) delete er[k]; });
+    } else if (!(S.pwOk && !pw && !pw2)) {
       if (!pw) er.pw = 'Scegli una password.';
       else if (pw.length < 10 || !/[A-Z]/.test(pw) || !/[a-z]/.test(pw) || !/\d/.test(pw)) er.pw = 'Almeno 10 caratteri, con maiuscola, minuscola e numero.';
       if (!er.pw && pw2 !== pw) er.pw2 = 'Le due password non coincidono.';
@@ -144,7 +179,7 @@
     if (bad) d.push(f + '-e'); if (d.length) $(f).setAttribute('aria-describedby', d.join(' ')); else $(f).removeAttribute('aria-describedby');
   }
   function showErrors(er) {
-    FIELDS.concat(['pw', 'pw2']).forEach(function (f) { fieldError(f, er[f]); });
+    (ASSIST ? COMPANY : FIELDS.concat(['pw', 'pw2'])).forEach(function (f) { fieldError(f, er[f]); });
     var keys = Object.keys(er), box = $('errsum');
     if (!keys.length) { box.hidden = true; return; }
     box.innerHTML = '<strong>Controlla ' + (keys.length === 1 ? 'il campo evidenziato' : 'i ' + keys.length + ' campi evidenziati') + '</strong><ul>' + keys.map(function (k) { return '<li><a href="#' + k + '">' + LABELS[k] + ': ' + e(er[k]) + '</a></li>'; }).join('') + '</ul>';
@@ -154,7 +189,7 @@
   // Controllo formale al momento dell'inserimento: alla perdita del focus di ogni campo.
   $('f1').addEventListener('focusout', function (ev) {
     var id = ev.target.id;
-    if (!LABELS[id] || S.submitted) return;
+    if (!LABELS[id] || S.submitted || (ASSIST && COMPANY.indexOf(id) < 0)) return;
     if ((id === 'pw' || id === 'pw2') && S.pwOk && !$('pw').value && !$('pw2').value) return;
     if (id === 'pw' && !$('pw2').value) { fieldError('pw', check().er.pw); return; }
     fieldError(id, check().er[id]);
@@ -165,6 +200,11 @@
     var r = check();
     showErrors(r.er);
     if (Object.keys(r.er).length) return;
+    if (ASSIST) {
+      S.azienda = {}; COMPANY.forEach(function (f) { S.azienda[f] = r.v[f]; });
+      generateCode();
+      return;
+    }
     var changed = !S.data || FIELDS.some(function (f) { return S.data[f] !== r.v[f]; });
     if (changed && S.data) invalidate();
     S.data = r.v; S.pwOk = true;
@@ -176,6 +216,7 @@
     S.dirty = true;
     var id = ev.target.id;
     if (ev.target.getAttribute('aria-invalid') === 'true') fieldError(id, '');
+    if (ASSIST) { if (S.azienda) { S.azienda = null; if (S.code) S.code.stale = true; render(); } return; }
     if (id === 'pw' || id === 'pw2') { if (S.pwOk) { S.pwOk = false; $('pw-ok').hidden = true; S.data = null; invalidate(); render(); } return; }
     if (S.data && S.data[id] !== undefined) { S.data = null; invalidate(); render(); }
   });
@@ -185,6 +226,7 @@
     if (S.submitted) return false;
     if (n === 1) return true;
     if (n === 2) return S.configured && items().length > 0;
+    if (ASSIST) return false;
     return S.configured && items().length > 0 && !!S.data;
   }
   function go(n) {
@@ -195,10 +237,11 @@
   document.addEventListener('click', function (ev) { var b = ev.target.closest('[data-go]'); if (b) go(+b.dataset.go); });
 
   function renderStepper() {
-    var L = [['Servizi', 'Configurazione e carrello'], ['Dati', 'Azienda, rappresentante, password'], ['Contratto', 'Bozza, firma, caricamento']];
+    var L = ASSIST ? [['Servizi', 'Configurazione, sconto e codice'], ['Dati', 'Azienda, facoltativi'], ['Contratto', 'A cura del legale rappresentante']]
+      : [['Servizi', 'Configurazione e carrello'], ['Dati', 'Azienda, rappresentante, password'], ['Contratto', 'Bozza, firma, caricamento']];
     $('stepper').innerHTML = L.map(function (l, i) {
       var n = i + 1, cur = !S.submitted && S.step === n, done = S.submitted || (n === 1 ? S.configured && items().length > 0 : n === 2 ? !!S.data && S.configured : false);
-      var why = !canGo(n) && !S.submitted ? (n === 2 ? ' (conferma prima la configurazione)' : ' (completa prima configurazione e dati)') : '';
+      var why = !canGo(n) && !S.submitted ? (n === 2 ? ' (conferma prima la configurazione)' : ASSIST ? ' (riservato al legale rappresentante)' : ' (completa prima configurazione e dati)') : '';
       return '<li><button type="button" class="' + (done ? 'done' : '') + '" data-step="' + n + '"' + (cur ? ' aria-current="step"' : '') + (canGo(n) ? '' : ' disabled') + ' aria-label="Passo ' + n + ': ' + l[0] + (done ? ', completato' : '') + why + '"><span class="dot" aria-hidden="true">' + (done && !cur ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>' : n) + '</span><span class="l"><b>' + l[0] + '</b><span>' + l[1] + '</span></span></button></li>';
     }).join('');
   }
@@ -207,7 +250,13 @@
   /* ---------- passo 1: configurazione ---------- */
   function renderCat() {
     var h = '', first = true;
-    if (S.restored) h += '<div class="okbox" role="status" style="margin-bottom:14px"><span>Configurazione ripristinata dal codice <strong>' + e(S.restored) + '</strong>. Controllala e conferma per proseguire.</span></div>';
+    if (S.restored) {
+      var o = S.origin;
+      h += '<div class="okbox" role="status" style="margin-bottom:14px"><span>Configurazione ripristinata dal codice <strong>' + e(S.restored) + '</strong>' +
+        (o ? ', predisposta in modalità assistita dal commerciale ' + e(o.commerciale) + (o.cliente ? ' per ' + e(o.cliente) : '') + (o.sconto ? ', con sconto del ' + D.num(o.sconto) + '% sul prezzo complessivo' : '') : '') +
+        '. Controllala e conferma per proseguire.' + (o && !ASSIST ? ' Completi tu i dati, firmi il contratto e invii la richiesta.' : '') + '</span></div>';
+    }
+    if (S.scontoLost && !ASSIST) h += '<div class="info" role="status" style="margin-bottom:14px">Hai cambiato la configurazione predisposta dal commerciale: lo sconto del ' + D.num(S.scontoLost) + '% vale solo per quella configurazione e non si applica più. Per recuperarlo reinserisci il codice ricevuto.</div>';
     D.families.forEach(function (f) {
       var list = D.services.filter(function (s) { return s.family === f; });
       h += '<h2 style="font-size:17px;margin:' + (first ? '0' : '22px') + ' 0 10px">' + e(f) + '</h2><div class="tscroll"><table class="tbl stack"><thead><tr><th>Servizio</th><th>Quantità</th><th class="r">Componente variabile</th></tr></thead><tbody>';
@@ -226,21 +275,26 @@
     var notes = S.autoAdded.map(function (a) { return '<div class="info" role="status">Aggiunto ' + e(D.byId(a.dep).name) + ': è necessario per ' + e(D.byId(a.by).name) + '. Puoi modificarne la quantità, ma non toglierlo finché ' + e(D.byId(a.by).name) + ' è nel carrello.</div>'; });
     if (notes.length) h += '<div class="notes">' + notes.join('') + '</div>';
     $('cat').innerHTML = h;
+    var n = items().length;
+    $('confirm').disabled = !n || !!S.scontoErr;
+    $('confirm').textContent = n ? 'Conferma la configurazione · ' + D.eur(total()) : 'Conferma la configurazione';
+    $('confirm').title = !n ? 'Aggiungi almeno un servizio al carrello' : S.scontoErr ? 'Correggi lo sconto' : '';
+  }
+  /* Codice generato: nel passo 1 sotto il catalogo, nel passo 2 (modalità assistita) sotto i dati dell'azienda. */
+  function renderCode() {
     var c = '';
     if (S.codeErr) c = '<div class="ferr" role="alert">' + e(S.codeErr) + '</div>';
     else if (S.code) c = '<div class="code" role="status"><span>Codice di configurazione</span><output id="code-value">' + e(S.code.value) + '</output><button type="button" class="btn btn-o" id="code-copy">Copia il codice</button>' +
       '<p>' + (S.code.stale ? '<strong style="color:#855800">La configurazione è cambiata dopo la generazione: il codice conserva quella precedente. Generane uno nuovo per salvare quella attuale.</strong> ' : '') +
+      (ASSIST ? 'Consegna il codice al legale rappresentante: inserendolo in questa pagina ritrova configurazione e sconto' + (S.azienda ? ' e i dati dell\'azienda' : '') + ', poi completa da sé dati, firma del contratto e invio della richiesta. ' : '') +
       'Il codice registra la configurazione presente al momento della generazione e permette di riprendere il percorso. Validità del codice: [DA DEFINIRE]. Nel prototipo il codice è salvato solo in questo browser.</p></div>';
-    $('code-out').innerHTML = c;
+    $('code-out').innerHTML = S.step === 1 ? c : '';
+    $('code-out2').innerHTML = ASSIST && S.step === 2 ? c : '';
     var cp = $('code-copy');
     if (cp) cp.onclick = function () {
       var fail = function () { cp.textContent = 'Copia non riuscita: selezionalo e copialo'; };
       try { navigator.clipboard.writeText(S.code.value).then(function () { cp.textContent = 'Codice copiato'; }, fail); } catch (x) { fail(); }
     };
-    var n = items().length;
-    $('confirm').disabled = !n;
-    $('confirm').textContent = n ? 'Conferma la configurazione · ' + D.eur(total()) : 'Conferma la configurazione';
-    $('confirm').title = n ? '' : 'Aggiungi almeno un servizio al carrello';
   }
   $('cat').addEventListener('click', function (ev) {
     var b = ev.target.closest('[data-act]'); if (!b || b.disabled || S.submitted) return;
@@ -251,14 +305,14 @@
       if (q <= 0 && requiredBy(s.id).length) return;
       if (q > 0) S.qty[s.id] = q; else delete S.qty[s.id];
     }
-    cartChanged(); refocus(a, i);
+    cartEdited(); refocus(a, i);
   });
   function refocus(a, i) {
     var el = $('cat').querySelector('[data-act="' + a + '"][data-i="' + i + '"]');
     if (el && !el.disabled) el.focus(); else { var alt = $('cat').querySelector('[data-act="inc"][data-i="' + i + '"]'); if (alt) alt.focus(); }
   }
   $('confirm').addEventListener('click', function () {
-    if (!items().length || S.submitted) return;
+    if (!items().length || S.submitted || S.scontoErr) return;
     S.configured = true;
     go(2);
   });
@@ -273,12 +327,19 @@
       return '<li><div class="c"><strong>' + e(i.name) + '</strong><small>' + e(i.detail) + '</small><span style="font-weight:600">' + D.eur(i.price) + '</span>' + (req.length ? '<small>Necessario per ' + e(req.join(', ')) + '</small>' : '') + '</div>' +
         (req.length ? '' : '<button type="button" class="x" data-rm="' + i.key + '" aria-label="Rimuovi ' + e(i.name) + '"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>') + '</li>';
     }).join('') + '</ul>';
-    if (it.length) {
+    if (it.length && S.sconto > 0) {
+      var x = scontato(), pc = D.num(x.pct) + '%';
+      var row = function (label, c) { return '<tr><th scope="row">' + label + '</th><td>' + D.eur(c.listino) + '</td><td>−' + D.eur(c.sconto) + '</td><td><strong>' + D.eur(c.netto) + '</strong></td></tr>'; };
+      h += '<table class="sctbl" data-testid="table-sconto"><caption class="sr">Prezzo di listino, sconto del ' + pc + ' e prezzo scontato per componente</caption><thead><tr><th scope="col">Componente</th><th scope="col">Listino</th><th scope="col">Sconto ' + pc + '</th><th scope="col">Scontato</th></tr></thead><tbody>' +
+        row('Componente variabile', x.variabile) + row('Fee di attivazione', x.fee) + row('Canone periodico', x.canone) +
+        '</tbody><tfoot>' + row('Totale', x.totale) + '</tfoot></table>';
+      h += '<p class="muted" style="margin:0;font-size:12px">Sconto sul prezzo complessivo' + (S.origin && !ASSIST ? ' applicato dal commerciale ' + e(S.origin.commerciale) : '') + ', entro la soglia massima. Fee di attivazione e canone: ' + e(D.SEGNAPOSTO) + '. Periodicità del canone: ' + e(D.periodicita) + '.</p>';
+    } else if (it.length) {
       var p = quote();
       h += '<ul class="kv"><li><span>Componente variabile</span><strong>' + D.eur(p.variabile) + '</strong></li><li><span>Fee di attivazione</span><strong>' + D.eur(p.fee) + '</strong></li><li><span>Canone periodico</span><strong>' + D.eur(p.canone) + '</strong></li></ul>';
       h += '<p class="muted" style="margin:0;font-size:12px">Fee di attivazione e canone: ' + e(D.SEGNAPOSTO) + '. Periodicità del canone: ' + e(D.periodicita) + '.</p>';
     }
-    h += '<div class="tot"><span class="muted" style="font-size:14px">Totale, IVA esclusa</span><strong>' + D.eur(total()) + '</strong></div>';
+    h += '<div class="tot"><span class="muted" style="font-size:14px">' + (S.sconto > 0 && it.length ? 'Totale scontato' : 'Totale') + ', IVA esclusa</span><strong>' + D.eur(total()) + '</strong></div>';
     h += '<p class="muted" style="margin:0;font-size:12px">Durata 12 mesi dalla controfirma di Postel. Nessun addebito in questa fase: la prima fattura si paga fuori dalla piattaforma.</p>';
     $('side').innerHTML = h;
   }
@@ -287,7 +348,7 @@
     var k = b.dataset.rm;
     if (requiredBy(k).length) return;
     delete S.qty[k];
-    cartChanged();
+    cartEdited();
     var next = $('side').querySelector('[data-rm]'); (next || $('t1')).focus();
   });
 
@@ -305,7 +366,7 @@
     if (!S.contract) { $('contract').innerHTML = ''; return; }
     var c = S.contract, h = '';
     if (S.invalidNote) h += '<div class="info" role="status">I dati o i servizi sono cambiati: abbiamo generato un nuovo contratto. Scaricalo di nuovo e carica la versione firmata aggiornata.</div>';
-    h += '<div class="task' + (S.downloaded ? ' ok' : '') + '"><span class="dot" aria-hidden="true">' + (S.downloaded ? '✓' : '1') + '</span><div class="b"><h2>Scarica il contratto</h2><p>Riferimento <strong>' + c.id + '</strong> · ' + items().length + (items().length === 1 ? ' servizio configurato' : ' servizi configurati') + ' · ' + D.eur(total()) + ' IVA esclusa. Formato: <strong>PDF</strong>, scaricabile direttamente. Bozza dimostrativa senza valore legale; termini da approvare, nessuna firma o attivazione reale.</p><div><button type="button" class="btn ' + (S.downloaded ? 'btn-o' : 'btn-p') + '" id="dl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16"/></svg>' + (S.downloaded ? 'Scarica di nuovo (PDF)' : 'Scarica il contratto (PDF)') + '</button></div>' + (S.downloadErr ? '<p role="alert">' + e(S.downloadErr) + '</p>' : '') + '</div></div>';
+    h += '<div class="task' + (S.downloaded ? ' ok' : '') + '"><span class="dot" aria-hidden="true">' + (S.downloaded ? '✓' : '1') + '</span><div class="b"><h2>Scarica il contratto</h2><p>Riferimento <strong>' + c.id + '</strong> · ' + items().length + (items().length === 1 ? ' servizio configurato' : ' servizi configurati') + ' · ' + D.eur(total()) + ' IVA esclusa' + (S.sconto > 0 ? ', con sconto del ' + D.num(S.sconto) + '% sul prezzo complessivo' : '') + '. Formato: <strong>PDF</strong>, scaricabile direttamente. Bozza dimostrativa senza valore legale; termini da approvare, nessuna firma o attivazione reale.</p><div><button type="button" class="btn ' + (S.downloaded ? 'btn-o' : 'btn-p') + '" id="dl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16"/></svg>' + (S.downloaded ? 'Scarica di nuovo (PDF)' : 'Scarica il contratto (PDF)') + '</button></div>' + (S.downloadErr ? '<p role="alert">' + e(S.downloadErr) + '</p>' : '') + '</div></div>';
     h += '<div class="task' + (S.file ? ' ok' : '') + '"><span class="dot" aria-hidden="true">' + (S.file ? '✓' : '2') + '</span><div class="b"><h2>Firma e carica il contratto firmato</h2><p>Firma il documento fuori da questa pagina con il tuo strumento di firma, poi carica il file firmato in formato PDF o P7M. Tipologie di firma ammesse: [DA DEFINIRE]. Massimo 10 MB.</p>' +
       '<input type="file" id="file" accept=".pdf,.p7m,application/pdf,application/pkcs7-mime" class="sr" aria-describedby="file-h"' + (S.downloaded ? '' : ' disabled') + '>' +
       (!S.downloaded ? '<p id="file-h" class="muted" style="font-size:13px">Scarica prima il contratto per poter caricare il file firmato.</p>' :
@@ -342,7 +403,7 @@
     if (dl) dl.onclick = function () {
       var url, a;
       try {
-        var blob = window.DTPContractPDF({ data: S.data, contract: S.contract, config: S.qty });
+        var blob = window.DTPContractPDF({ data: S.data, contract: S.contract, config: S.qty, sconto: S.sconto });
         url = URL.createObjectURL(blob);
         a = document.createElement('a'); a.href = url; a.download = 'bozza-contratto-' + S.contract.id + '.pdf';
         document.body.appendChild(a); a.click();
@@ -372,7 +433,7 @@
     });
   }
   $('submit').addEventListener('click', function () {
-    if (S.submitted || !ready() || !canGo(3)) return;
+    if (ASSIST || S.submitted || !ready() || !canGo(3)) return;
     S.submitted = true;
     S.ref = 'RA-' + String(Math.floor(1000000 + Math.random() * 9000000));
     S.file = { name: S.file.name, size: S.file.size };
@@ -422,6 +483,37 @@
     $('dlg-ok').focus();
   }
 
+  /* ---------- modalità assistita: banda, sconto e passo dati ridotto all'azienda ---------- */
+  function setScontoMsg() {
+    $('sconto').setAttribute('aria-invalid', S.scontoErr ? 'true' : 'false');
+    $('sconto-e').textContent = S.scontoErr;
+    $('sconto-h').textContent = 'Soglia massima ' + D.num(D.sogliaSconto) + '%: valore dimostrativo, ' + D.SOGLIA_SCONTO_STATO + '. Lo sconto si applica a componente variabile, fee di attivazione e canone periodico; oltre la soglia il sistema blocca.';
+    $('sconto').setAttribute('aria-describedby', 'sconto-h' + (S.scontoErr ? ' sconto-e' : ''));
+  }
+  if (ASSIST) {
+    var band = $('assist-band');
+    band.innerHTML = '<strong>Modalità assistita · commerciale ' + e(COMMERCIALE) + '</strong>' +
+      '<span>' + (CLIENTE ? 'Per <b>' + e(CLIENTE) + '</b>. ' : '') + 'Configuri servizi e quantità del catalogo, applichi uno sconto entro la soglia e, se vuoi, compili i dati dell\'azienda. Non carichi il contratto firmato e non invii la richiesta: generi il codice di configurazione da consegnare al legale rappresentante, che conclude il primo acquisto.</span>' +
+      '<span><a href="postel-O2-portafoglio.html">Torna a Portafoglio e contratti</a></span>';
+    band.hidden = false;
+    $('discount-box').hidden = false;
+    $('fs-lr').hidden = true; $('fs-pw').hidden = true;
+    if (CLIENTE) $('ragione').value = CLIENTE;
+    $('demo-prefill').textContent = 'Dati fittizi precompilati temporaneamente per esplorare il percorso' + (CLIENTE ? ', con la ragione sociale indicata in O2-09' : '') + '. Puoi modificarli prima di salvarli nel codice.';
+    FIELDS.filter(function (f) { return COMPANY.indexOf(f) < 0; }).concat(['pw', 'pw2']).forEach(function (f) { $(f).disabled = true; });
+    $('t2').textContent = 'Dati dell\'azienda';
+    $('t2').nextElementSibling.textContent = 'Facoltativi in modalità assistita: se li compili vengono salvati nel codice di configurazione e il legale rappresentante li ritrova. I dati del legale rappresentante, la password, il contratto e l\'invio sono a cura del legale rappresentante.';
+    $('data-submit').textContent = 'Salva i dati nel codice';
+    $('gen-code').textContent = 'Genera codice per il legale rappresentante';
+    setScontoMsg();
+    $('sconto').addEventListener('input', function () {
+      var r = D.checkSconto($('sconto').value);
+      S.sconto = r.value; S.scontoErr = r.error;
+      setScontoMsg();
+      cartChanged();
+    });
+  }
+
   /* ---------- render ---------- */
   function render() {
     if (S.step === 3 && !canGo(3)) S.step = canGo(2) ? 2 : 1;
@@ -434,6 +526,7 @@
     $('side').hidden = !showCart;
     $('activation-layout').classList.toggle('layout-single', !showCart);
     if (S.step === 1 && !S.submitted) { renderCat(); renderSide(); }
+    renderCode();
     if (S.step === 3 && !S.submitted) renderContract();
     renderDone();
   }

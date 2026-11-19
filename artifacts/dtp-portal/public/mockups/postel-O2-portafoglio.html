@@ -195,6 +195,23 @@ a{color:#0047BB}a:hover{color:#003A99}
 </div>
 </section>
 
+<sc-if value="{{act}}" hint-placeholder-val="{{ true }}">
+<section class="dtp-card" aria-labelledby="titolo-assistita" data-testid="section-o2-09" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div>
+<h2 id="titolo-assistita" style="margin: 0; font-size: 18px; font-weight: 600">Configurazione assistita</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Compili per il cliente o il prospect lo stesso percorso digitale di attivazione (V-02): servizi e quantità del catalogo, sconto sul prezzo complessivo entro la soglia consentita e, se vuoi, i dati dell'azienda. Generi il codice di configurazione da consegnare al legale rappresentante, che completa i dati, firma il contratto e invia la richiesta.</p>
+</div>
+<form action="vetrina-V02-contratto.html" method="get" style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #3A424C; flex: 1 1 320px">Cliente o prospect<input name="cliente" list="o2-09-prospect" autocomplete="off" maxlength="120" placeholder="Ragione sociale" data-testid="input-o2-09-cliente" style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px; font-weight: 400; color: #1A1C1E"></label>
+<datalist id="o2-09-prospect">
+<sc-for list="{{prospects}}" as="pr" hint-placeholder-count="3"><option value="{{pr}}"></option></sc-for>
+</datalist>
+<button class="dtp-btn dtp-btn-p" type="submit" data-testid="button-o2-09-apri" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">Apri V-02 in modalità assistita</button>
+</form>
+<p style="margin: 0; font-size: 12px; color: #4D5762">Il primo acquisto resta concluso dal legale rappresentante: in modalità assistita non si carica il contratto firmato e non si invia la richiesta. Non si possono aggiungere servizi o combinazioni fuori catalogo.</p>
+</section>
+</sc-if>
+
 <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
 <section class="dtp-card" aria-labelledby="titolo-pratiche" style="flex: 999 1 640px; min-width: 0; background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
 <div>
@@ -469,24 +486,28 @@ class Component extends DCLogic {
     };
     var pratiche = [
       ['p1', 'Studio Legale Martini', 'Nuovo contratto · 3 servizi configurati', 'firmato dal LR oggi alle 10:12', 'Vetrina', 'sign'],
-      ['p2', 'Ottica Riviera S.r.l.', 'Nuovo contratto · offerta componibile, 6 servizi', 'ordine predisposto da S. Greco', 'Commerciale', 'client'],
+      ['p2', 'Ottica Riviera S.r.l.', 'Nuovo contratto · offerta componibile, 6 servizi', 'configurazione assistita di S. Greco', 'Commerciale', 'client', 8],
       ['p3', 'Assicurazioni Aurora S.p.A.', 'Upgrade Identificazioni Full Prospect: +3.000 unità', 'richiesto dal delegato amministrativo', 'Portale cliente', 'review'],
       ['p4', 'Energia Verde Soc. Coop.', 'Recesso al 10/11/2026', 'disattivazione dei servizi alla data', 'Portale cliente', 'conguaglio'],
       ['p5', 'Logistica Adriatica S.r.l.', 'Upgrade Verifiche Contatti: +10.000 unità', 'controfirmato il 26 ott 2026', 'Portale cliente', 'active']
     ].map(function (r) {
       var k = signedNow.indexOf(r[0]) >= 0 ? 'active' : r[5], s = PS[k], can = k === 'sign' && P === 'com';
-      return { client: r[1], what: r[2], detail: k === 'active' && r[5] === 'sign' ? 'controfirmato ora: servizi attivi, accesso inviato al LR' : r[3], origin: r[4], state: s[0], bg: s[1], fg: s[2],
+      /* Richieste nate da una configurazione assistita (O2-09): origine "Commerciale" e sconto applicato, nascosto a chi non vede dati economici. */
+      var detail = k === 'active' && r[5] === 'sign' ? 'controfirmato ora: servizi attivi, accesso inviato al LR' : r[3];
+      if (r[6] && money) detail += ' · sconto ' + DTP.num(r[6]) + '% sul prezzo complessivo';
+      return { client: r[1], what: r[2], detail: detail, origin: r[4], state: s[0], bg: s[1], fg: s[2],
         hasAct: can, noAct: !can, btn: 'Controfirma',
         note: k === 'sign' ? 'controfirma del commerciale' : (k === 'conguaglio' ? 'a cura di rating e fatturazione' : '—'),
         act: function () { set({ signed: signedNow.concat([r[0]]) }); } };
     });
+    var prospects = ['Ottica Riviera S.r.l.', 'Studio Notarile Ferraro', 'Cantine del Garda S.r.l.'];
     var insoluti = [
       ['Energia Verde Soc. Coop.', '€ 1.225', 'Canone 4° trimestre scaduto da 22 giorni · 2° sollecito inviato via PEC'],
       ['Immobiliare Tevere S.r.l.', '€ 1.225', 'Canone 4° trimestre scaduto da 8 giorni · 1° sollecito inviato']
     ].map(function (u) { return { client: u[0], amount: money ? u[1] : 'Insoluto', detail: u[2] }; });
     segments.forEach(function (x) { x.arrText = money ? ' · ' + x.arr : ''; });
     renewals.forEach(function (x) { x.arrText = money ? ' · ' + x.arr : ''; });
-    return { pratiche: pratiche, insoluti: insoluti, insolutiTitle: money ? 'Insoluti: 2 clienti, € 2.450' : 'Insoluti: 2 clienti', money: money, act: act,
+    return { pratiche: pratiche, prospects: prospects, insoluti: insoluti, insolutiTitle: money ? 'Insoluti: 2 clienti, € 2.450' : 'Insoluti: 2 clienti', money: money, act: act,
       gridCols: act ? '2.1fr 1fr 1fr 0.95fr 1.9fr 0.65fr 1.1fr 0.95fr 1.1fr 1.6fr' : '2.3fr 1fr 1fr 1fr 2fr 0.7fr 1.2fr 1fr 1.2fr',
       exportLabel: money ? 'Esporta lista di lavoro' : 'Esporta lista (senza importi)',
       renewTitle: money ? 'Scadenzario rinnovi: 23 contratti e € 512k di ARR nei prossimi 90 giorni' : 'Scadenzario rinnovi: 23 contratti nei prossimi 90 giorni',

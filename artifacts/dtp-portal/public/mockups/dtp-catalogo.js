@@ -27,6 +27,11 @@
   var periodicita = '[DA DEFINIRE]';
   var SEGNAPOSTO = 'valore segnaposto [DA DEFINIRE]';
 
+  /* Modalità assistita del commerciale: sconto percentuale sul prezzo complessivo entro una soglia massima.
+     SOGLIA_SCONTO = [DA DEFINIRE]: il valore 10 è solo dimostrativo. Oltre la soglia il sistema blocca, senza deroghe. */
+  var sogliaSconto = 10;
+  var SOGLIA_SCONTO_STATO = 'SOGLIA_SCONTO = [DA DEFINIRE]';
+
   function byId(id) { return index[id] || null; }
   function lines(config) {
     return services.filter(function (s) { return config && config[s.id] > 0; }).map(function (s) {
@@ -42,6 +47,27 @@
     var fee = any && withFee ? feeAttivazione : 0;
     var canone = any ? canonePeriodico : 0;
     return { lines: l, variabile: variabile, fee: fee, canone: canone, totale: round(variabile + fee + canone) };
+  }
+  /* Sconto percentuale applicato a un prezzo calcolato con price(): per ogni riga e per ogni componente
+     restituisce listino, sconto e prezzo scontato. La componente variabile somma gli sconti delle righe. */
+  function applySconto(p, pct) {
+    var k = pct > 0 ? pct / 100 : 0;
+    function part(n) { var d = round(n * k); return { listino: n, sconto: d, netto: round(n - d) }; }
+    var l = p.lines.map(function (x) { return Object.assign({}, x, part(x.amount)); });
+    var dv = round(l.reduce(function (a, x) { return a + x.sconto; }, 0));
+    var variabile = { listino: p.variabile, sconto: dv, netto: round(p.variabile - dv) };
+    var fee = part(p.fee), canone = part(p.canone);
+    var ds = round(variabile.sconto + fee.sconto + canone.sconto);
+    return { pct: k ? pct : 0, lines: l, variabile: variabile, fee: fee, canone: canone, totale: { listino: p.totale, sconto: ds, netto: round(p.totale - ds) } };
+  }
+  /* Controllo dello sconto inserito come testo ("8", "7,5"): { ok, value, error }. */
+  function checkSconto(raw) {
+    var t = String(raw == null ? '' : raw).trim().replace(',', '.');
+    if (!t) return { ok: true, value: 0, error: '' };
+    if (!/^\d{1,3}(\.\d{1,2})?$/.test(t)) return { ok: false, value: 0, error: 'Inserisci una percentuale con al massimo due decimali, per esempio 5 oppure 7,5.' };
+    var v = Number(t);
+    if (v > sogliaSconto) return { ok: false, value: 0, error: 'Sconto non consentito: la soglia massima è ' + grp(sogliaSconto) + '%. Il sistema non permette di superarla e non sono previste deroghe.' };
+    return { ok: true, value: v, error: '' };
   }
   // Dipendenze non soddisfatte: [{ id, name, missing: [nomi] }]
   function missingDeps(config) {
@@ -90,6 +116,7 @@
     families: ['Identità e verifica', 'Firma elettronica', 'Contratti e documenti', 'Fatturazione'],
     feeAttivazione: feeAttivazione, canonePeriodico: canonePeriodico, periodicita: periodicita, SEGNAPOSTO: SEGNAPOSTO,
     lines: lines, price: price, missingDeps: missingDeps, esempio: esempio,
+    sogliaSconto: sogliaSconto, SOGLIA_SCONTO_STATO: SOGLIA_SCONTO_STATO, applySconto: applySconto, checkSconto: checkSconto,
     eur: eur, num: num, unit3: unit3, esc: esc
   };
 })();

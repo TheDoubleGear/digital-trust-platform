@@ -58,7 +58,18 @@
     field('Componente variabile (quantità × prezzo unitario)', D.eur(pr.variabile));
     field('Fee di attivazione', D.eur(pr.fee) + ' (' + D.SEGNAPOSTO + ')');
     field('Canone periodico', D.eur(pr.canone) + ' (' + D.SEGNAPOSTO + ') · periodicità ' + D.periodicita);
-    heading('Totale, IVA esclusa: ' + D.eur(pr.totale));
+    /* Sconto della configurazione assistita del commerciale: listino, sconto e prezzo scontato per componente. */
+    var sc = input.sconto > 0 ? D.applySconto(pr, input.sconto) : null;
+    if (sc) {
+      var pct = D.num(sc.pct) + '%';
+      heading('Sconto sul prezzo complessivo: ' + pct);
+      [['Componente variabile', sc.variabile], ['Fee di attivazione', sc.fee], ['Canone periodico', sc.canone]].forEach(function (x) {
+        field(x[0] + ' (con sconto)', 'listino ' + D.eur(x[1].listino) + ' · sconto ' + pct + ' -' + D.eur(x[1].sconto) + ' · prezzo scontato ' + D.eur(x[1].netto));
+      });
+      field('Totale di listino', D.eur(sc.totale.listino));
+      field('Sconto complessivo', '-' + D.eur(sc.totale.sconto));
+      heading('Totale scontato, IVA esclusa: ' + D.eur(sc.totale.netto));
+    } else heading('Totale, IVA esclusa: ' + D.eur(pr.totale));
     text('Oltre le quantità configurate si applica l\'overage al prezzo unitario di listino. Ogni variazione successiva è una modifica dell\'offerta e del contratto. Modalità di fatturazione: [DA DEFINIRE].');
     heading('5. Durata');
     text('12 mesi dalla data di controfirma di Postel. Modalità di rinnovo: [DA DEFINIRE].');

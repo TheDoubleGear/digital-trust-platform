@@ -200,3 +200,16 @@ dialog.detail dd{margin:2px 0 0}
  .tbl.stack td{border:0;padding:0}.tbl.stack td:first-child{grid-column:1/-1}
  .dlg{padding:20px}.btn{white-space:normal;text-align:center}
 }
+
+/* Modalità assistita del commerciale (V-02) */
+.assist{display:flex;flex-direction:column;gap:4px;padding:14px 18px;border-radius:6px;background:var(--blue);color:#FFFFFF;font-size:13px}
+.assist strong{font-size:16px}
+.assist a{color:#FFFFFF;font-weight:600}
+.discount{padding:14px 16px;border:1px solid var(--line);border-radius:6px;background:var(--pale)}
+.discount .f{max-width:420px}
+.sctbl{width:100%;border-collapse:collapse;font-size:12px}
+.sctbl th,.sctbl td{padding:4px 0;text-align:right;font-weight:400}
+.sctbl th:first-child,.sctbl td:first-child{text-align:left}
+.sctbl thead th{color:var(--mut);border-bottom:1px solid var(--line)}
+.sctbl tfoot td{border-top:1px solid var(--line);font-weight:700}
+.assist a:focus-visible{outline-color:#FFFFFF}
