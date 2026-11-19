@@ -326,20 +326,26 @@ test('without the sales session V-02 has no assisted band and no discount field'
   } finally { dom.window.close(); }
 });
 
-test('assisted mode: sales configures with a capped discount, saves company data in the code and cannot reach the contract', () => {
-  const { w, $, dom, configure, submitData } = setup({ role: 'com', query: '?cliente=Ottica%20Riviera%20S.r.l.' });
+test('assisted mode: sales prepares only configuration and discount, never data, and cannot reach data or contract', () => {
+  const { w, $, dom } = setup({ role: 'com', query: '?cliente=Ottica%20Riviera%20S.r.l.' });
   try {
     const D = w.DTP;
     assert.equal($('#assist-band').hidden, false);
     assert.match($('#assist-band').textContent, /Modalità assistita · commerciale Marco Rinaldi/);
     assert.match($('#assist-band').textContent, /Ottica Riviera S\.r\.l\./);
+    assert.match($('#assist-band').textContent, /prepari la configurazione e lo sconto; dati e contratto li completa il legale rappresentante/);
     assert.match($('#sconto-h').textContent, /SOGLIA_SCONTO = \[DA DEFINIRE\]/);
+    assert.equal($('#confirm').hidden, true, 'il percorso del commerciale si ferma alla configurazione');
+    assert.equal($('#gen-code').textContent, 'Genera codice di configurazione');
     $('[data-act="inc"][data-i="2"]').click();
+    assert.equal($('[data-step="2"]').disabled, true, 'passo Dati non disponibile');
+    assert.match($('[data-step="2"]').getAttribute('aria-label'), /riservato al legale rappresentante/);
+    assert.equal($('[data-step="3"]').disabled, true, 'passo Contratto non disponibile');
+    assert.match($('[data-step="3"]').getAttribute('aria-label'), /riservato al legale rappresentante/);
     const setSconto = v => { $('#sconto').value = v; $('#sconto').dispatchEvent(new w.Event('input', { bubbles: true })); };
     setSconto(String(D.sogliaSconto + 5));
     assert.equal($('#sconto').getAttribute('aria-invalid'), 'true');
     assert.match($('#sconto-e').textContent, /soglia massima/);
-    assert.equal($('#confirm').disabled, true, 'oltre soglia non si conferma');
     $('#gen-code').click();
     assert.equal($('#code-value'), null, 'oltre soglia non si genera il codice');
     assert.match($('#code-out').textContent, /Correggi lo sconto/);
@@ -350,61 +356,62 @@ test('assisted mode: sales configures with a capped discount, saves company data
     for (const c of [x.variabile, x.fee, x.canone, x.totale]) {
       for (const v of [c.listino, c.sconto, c.netto]) assert.ok(side.includes(D.eur(v)), D.eur(v));
     }
-    configure([]);
-    assert.equal($('#s2').hidden, false);
-    assert.equal($('#fs-lr').hidden, true, 'i dati del legale rappresentante non sono del commerciale');
-    assert.equal($('#fs-pw').hidden, true);
-    assert.equal($('#ragione').value, 'Ottica Riviera S.r.l.');
-    assert.equal($('[data-step="3"]').disabled, true);
-    assert.match($('[data-step="3"]').getAttribute('aria-label'), /riservato al legale rappresentante/);
-    $('#piva').value = '12AB';
-    submitData();
-    assert.equal($('#piva').getAttribute('aria-invalid'), 'true', 'controlli formali anche in modalità assistita');
-    $('#piva').value = '01234567890';
-    $('#piva').dispatchEvent(new w.Event('input', { bubbles: true }));
-    submitData();
+    $('#confirm').click();
+    $('[data-step="2"]').click();
+    assert.equal($('#s1').hidden, false);
+    assert.equal($('#s2').hidden, true, 'il commerciale non vede i dati dell\'azienda');
+    for (const f of ['ragione', 'piva', 'sdi', 'sede', 'pec', 'nome', 'cf', 'email', 'pw']) {
+      assert.equal($('#' + f).value, '', f);
+      assert.equal($('#' + f).disabled, true, f);
+    }
+    $('#f1').dispatchEvent(new w.Event('submit', { bubbles: true, cancelable: true }));
     assert.equal($('#s3').hidden, true, 'il commerciale non arriva al contratto');
     assert.equal($('#dl'), null);
     $('#submit').click();
     assert.equal($('#done').hidden, true, 'il commerciale non invia la richiesta');
+    $('#gen-code').click();
     const code = $('#code-value').textContent;
     assert.match(code, /^DTP-[A-Z0-9]{4}-[A-Z0-9]{4}$/);
+    assert.match($('#code-out').textContent, /ritrova servizi, quantità e sconto/);
     const saved = JSON.parse(w.localStorage.getItem('dtp-demo-config-codes'))[code];
+    assert.deepEqual(Object.keys(saved).sort(), ['at', 'commerciale', 'origine', 'qty', 'sconto'], 'solo servizi, quantità e sconto con l\'autore');
+    assert.deepEqual(saved.qty, { [D.services[2].id]: D.services[2].step });
     assert.equal(saved.sconto, 8);
     assert.equal(saved.origine, 'Commerciale');
     assert.equal(saved.commerciale, 'Marco Rinaldi');
-    assert.equal(saved.azienda.piva, '01234567890');
-    assert.equal(saved.azienda.nome, undefined, 'nessun dato del legale rappresentante nel codice');
   } finally { dom.window.close(); }
 });
 
-test('the legal representative restores the sales code with configuration, discount and company data and concludes alone', async () => {
+test('the legal representative restores the sales code with services, quantities and discount, finds the data step empty and concludes alone', async () => {
   const sales = setup({ role: 'com', query: '?cliente=Ottica%20Riviera%20S.r.l.' });
   let storage, code;
   try {
     sales.$('[data-act="inc"][data-i="0"]').click();
     sales.$('#sconto').value = '10';
     sales.$('#sconto').dispatchEvent(new sales.w.Event('input', { bubbles: true }));
-    sales.configure([]);
-    sales.submitData();
+    sales.$('#gen-code').click();
     code = sales.$('#code-value').textContent;
     storage = { 'dtp-demo-config-codes': sales.w.localStorage.getItem('dtp-demo-config-codes') };
   } finally { sales.dom.window.close(); }
 
-  const { w, $, dom, downloads, attach, submitData } = setup({ storage });
+  const { w, $, dom, downloads, attach, form } = setup({ storage });
   try {
     const D = w.DTP;
     $('#code-in').value = code;
     $('#code-apply').click();
-    assert.match($('#cat').textContent, /predisposta in modalità assistita dal commerciale Marco Rinaldi per Ottica Riviera S\.r\.l\., con sconto del 10%/);
+    assert.match($('#cat').textContent, /predisposta in modalità assistita dal commerciale Marco Rinaldi, con sconto del 10%/);
+    assert.doesNotMatch($('#cat').textContent, /Ottica Riviera/);
     const x = D.applySconto(D.price({ cert: D.byId('cert').step }), 10);
     assert.ok($('#side').textContent.includes(D.eur(x.totale.netto)));
     assert.match($('#confirm').textContent, new RegExp(D.eur(x.totale.netto).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
     $('#confirm').click();
-    assert.equal($('#ragione').value, 'Ottica Riviera S.r.l.', 'dati azienda dal codice');
-    for (const [key, value] of Object.entries(data)) if (!['ragione', 'piva', 'sdi', 'sede', 'pec'].includes(key)) $('#' + key).value = value;
-    $('#pw').value = $('#pw2').value = 'SecretNotInPDF123';
-    submitData();
+    assert.equal($('#s2').hidden, false);
+    for (const f of ['ragione', 'piva', 'sdi', 'sede', 'pec', 'nome', 'cognome', 'cf', 'tel', 'email', 'pw', 'pw2']) {
+      assert.equal($('#' + f).value, '', 'passo Dati vuoto: ' + f);
+      assert.equal($('#' + f).disabled, false, f);
+    }
+    assert.equal($('#demo-prefill').hidden, true);
+    form();
     assert.equal($('#s3').hidden, false);
     $('#dl').click();
     const text = await extract(downloads[0].blob, 'assisted-discount');

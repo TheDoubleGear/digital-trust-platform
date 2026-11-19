@@ -110,9 +110,11 @@ issue con etichetta `analisi` aperte: in caso di dubbio prevale la issue.
   all'inserimento; contratto con i soli servizi configurati, firmato fuori dalla pagina e caricato; verifica della
   firma, controfirma Postel, prima fattura pagata fuori dalla piattaforma, abilitazione del tenant e credenziali
   via e-mail solo dopo il pagamento.
-- Il primo acquisto è concluso solo dal legale rappresentante. Il commerciale può compilare V-02 in modalità
-  assistita, con sconto entro una soglia controllata dal sistema, e genera il codice per il legale rappresentante:
-  non carica il contratto e non invia la richiesta.
+- Il primo acquisto è concluso solo dal legale rappresentante. Il commerciale può preparare in V-02, in modalità
+  assistita, solo la configurazione di servizi e quantità con uno sconto entro una soglia controllata dal sistema,
+  e genera il codice per il legale rappresentante. Il codice contiene solo servizi, quantità e sconto. Lo sconto
+  decade se il legale rappresentante modifica la configurazione. Il commerciale non inserisce dati, non carica il
+  contratto e non invia la richiesta.
 - Modifiche dell'offerta: il delegato amministrativo avvia, il legale rappresentante approva (evidenza conservata),
   il delegato firma l'atto, Postel controfirma. Il legale rappresentante può avviare e firmare direttamente.
 - Il rinnovo non è tacito: alla scadenza senza rinnovo il servizio è disabilitato e i dati sono conservati per
