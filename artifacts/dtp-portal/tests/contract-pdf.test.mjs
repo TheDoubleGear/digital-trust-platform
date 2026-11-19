@@ -13,11 +13,15 @@ const data = {
   sede: 'Via Roma 1, 00100 Roma', pec: 'demo@pec.example.it', nome: 'Niccolò',
   cognome: 'D’Angelo', cf: 'RSSMRA80A01H501U', tel: '+393331234567', email: 'demo@example.it',
 };
-function setup() {
+// opts.role simula la sessione demo (es. 'com' per la modalità assistita), opts.query la query string,
+// opts.storage riprende il localStorage di un'altra scheda (i codici di configurazione).
+function setup(opts = {}) {
   const dom = new JSDOM(readFileSync(new URL('vetrina-V02-contratto.html', mockups), 'utf8'), {
-    runScripts: 'outside-only', url: 'https://example.test/mockups/vetrina-V02-contratto.html',
+    runScripts: 'outside-only', url: 'https://example.test/mockups/vetrina-V02-contratto.html' + (opts.query || ''),
   });
   const w = dom.window;
+  if (opts.storage) for (const [k, v] of Object.entries(opts.storage)) w.localStorage.setItem(k, v);
+  if (opts.role) w.DTPAuth = { getRole: () => opts.role };
   w.scrollTo = () => {};
   w.jspdf = { jsPDF };
   const downloads = [];
@@ -290,5 +294,139 @@ test('extremely long fields paginate without dropping the final content', async 
     assert.ok(text.includes('FINE INDIRIZZO'));
     assert.ok(text.includes('1.234,56'));
     assert.ok(text.includes('Nessuna firma acquisita'));
+  } finally { dom.window.close(); }
+});
+
+test('discount helpers apply the percentage to every component and block values above the threshold', () => {
+  const { w, dom } = setup();
+  try {
+    const D = w.DTP;
+    assert.equal(D.SOGLIA_SCONTO_STATO, 'SOGLIA_SCONTO = [DA DEFINIRE]');
+    const p = D.price({ cert: 1000, ver: 20000 });
+    const s = D.applySconto(p, 10);
+    assert.equal(s.variabile.listino, p.variabile);
+    assert.equal(s.variabile.sconto, Math.round(p.variabile * 10) / 100);
+    assert.equal(s.fee.netto, p.fee * 0.9);
+    assert.equal(s.canone.netto, p.canone * 0.9);
+    assert.equal(s.totale.netto, s.variabile.netto + s.fee.netto + s.canone.netto);
+    assert.equal(D.applySconto(p, 0).totale.netto, p.totale);
+    assert.deepEqual([D.checkSconto('7,5').value, D.checkSconto('').value], [7.5, 0]);
+    assert.equal(D.checkSconto(String(D.sogliaSconto)).ok, true);
+    assert.match(D.checkSconto(String(D.sogliaSconto + 0.5)).error, /soglia massima/);
+    assert.equal(D.checkSconto('abc').ok, false);
+  } finally { dom.window.close(); }
+});
+
+test('without the sales session V-02 has no assisted band and no discount field', () => {
+  const { $, dom } = setup({ role: 'lr', query: '?cliente=Prova' });
+  try {
+    assert.equal($('#assist-band').hidden, true);
+    assert.equal($('#discount-box').hidden, true);
+    assert.equal($('#fs-lr').hidden, false);
+  } finally { dom.window.close(); }
+});
+
+test('assisted mode: sales configures with a capped discount, saves company data in the code and cannot reach the contract', () => {
+  const { w, $, dom, configure, submitData } = setup({ role: 'com', query: '?cliente=Ottica%20Riviera%20S.r.l.' });
+  try {
+    const D = w.DTP;
+    assert.equal($('#assist-band').hidden, false);
+    assert.match($('#assist-band').textContent, /Modalità assistita · commerciale Marco Rinaldi/);
+    assert.match($('#assist-band').textContent, /Ottica Riviera S\.r\.l\./);
+    assert.match($('#sconto-h').textContent, /SOGLIA_SCONTO = \[DA DEFINIRE\]/);
+    $('[data-act="inc"][data-i="2"]').click();
+    const setSconto = v => { $('#sconto').value = v; $('#sconto').dispatchEvent(new w.Event('input', { bubbles: true })); };
+    setSconto(String(D.sogliaSconto + 5));
+    assert.equal($('#sconto').getAttribute('aria-invalid'), 'true');
+    assert.match($('#sconto-e').textContent, /soglia massima/);
+    assert.equal($('#confirm').disabled, true, 'oltre soglia non si conferma');
+    $('#gen-code').click();
+    assert.equal($('#code-value'), null, 'oltre soglia non si genera il codice');
+    assert.match($('#code-out').textContent, /Correggi lo sconto/);
+    setSconto('8');
+    assert.equal($('#sconto-e').textContent, '');
+    const x = D.applySconto(D.price({ [D.services[2].id]: D.services[2].step }), 8);
+    const side = $('#side').textContent;
+    for (const c of [x.variabile, x.fee, x.canone, x.totale]) {
+      for (const v of [c.listino, c.sconto, c.netto]) assert.ok(side.includes(D.eur(v)), D.eur(v));
+    }
+    configure([]);
+    assert.equal($('#s2').hidden, false);
+    assert.equal($('#fs-lr').hidden, true, 'i dati del legale rappresentante non sono del commerciale');
+    assert.equal($('#fs-pw').hidden, true);
+    assert.equal($('#ragione').value, 'Ottica Riviera S.r.l.');
+    assert.equal($('[data-step="3"]').disabled, true);
+    assert.match($('[data-step="3"]').getAttribute('aria-label'), /riservato al legale rappresentante/);
+    $('#piva').value = '12AB';
+    submitData();
+    assert.equal($('#piva').getAttribute('aria-invalid'), 'true', 'controlli formali anche in modalità assistita');
+    $('#piva').value = '01234567890';
+    $('#piva').dispatchEvent(new w.Event('input', { bubbles: true }));
+    submitData();
+    assert.equal($('#s3').hidden, true, 'il commerciale non arriva al contratto');
+    assert.equal($('#dl'), null);
+    $('#submit').click();
+    assert.equal($('#done').hidden, true, 'il commerciale non invia la richiesta');
+    const code = $('#code-value').textContent;
+    assert.match(code, /^DTP-[A-Z0-9]{4}-[A-Z0-9]{4}$/);
+    const saved = JSON.parse(w.localStorage.getItem('dtp-demo-config-codes'))[code];
+    assert.equal(saved.sconto, 8);
+    assert.equal(saved.origine, 'Commerciale');
+    assert.equal(saved.commerciale, 'Marco Rinaldi');
+    assert.equal(saved.azienda.piva, '01234567890');
+    assert.equal(saved.azienda.nome, undefined, 'nessun dato del legale rappresentante nel codice');
+  } finally { dom.window.close(); }
+});
+
+test('the legal representative restores the sales code with configuration, discount and company data and concludes alone', async () => {
+  const sales = setup({ role: 'com', query: '?cliente=Ottica%20Riviera%20S.r.l.' });
+  let storage, code;
+  try {
+    sales.$('[data-act="inc"][data-i="0"]').click();
+    sales.$('#sconto').value = '10';
+    sales.$('#sconto').dispatchEvent(new sales.w.Event('input', { bubbles: true }));
+    sales.configure([]);
+    sales.submitData();
+    code = sales.$('#code-value').textContent;
+    storage = { 'dtp-demo-config-codes': sales.w.localStorage.getItem('dtp-demo-config-codes') };
+  } finally { sales.dom.window.close(); }
+
+  const { w, $, dom, downloads, attach, submitData } = setup({ storage });
+  try {
+    const D = w.DTP;
+    $('#code-in').value = code;
+    $('#code-apply').click();
+    assert.match($('#cat').textContent, /predisposta in modalità assistita dal commerciale Marco Rinaldi per Ottica Riviera S\.r\.l\., con sconto del 10%/);
+    const x = D.applySconto(D.price({ cert: D.byId('cert').step }), 10);
+    assert.ok($('#side').textContent.includes(D.eur(x.totale.netto)));
+    assert.match($('#confirm').textContent, new RegExp(D.eur(x.totale.netto).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    $('#confirm').click();
+    assert.equal($('#ragione').value, 'Ottica Riviera S.r.l.', 'dati azienda dal codice');
+    for (const [key, value] of Object.entries(data)) if (!['ragione', 'piva', 'sdi', 'sede', 'pec'].includes(key)) $('#' + key).value = value;
+    $('#pw').value = $('#pw2').value = 'SecretNotInPDF123';
+    submitData();
+    assert.equal($('#s3').hidden, false);
+    $('#dl').click();
+    const text = await extract(downloads[0].blob, 'assisted-discount');
+    assert.ok(text.includes('Sconto sul prezzo complessivo: 10%'));
+    assert.ok(text.includes('Totale scontato, IVA esclusa: ' + D.eur(x.totale.netto)));
+    attach('firmato.pdf', 'application/pdf');
+    for (const i of [0, 1, 2]) $(`[data-ack="${i}"]`).click();
+    $('#submit').click();
+    assert.equal($('#done').hidden, false, 'il legale rappresentante invia la richiesta');
+  } finally { dom.window.close(); }
+});
+
+test('changing the configuration prepared by sales drops the discount with an explanation', () => {
+  const codes = { 'DTP-AAAA-BBBB': { qty: { cert: 500 }, sconto: 5, origine: 'Commerciale', commerciale: 'Marco Rinaldi' } };
+  const { w, $, dom } = setup({ storage: { 'dtp-demo-config-codes': JSON.stringify(codes) } });
+  try {
+    $('#code-in').value = 'DTP-AAAA-BBBB';
+    $('#code-apply').click();
+    assert.ok($('[data-testid="table-sconto"]'));
+    $('[data-act="inc"][data-i="0"]').click();
+    assert.equal($('[data-testid="table-sconto"]'), null);
+    assert.match($('#cat').textContent, /lo sconto del 5% vale solo per quella configurazione/);
+    assert.ok($('#side').textContent.includes(w.DTP.eur(w.DTP.price({ cert: 1000 }).totale)));
   } finally { dom.window.close(); }
 });
