@@ -4,10 +4,9 @@
 (function () {
   var D = window.DTP, e = D.esc, $ = function (id) { return document.getElementById(id); };
   var FIELDS = ['ragione', 'piva', 'sdi', 'sede', 'pec', 'nome', 'cognome', 'cf', 'tel', 'email'];
-  var COMPANY = ['ragione', 'piva', 'sdi', 'sede', 'pec'];
-  /* Modalità assistita (O2-09): riconosciuta dalla sessione demo del commerciale. Il commerciale compila
-     configurazione, sconto entro soglia e dati dell'azienda e genera il codice; contratto firmato e invio
-     restano al legale rappresentante. Il nome è quello dimostrativo del commerciale C/C1 nella console Postel. */
+  /* Modalità assistita (O2-09): riconosciuta dalla sessione demo del commerciale. Il commerciale interviene
+     solo nella configurazione: servizi, quantità e sconto entro soglia, poi genera il codice. Dati, contratto
+     firmato e invio restano al legale rappresentante. Il nome è quello dimostrativo del commerciale C/C1. */
   var AUTH = window.DTPAuth;
   var ASSIST = !!(AUTH && typeof AUTH.getRole === 'function' && AUTH.getRole() === 'com');
   var COMMERCIALE = 'Marco Rinaldi';
@@ -35,7 +34,7 @@
     data: null, pwOk: false, dirty: false,
     contract: null, downloaded: false, downloadErr: '', file: null, fileErr: '', acks: [false, false, false], invalidNote: false,
     submitted: false, ref: null,
-    sconto: 0, scontoErr: '', origin: null, scontoLost: 0, azienda: null
+    sconto: 0, scontoErr: '', origin: null, scontoLost: 0
   };
 
   /* ---------- carrello e dipendenze ---------- */
@@ -92,11 +91,11 @@
       var all = readCodes(), code = newCode();
       while (all[code]) code = newCode();
       var rec = { qty: JSON.parse(JSON.stringify(S.qty)), at: new Date().toISOString() };
-      /* Il codice del commerciale porta con sé sconto, origine e, se compilati, i dati dell'azienda. */
-      var by = ASSIST ? { commerciale: COMMERCIALE, cliente: CLIENTE } : S.origin;
-      if (by) { rec.origine = 'Commerciale'; rec.commerciale = by.commerciale; if (by.cliente) rec.cliente = by.cliente; }
+      /* Il codice contiene solo servizi, quantità ed eventuale sconto con il commerciale che l'ha applicato:
+         nessun dato dell'azienda o del legale rappresentante, nessuna password. */
+      var by = ASSIST ? { commerciale: COMMERCIALE } : S.origin;
+      if (by) { rec.origine = 'Commerciale'; rec.commerciale = by.commerciale; }
       if (by && S.sconto > 0) rec.sconto = S.sconto;
-      if (ASSIST && S.azienda) rec.azienda = JSON.parse(JSON.stringify(S.azienda));
       all[code] = rec;
       localStorage.setItem(CODE_KEY, JSON.stringify(all));
       S.code = { value: code, stale: false };
@@ -124,17 +123,20 @@
     cartChanged();
     var sc = D.checkSconto(saved.commerciale && saved.sconto > 0 ? String(saved.sconto) : '');
     S.sconto = sc.ok ? sc.value : 0; S.scontoErr = ''; S.scontoLost = 0;
-    S.origin = saved.commerciale ? { commerciale: String(saved.commerciale), cliente: saved.cliente ? String(saved.cliente) : '', sconto: S.sconto, code: v } : null;
+    S.origin = saved.commerciale ? { commerciale: String(saved.commerciale), sconto: S.sconto, code: v } : null;
     if (ASSIST) { $('sconto').value = S.sconto ? D.num(S.sconto) : ''; setScontoMsg(); }
-    if (saved.azienda && typeof saved.azienda === 'object') {
-      COMPANY.forEach(function (f) { if (typeof saved.azienda[f] === 'string') { $(f).value = saved.azienda[f]; fieldError(f, ''); } });
-      if (S.data) { S.data = null; invalidate(); }
-      if (ASSIST) { S.azienda = {}; COMPANY.forEach(function (f) { S.azienda[f] = val(f); }); }
-    }
+    else clearData();
     S.restored = v; S.code = null;
     $('code-in').value = '';
     render();
     $('t1').focus();
+  }
+  /* Il codice non porta dati: chi lo inserisce trova il passo Dati vuoto e lo compila da sé. */
+  function clearData() {
+    FIELDS.concat(['pw', 'pw2']).forEach(function (f) { $(f).value = ''; fieldError(f, ''); });
+    $('errsum').hidden = true; $('demo-prefill').hidden = true; $('pw-ok').hidden = true;
+    S.pwOk = false;
+    if (S.data) { S.data = null; invalidate(); }
   }
   $('gen-code').addEventListener('click', function () { if (!S.submitted) generateCode(); });
   $('code-apply').addEventListener('click', function () { if (!S.submitted) restoreCode(); });
@@ -161,9 +163,7 @@
     if (!/^\+?[\d\s]+$/.test(v.tel) || digits.length < 9 || digits.length > 15) er.tel = 'Inserisci un numero di cellulare valido.';
     if (!EM.test(v.email)) er.email = 'Inserisci un indirizzo e-mail valido.';
     var pw = $('pw').value, pw2 = $('pw2').value;
-    if (ASSIST) {
-      Object.keys(er).forEach(function (k) { if (COMPANY.indexOf(k) < 0) delete er[k]; });
-    } else if (!(S.pwOk && !pw && !pw2)) {
+    if (!(S.pwOk && !pw && !pw2)) {
       if (!pw) er.pw = 'Scegli una password.';
       else if (pw.length < 10 || !/[A-Z]/.test(pw) || !/[a-z]/.test(pw) || !/\d/.test(pw)) er.pw = 'Almeno 10 caratteri, con maiuscola, minuscola e numero.';
       if (!er.pw && pw2 !== pw) er.pw2 = 'Le due password non coincidono.';
@@ -179,7 +179,7 @@
     if (bad) d.push(f + '-e'); if (d.length) $(f).setAttribute('aria-describedby', d.join(' ')); else $(f).removeAttribute('aria-describedby');
   }
   function showErrors(er) {
-    (ASSIST ? COMPANY : FIELDS.concat(['pw', 'pw2'])).forEach(function (f) { fieldError(f, er[f]); });
+    FIELDS.concat(['pw', 'pw2']).forEach(function (f) { fieldError(f, er[f]); });
     var keys = Object.keys(er), box = $('errsum');
     if (!keys.length) { box.hidden = true; return; }
     box.innerHTML = '<strong>Controlla ' + (keys.length === 1 ? 'il campo evidenziato' : 'i ' + keys.length + ' campi evidenziati') + '</strong><ul>' + keys.map(function (k) { return '<li><a href="#' + k + '">' + LABELS[k] + ': ' + e(er[k]) + '</a></li>'; }).join('') + '</ul>';
@@ -189,7 +189,7 @@
   // Controllo formale al momento dell'inserimento: alla perdita del focus di ogni campo.
   $('f1').addEventListener('focusout', function (ev) {
     var id = ev.target.id;
-    if (!LABELS[id] || S.submitted || (ASSIST && COMPANY.indexOf(id) < 0)) return;
+    if (!LABELS[id] || S.submitted) return;
     if ((id === 'pw' || id === 'pw2') && S.pwOk && !$('pw').value && !$('pw2').value) return;
     if (id === 'pw' && !$('pw2').value) { fieldError('pw', check().er.pw); return; }
     fieldError(id, check().er[id]);
@@ -200,11 +200,6 @@
     var r = check();
     showErrors(r.er);
     if (Object.keys(r.er).length) return;
-    if (ASSIST) {
-      S.azienda = {}; COMPANY.forEach(function (f) { S.azienda[f] = r.v[f]; });
-      generateCode();
-      return;
-    }
     var changed = !S.data || FIELDS.some(function (f) { return S.data[f] !== r.v[f]; });
     if (changed && S.data) invalidate();
     S.data = r.v; S.pwOk = true;
@@ -216,7 +211,6 @@
     S.dirty = true;
     var id = ev.target.id;
     if (ev.target.getAttribute('aria-invalid') === 'true') fieldError(id, '');
-    if (ASSIST) { if (S.azienda) { S.azienda = null; if (S.code) S.code.stale = true; render(); } return; }
     if (id === 'pw' || id === 'pw2') { if (S.pwOk) { S.pwOk = false; $('pw-ok').hidden = true; S.data = null; invalidate(); render(); } return; }
     if (S.data && S.data[id] !== undefined) { S.data = null; invalidate(); render(); }
   });
@@ -225,8 +219,8 @@
   function canGo(n) {
     if (S.submitted) return false;
     if (n === 1) return true;
-    if (n === 2) return S.configured && items().length > 0;
     if (ASSIST) return false;
+    if (n === 2) return S.configured && items().length > 0;
     return S.configured && items().length > 0 && !!S.data;
   }
   function go(n) {
@@ -237,11 +231,11 @@
   document.addEventListener('click', function (ev) { var b = ev.target.closest('[data-go]'); if (b) go(+b.dataset.go); });
 
   function renderStepper() {
-    var L = ASSIST ? [['Servizi', 'Configurazione, sconto e codice'], ['Dati', 'Azienda, facoltativi'], ['Contratto', 'A cura del legale rappresentante']]
+    var L = ASSIST ? [['Servizi', 'Configurazione, sconto e codice'], ['Dati', 'A cura del legale rappresentante'], ['Contratto', 'A cura del legale rappresentante']]
       : [['Servizi', 'Configurazione e carrello'], ['Dati', 'Azienda, rappresentante, password'], ['Contratto', 'Bozza, firma, caricamento']];
     $('stepper').innerHTML = L.map(function (l, i) {
       var n = i + 1, cur = !S.submitted && S.step === n, done = S.submitted || (n === 1 ? S.configured && items().length > 0 : n === 2 ? !!S.data && S.configured : false);
-      var why = !canGo(n) && !S.submitted ? (n === 2 ? ' (conferma prima la configurazione)' : ASSIST ? ' (riservato al legale rappresentante)' : ' (completa prima configurazione e dati)') : '';
+      var why = !canGo(n) && !S.submitted ? (ASSIST ? ' (riservato al legale rappresentante)' : n === 2 ? ' (conferma prima la configurazione)' : ' (completa prima configurazione e dati)') : '';
       return '<li><button type="button" class="' + (done ? 'done' : '') + '" data-step="' + n + '"' + (cur ? ' aria-current="step"' : '') + (canGo(n) ? '' : ' disabled') + ' aria-label="Passo ' + n + ': ' + l[0] + (done ? ', completato' : '') + why + '"><span class="dot" aria-hidden="true">' + (done && !cur ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>' : n) + '</span><span class="l"><b>' + l[0] + '</b><span>' + l[1] + '</span></span></button></li>';
     }).join('');
   }
@@ -253,8 +247,8 @@
     if (S.restored) {
       var o = S.origin;
       h += '<div class="okbox" role="status" style="margin-bottom:14px"><span>Configurazione ripristinata dal codice <strong>' + e(S.restored) + '</strong>' +
-        (o ? ', predisposta in modalità assistita dal commerciale ' + e(o.commerciale) + (o.cliente ? ' per ' + e(o.cliente) : '') + (o.sconto ? ', con sconto del ' + D.num(o.sconto) + '% sul prezzo complessivo' : '') : '') +
-        '. Controllala e conferma per proseguire.' + (o && !ASSIST ? ' Completi tu i dati, firmi il contratto e invii la richiesta.' : '') + '</span></div>';
+        (o ? ', predisposta in modalità assistita dal commerciale ' + e(o.commerciale) + (o.sconto ? ', con sconto del ' + D.num(o.sconto) + '% sul prezzo complessivo' : '') : '') +
+        (ASSIST ? '. Puoi modificarla e generare un nuovo codice.' : '. Controllala e conferma per proseguire.' + (o ? ' Inserisci tu i dati di azienda e legale rappresentante, firmi il contratto e invii la richiesta.' : '')) + '</span></div>';
     }
     if (S.scontoLost && !ASSIST) h += '<div class="info" role="status" style="margin-bottom:14px">Hai cambiato la configurazione predisposta dal commerciale: lo sconto del ' + D.num(S.scontoLost) + '% vale solo per quella configurazione e non si applica più. Per recuperarlo reinserisci il codice ricevuto.</div>';
     D.families.forEach(function (f) {
@@ -280,16 +274,15 @@
     $('confirm').textContent = n ? 'Conferma la configurazione · ' + D.eur(total()) : 'Conferma la configurazione';
     $('confirm').title = !n ? 'Aggiungi almeno un servizio al carrello' : S.scontoErr ? 'Correggi lo sconto' : '';
   }
-  /* Codice generato: nel passo 1 sotto il catalogo, nel passo 2 (modalità assistita) sotto i dati dell'azienda. */
+  /* Codice generato: nel passo 1, sotto il catalogo. */
   function renderCode() {
     var c = '';
     if (S.codeErr) c = '<div class="ferr" role="alert">' + e(S.codeErr) + '</div>';
     else if (S.code) c = '<div class="code" role="status"><span>Codice di configurazione</span><output id="code-value">' + e(S.code.value) + '</output><button type="button" class="btn btn-o" id="code-copy">Copia il codice</button>' +
       '<p>' + (S.code.stale ? '<strong style="color:#855800">La configurazione è cambiata dopo la generazione: il codice conserva quella precedente. Generane uno nuovo per salvare quella attuale.</strong> ' : '') +
-      (ASSIST ? 'Consegna il codice al legale rappresentante: inserendolo in questa pagina ritrova configurazione e sconto' + (S.azienda ? ' e i dati dell\'azienda' : '') + ', poi completa da sé dati, firma del contratto e invio della richiesta. ' : '') +
+      (ASSIST ? 'Consegna il codice al legale rappresentante: inserendolo in questa pagina ritrova servizi, quantità e sconto, poi inserisce i dati di azienda e legale rappresentante, firma il contratto e invia la richiesta. Il codice non contiene dati dell\'azienda. ' : '') +
       'Il codice registra la configurazione presente al momento della generazione e permette di riprendere il percorso. Validità del codice: [DA DEFINIRE]. Nel prototipo il codice è salvato solo in questo browser.</p></div>';
     $('code-out').innerHTML = S.step === 1 ? c : '';
-    $('code-out2').innerHTML = ASSIST && S.step === 2 ? c : '';
     var cp = $('code-copy');
     if (cp) cp.onclick = function () {
       var fail = function () { cp.textContent = 'Copia non riuscita: selezionalo e copialo'; };
@@ -483,7 +476,7 @@
     $('dlg-ok').focus();
   }
 
-  /* ---------- modalità assistita: banda, sconto e passo dati ridotto all'azienda ---------- */
+  /* ---------- modalità assistita: banda e sconto; il percorso del commerciale si ferma alla configurazione ---------- */
   function setScontoMsg() {
     $('sconto').setAttribute('aria-invalid', S.scontoErr ? 'true' : 'false');
     $('sconto-e').textContent = S.scontoErr;
@@ -493,18 +486,16 @@
   if (ASSIST) {
     var band = $('assist-band');
     band.innerHTML = '<strong>Modalità assistita · commerciale ' + e(COMMERCIALE) + '</strong>' +
-      '<span>' + (CLIENTE ? 'Per <b>' + e(CLIENTE) + '</b>. ' : '') + 'Configuri servizi e quantità del catalogo, applichi uno sconto entro la soglia e, se vuoi, compili i dati dell\'azienda. Non carichi il contratto firmato e non invii la richiesta: generi il codice di configurazione da consegnare al legale rappresentante, che conclude il primo acquisto.</span>' +
+      '<span>' + (CLIENTE ? 'Per <b>' + e(CLIENTE) + '</b>' + (/\.$/.test(CLIENTE) ? ' ' : '. ') : '') + 'In modalità assistita prepari la configurazione e lo sconto; dati e contratto li completa il legale rappresentante. Scegli servizi e quantità, applichi uno sconto entro la soglia e generi il codice di configurazione da consegnargli: contiene solo servizi, quantità e sconto. Non inserisci dati, non carichi il contratto firmato e non invii la richiesta.</span>' +
       '<span><a href="postel-O2-portafoglio.html">Torna a Portafoglio e contratti</a></span>';
     band.hidden = false;
     $('discount-box').hidden = false;
-    $('fs-lr').hidden = true; $('fs-pw').hidden = true;
-    if (CLIENTE) $('ragione').value = CLIENTE;
-    $('demo-prefill').textContent = 'Dati fittizi precompilati temporaneamente per esplorare il percorso' + (CLIENTE ? ', con la ragione sociale indicata in O2-09' : '') + '. Puoi modificarli prima di salvarli nel codice.';
-    FIELDS.filter(function (f) { return COMPANY.indexOf(f) < 0; }).concat(['pw', 'pw2']).forEach(function (f) { $(f).disabled = true; });
-    $('t2').textContent = 'Dati dell\'azienda';
-    $('t2').nextElementSibling.textContent = 'Facoltativi in modalità assistita: se li compili vengono salvati nel codice di configurazione e il legale rappresentante li ritrova. I dati del legale rappresentante, la password, il contratto e l\'invio sono a cura del legale rappresentante.';
-    $('data-submit').textContent = 'Salva i dati nel codice';
-    $('gen-code').textContent = 'Genera codice per il legale rappresentante';
+    /* Nessun dato in modalità assistita: il modulo dei dati resta vuoto e non raggiungibile. */
+    FIELDS.concat(['pw', 'pw2']).forEach(function (f) { $(f).value = ''; $(f).disabled = true; });
+    $('demo-prefill').hidden = true;
+    $('confirm').hidden = true;
+    $('gen-code').className = 'btn btn-p btn-lg';
+    $('gen-code').textContent = 'Genera codice di configurazione';
     setScontoMsg();
     $('sconto').addEventListener('input', function () {
       var r = D.checkSconto($('sconto').value);
