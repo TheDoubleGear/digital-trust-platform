@@ -15,6 +15,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
+<script src="dtp-catalogo.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -98,16 +99,16 @@ a{color:#0047BB}a:hover{color:#003A99}
 <section class="dtp-card" aria-labelledby="titolo-offerta" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
 <div>
 <h2 id="titolo-offerta" style="margin: 0; font-size: 18px; font-weight: 600">Servizi e quantità configurati</h2>
-<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Allegato A del contratto · quantità per il periodo contrattuale · canone periodico € 4.975 a trimestre</p>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Allegato A del contratto · quantità per il periodo contrattuale · {{offerLine}}</p>
 </div>
 <div style="overflow-x: auto">
-<div role="table" aria-label="Servizi e quantità configurati" style="min-width: 520px; font-size: 14px">
-<div role="row" style="display: grid; grid-template-columns: 2.4fr 1.6fr 1fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid #D9E1EC; color: #4D5762; font-size: 12px">
-<span role="columnheader">Servizio</span><span role="columnheader">Famiglia</span><span role="columnheader" style="text-align: right">Quantità</span>
+<div role="table" aria-label="Servizi e quantità configurati" style="min-width: 620px; font-size: 14px">
+<div role="row" style="display: grid; grid-template-columns: 2.4fr 1.6fr 1fr 1fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid #D9E1EC; color: #4D5762; font-size: 12px">
+<span role="columnheader">Servizio</span><span role="columnheader">Famiglia</span><span role="columnheader" style="text-align: right">Quantità</span><span role="columnheader" style="text-align: right">Componente variabile</span>
 </div>
 <sc-for list="{{config}}" as="c" hint-placeholder-count="9">
-<div role="row" style="display: grid; grid-template-columns: 2.4fr 1.6fr 1fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EAEFF5">
-<span role="cell" style="font-weight: 500">{{c.name}}</span><span role="cell" style="color: #4D5762">{{c.family}}</span><span role="cell" style="text-align: right; font-weight: 600">{{c.qty}}</span>
+<div role="row" style="display: grid; grid-template-columns: 2.4fr 1.6fr 1fr 1fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EAEFF5">
+<span role="cell" style="font-weight: 500">{{c.name}}</span><span role="cell" style="color: #4D5762">{{c.family}}</span><span role="cell" style="text-align: right; font-weight: 600">{{c.qty}}</span><span role="cell" style="text-align: right">{{c.amount}}</span>
 </div>
 </sc-for>
 </div>
@@ -300,7 +301,7 @@ class Component extends DCLogic {
     });
     var isLr = P === 'lr';
     var tiles = [
-      { label: 'Offerta configurata', value: '9 servizi', sub: '€ 19.900 / anno · canone periodico e componente variabile', color: '#1A1C1E' },
+      { label: 'Offerta configurata', value: '9 servizi', sub: DTP.eur(DTP.esempio.contratto().totale) + ' / anno · componente variabile e canone periodico', color: '#1A1C1E' },
       { label: 'Scadenza', value: '28 feb 2027', sub: 'tra 108 giorni', color: '#1A1C1E' },
       { label: 'Decisione sul rinnovo', value: 'entro 30 nov', sub: 'modalità di rinnovo: [DA DEFINIRE]', color: '#B03A0B' },
       { label: 'Upgrade in attivazione', value: '1', sub: 'upgrade +500 Nuovi Certificati FEA', color: '#1A1C1E' }
@@ -358,7 +359,8 @@ class Component extends DCLogic {
     return {
       who: WHO[P], subtabs: subtabs, money: money, noMoney: !money,
       tiles: tiles, actions: actions,
-      config: [['Nuovi Certificati FEA', 'Firma elettronica', 2500], ['Apposizioni FEA con COD', 'Firma elettronica', 12500], ['Identificazioni Full Prospect', 'Identità e verifica', 5000], ['Full Prospect con funnel completato', 'Identità e verifica', 4000], ['Identificazioni Proprietarie', 'Identità e verifica', 2500], ['Verifiche Contatti', 'Identità e verifica', 25000], ['Doc Composition Contratti', 'Contratti e documenti', 5000], ['Contratti', 'Contratti e documenti', 5000], ['Fatture Elettroniche', 'Fatturazione', 6000]].map(function (c) { return { name: c[0], family: c[1], qty: c[2].toLocaleString('it-IT') }; }),
+      config: DTP.price(DTP.esempio.config).lines.map(function (l) { return { name: l.name, family: l.family, qty: l.qty.toLocaleString('it-IT'), amount: DTP.eur(l.amount) }; }),
+      offerLine: (function (c) { return 'componente variabile ' + DTP.eur(c.variabile) + ' · canone periodico ' + DTP.eur(c.canone) + ' (' + DTP.SEGNAPOSTO + ')'; })(DTP.esempio.contratto()),
       actionsNote: isLr ? 'Come legale rappresentante firmi direttamente ogni operazione.' : 'Le tue richieste arrivano al legale rappresentante per la presa visione; dopo l\'autorizzazione firmi tu l\'atto di modifica.',
       flow: [
         { n: '1', what: 'Richiesta', who: 'delegato amministrativo' },

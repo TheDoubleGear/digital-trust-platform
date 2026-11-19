@@ -364,3 +364,24 @@ test('archiviazione bloccata nelle pagine reali: Continua e Concludi non navigan
   assert.deepEqual(JSON.parse(ps02.w.localStorage.getItem('dtp-demo-lr-setup')), { delegates: true, done: false });
   assert.equal(click(ps02, 'a[href="' + PS01 + '"]'), false, 'Indietro resta disponibile');
 });
+
+test('dati del cliente di esempio coerenti tra le pagine (valore, upgrade in corso, overage previsto)', () => {
+  const pages = {
+    H: openPage(H, { role: 'lr', setup: done }),
+    M4: openPage('cliente-M4-fatture.html', { role: 'lr', setup: done }),
+    M5: openPage('cliente-M5-contratto.html', { role: 'lr', setup: done }),
+    O5: openPage(O5, { role: 'cdg' }),
+  };
+  const D = pages.H.w.DTP, E = D.esempio, c = E.contratto();
+  assert.equal(c.totale, c.variabile + c.canone);
+  assert.equal(c.fee, 0, 'il contratto in corso è un rinnovo: niente fee di attivazione');
+  const value = D.eur(c.totale), upgrade = D.eur(E.upgradeInCorsoPrezzo()), overage = D.eur(E.overageTotale());
+  for (const name of ['H', 'M5', 'O5']) assert.ok(pages[name].text.includes(value), name + ' valore annuo');
+  assert.ok(pages.M4.text.includes(D.eur(E.trimestre())), 'M4 rata trimestrale della componente variabile');
+  assert.ok(pages.M4.text.includes(D.eur(c.canone)), 'M4 canone periodico');
+  for (const name of ['H', 'M4', 'O5']) assert.ok(pages[name].text.includes(upgrade), name + ' upgrade in corso');
+  for (const name of ['H', 'M4', 'O5']) assert.ok(pages[name].text.includes(overage), name + ' overage previsto');
+  for (const [name, p] of Object.entries(pages)) {
+    assert.ok(!/\b(Base|Medium|Pro|Enterprise)\b/.test(p.text.replace(/Identificazioni Proprietarie/g, '')), name + ' senza livelli di offerta');
+  }
+});

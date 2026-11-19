@@ -15,6 +15,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
+<script src="dtp-catalogo.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -426,7 +427,7 @@ class Component extends DCLogic {
       'In linea': ['#EAEFF5', '#3A424C'], 'Sotto-utilizzo': ['#E5EFFF', '#0047BB']
     };
     var cRaw = [
-      ['Assicurazioni Aurora S.p.A.', '€ 19.900', 'M. Rinaldi', '28/02/2027', 124, 'Nuovi Certificati FEA', '105,6%', '1,60', 'Esaurito (17/10)', 82, 'Overage', 'Proporre upgrade FEA e identificazioni'],
+      ['Assicurazioni Aurora S.p.A.', DTP.eur(DTP.esempio.contratto().totale), 'M. Rinaldi', '28/02/2027', 124, 'Nuovi Certificati FEA', '105,6%', '1,60', 'Esaurito (17/10)', 82, 'Overage', 'Proporre upgrade FEA e identificazioni'],
       ['Logistica Adriatica S.r.l.', '€ 5.400', 'S. Greco', '31/03/2027', 155, 'Fatture Elettroniche', '112%', '1,95', 'Esaurito (02/10)', 74, 'Overage', 'Proporre upgrade Fatture Elettroniche'],
       ['Banca Levante S.p.A.', '€ 72.300', 'L. Conti', '31/12/2026', 65, 'Ident. Full Prospect', '94%', '1,31', '02/12/2026', 78, 'Upsell', 'Anticipare il rinnovo con upgrade'],
       ['Immobiliare Tevere S.r.l.', '€ 6.200', 'M. Rinaldi', '20/12/2026', 54, 'Apposizioni FEA con COD', '88%', '1,09', '05/12/2026', 69, 'Upsell', 'Proporre upgrade'],
@@ -469,9 +470,9 @@ class Component extends DCLogic {
     var pratiche = [
       ['p1', 'Studio Legale Martini', 'Nuovo contratto · 3 servizi configurati', 'firmato dal LR oggi alle 10:12', 'Vetrina', 'sign'],
       ['p2', 'Ottica Riviera S.r.l.', 'Nuovo contratto · offerta componibile, 6 servizi', 'ordine predisposto da S. Greco', 'Commerciale', 'client'],
-      ['p3', 'Assicurazioni Aurora S.p.A.', 'Upgrade a Pro dal rinnovo', 'richiesto dal delegato amministrativo', 'Portale cliente', 'review'],
+      ['p3', 'Assicurazioni Aurora S.p.A.', 'Upgrade Identificazioni Full Prospect: +3.000 unità', 'richiesto dal delegato amministrativo', 'Portale cliente', 'review'],
       ['p4', 'Energia Verde Soc. Coop.', 'Recesso al 10/11/2026', 'disattivazione dei servizi alla data', 'Portale cliente', 'conguaglio'],
-      ['p5', 'Logistica Adriatica S.r.l.', 'Upgrade a Medium', 'controfirmato il 26 ott 2026', 'Portale cliente', 'active']
+      ['p5', 'Logistica Adriatica S.r.l.', 'Upgrade Verifiche Contatti: +10.000 unità', 'controfirmato il 26 ott 2026', 'Portale cliente', 'active']
     ].map(function (r) {
       var k = signedNow.indexOf(r[0]) >= 0 ? 'active' : r[5], s = PS[k], can = k === 'sign' && P === 'com';
       return { client: r[1], what: r[2], detail: k === 'active' && r[5] === 'sign' ? 'controfirmato ora: servizi attivi, accesso inviato al LR' : r[3], origin: r[4], state: s[0], bg: s[1], fg: s[2],

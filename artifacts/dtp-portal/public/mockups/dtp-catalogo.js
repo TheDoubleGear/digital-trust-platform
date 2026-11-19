@@ -50,6 +50,35 @@
       return { id: x.id, name: x.name, missing: miss };
     }).filter(function (x) { return x.missing.length; });
   }
+  /* Cliente di esempio della demo (Assicurazioni Aurora S.p.A.): unica fonte degli importi mostrati nelle pagine.
+     consumi[id] = [usato ad oggi, consumo previsto a fine periodo, stato]. */
+  var esempio = {
+    cliente: 'Assicurazioni Aurora S.p.A.',
+    config: { cert: 2500, app: 12500, fp: 5000, fun: 4000, pro: 2500, ver: 25000, doc: 5000, con: 5000, fat: 6000 },
+    consumi: {
+      cert: [2640, 4302, 'out'], fp: [4610, 7505, 'crit'], fun: [3320, 5402, 'warn'], ver: [19850, 32307, 'warn'],
+      doc: [3610, 5871, 'warn'], app: [8920, 14514, 'warn'], con: [3480, 5659, 'ok'], pro: [1140, 1857, 'ok'], fat: [2380, 3869, 'ok']
+    },
+    upgradeInCorso: { id: 'cert', qty: 500, ordine: 'ORD-2026-1187' }
+  };
+  // Valore annuo del contratto in corso (rinnovo: senza fee di attivazione) e primo contratto (con fee).
+  esempio.contratto = function () { return price(esempio.config, { fee: false }); };
+  esempio.primoContratto = function () { return price(esempio.config); };
+  // Rata trimestrale della componente variabile.
+  esempio.trimestre = function () { return round(esempio.contratto().variabile / 4); };
+  // Overage per servizio: unità oltre la quantità configurata, ad oggi e a fine periodo, al prezzo unitario di listino.
+  esempio.overage = function () {
+    return services.map(function (s) {
+      var c = esempio.consumi[s.id], q = esempio.config[s.id] || 0;
+      var ora = Math.max(0, c[0] - q), fine = Math.max(0, c[1] - q);
+      return { id: s.id, name: s.name, unit: s.unit, ora: ora, oraEur: round(ora * s.unit), fine: fine, fineEur: round(fine * s.unit) };
+    });
+  };
+  esempio.overageTotale = function () { return round(esempio.overage().reduce(function (a, o) { return a + o.fineEur; }, 0)); };
+  esempio.overageOra = function () { return round(esempio.overage().reduce(function (a, o) { return a + o.oraEur; }, 0)); };
+  esempio.prezzoUpgrade = function (id, qty) { return round(qty * byId(id).unit); };
+  esempio.upgradeInCorsoPrezzo = function () { return esempio.prezzoUpgrade(esempio.upgradeInCorso.id, esempio.upgradeInCorso.qty); };
+
   function round(n) { return Math.round(n * 100) / 100; }
   function grp(n, opt) { return n.toLocaleString('it-IT', Object.assign({ useGrouping: 'always' }, opt || {})); }
   function eur(n) { return '€ ' + grp(n, { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); }
@@ -60,7 +89,7 @@
     services: services, byId: byId,
     families: ['Identità e verifica', 'Firma elettronica', 'Contratti e documenti', 'Fatturazione'],
     feeAttivazione: feeAttivazione, canonePeriodico: canonePeriodico, periodicita: periodicita, SEGNAPOSTO: SEGNAPOSTO,
-    lines: lines, price: price, missingDeps: missingDeps,
+    lines: lines, price: price, missingDeps: missingDeps, esempio: esempio,
     eur: eur, num: num, unit3: unit3, esc: esc
   };
 })();

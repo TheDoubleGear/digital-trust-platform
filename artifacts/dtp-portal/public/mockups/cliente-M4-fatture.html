@@ -15,6 +15,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
+<script src="dtp-catalogo.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -80,7 +81,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div class="dtp-hero" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
 <div>
 <h1 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em">Fatture</h1>
-<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">Contratto DTP-2026-0418 · fee di attivazione, canone periodico a trimestri anticipati, componente variabile e overage a fine mese</p>
+<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">Contratto DTP-2026-0418 · fee di attivazione, canone periodico, componente variabile a trimestri anticipati e overage a fine mese</p>
 </div>
 <button class="dtp-btn dtp-btn-o" type="button" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1A1C1E; cursor: pointer">Scarica tutte (ZIP)</button>
 </div>
@@ -170,7 +171,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <section class="dtp-card" aria-labelledby="titolo-overage" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
 <div>
-<h2 id="titolo-overage" style="margin: 0; font-size: 18px; font-weight: 600">Overage: € 420 maturati finora, € 10.703 previsti a fine periodo</h2>
+<h2 id="titolo-overage" style="margin: 0; font-size: 18px; font-weight: 600">Overage: {{ovNow}} maturati finora, {{ovEnd}} previsti a fine periodo</h2>
 <p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Unità oltre la quantità inclusa per servizio · previsione al ritmo degli ultimi 30 giorni, senza upgrade</p>
 </div>
 <a class="dtp-btn dtp-btn-p" href="cliente-H-catalogo.html" style="min-height: 44px; padding: 0 20px; border-radius: 999px; background: #0047BB; color: #FFFFFF; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Riduci l'overage con un upgrade</a>
@@ -199,9 +200,9 @@ a{color:#0047BB}a:hover{color:#003A99}
 <span role="rowheader" style="padding: 12px 10px; text-align: left">Totale</span>
 <span role="cell" style="padding: 12px 10px"></span>
 <span role="cell" style="padding: 12px 10px"></span>
-<span role="cell" style="padding: 12px 10px">€ 420</span>
+<span role="cell" style="padding: 12px 10px">{{ovNow}}</span>
 <span role="cell" style="padding: 12px 10px"></span>
-<span role="cell" style="padding: 12px 10px; color: #B03A0B">€ 10.703</span>
+<span role="cell" style="padding: 12px 10px; color: #B03A0B">{{ovEnd}}</span>
 </div>
 </div>
 </div>
@@ -322,37 +323,32 @@ class Component extends DCLogic {
       var on = money && i === 3;
       return { label: t[0], href: t[1], current: on ? 'page' : 'false', weight: on ? 600 : 500, color: on ? '#0047BB' : '#4D5762', line: on ? '#0047BB' : 'transparent' };
     });
+    /* Importi del cliente di esempio calcolati da DTP.esempio (dtp-catalogo.js). */
+    var D = window.DTP, E = D.esempio, ctr = E.contratto(), trim = E.trimestre(), ovNow = E.overageOra();
     var tiles = [
-      { label: 'Fatturato nel periodo', value: '€ 15.345', sub: '3 fatture di canone e 1 di overage', color: '#1A1C1E' },
-      { label: 'Da pagare', value: paid ? '€ 0' : '€ 420', sub: paid ? 'pagamento ricevuto, in riconciliazione' : 'overage di ottobre · scadenza 30 nov 2026', color: paid ? '#1A6B4A' : '#B03A0B' },
-      { label: 'In emissione', value: '€ 1.500', sub: 'upgrade +500 Nuovi Certificati FEA', color: '#855800' },
-      { label: 'Prossima fattura di canone periodico', value: '1 dic 2026', sub: '€ 4.975 · 4° trimestre (dic–feb)', color: '#1A1C1E' }
+      { label: 'Fatturato nel periodo', value: D.eur(ctr.canone + 3 * trim + ovNow), sub: '1 fattura di canone, 3 di componente variabile e 1 di overage', color: '#1A1C1E' },
+      { label: 'Da pagare', value: paid ? '€ 0' : D.eur(ovNow), sub: paid ? 'pagamento ricevuto, in riconciliazione' : 'overage di ottobre · scadenza 30 nov 2026', color: paid ? '#1A6B4A' : '#B03A0B' },
+      { label: 'In emissione', value: D.eur(E.upgradeInCorsoPrezzo()), sub: 'upgrade +500 Nuovi Certificati FEA', color: '#855800' },
+      { label: 'Prossima fattura di componente variabile', value: '1 dic 2026', sub: D.eur(trim) + ' · 4° trimestre (dic–feb)', color: '#1A1C1E' }
     ];
     var IS = { paid: ['Pagata', '#E3F3EA', '#1A6B4A'], soon: ['In emissione', '#FDF1D6', '#855800'], topay: ['Da approvare', '#FDE7DC', '#B03A0B'], approved: ['Approvata, da pagare', '#FDF1D6', '#855800'], recon: ['Pagata · in riconciliazione', '#E5EFFF', '#0047BB'] };
     var invoices = [
-      ['FT-2026-11012', '2 nov 2026', 'Overage', 'Overage ottobre: Nuovi Certificati FEA, 140 unità × € 3,00', '€ 420', '30 nov 2026', paid ? 'recon' : (approved ? 'approved' : 'topay'), true],
-      ['—', 'all’attivazione', 'Componente variabile', 'Upgrade +500 Nuovi Certificati FEA (ORD-2026-1187)', '€ 1.500', '30 gg data fattura', 'soon', false],
-      ['FT-2026-09044', '1 set 2026', 'Canone periodico', 'Canone periodico · 3° trimestre (set–nov)', '€ 4.975', '30 set 2026', 'paid', true],
-      ['FT-2026-06071', '1 giu 2026', 'Canone periodico', 'Canone periodico · 2° trimestre (giu–ago)', '€ 4.975', '30 giu 2026', 'paid', true],
-      ['FT-2026-03182', '1 mar 2026', 'Canone periodico', 'Canone periodico · 1° trimestre (mar–mag)', '€ 4.975', '31 mar 2026', 'paid', true]
+      ['FT-2026-11012', '2 nov 2026', 'Overage', 'Overage ottobre: Nuovi Certificati FEA, 140 unità × € 3,00', D.eur(ovNow), '30 nov 2026', paid ? 'recon' : (approved ? 'approved' : 'topay'), true],
+      ['—', 'all’attivazione', 'Componente variabile', 'Upgrade +500 Nuovi Certificati FEA (ORD-2026-1187)', D.eur(E.upgradeInCorsoPrezzo()), '30 gg data fattura', 'soon', false],
+      ['FT-2026-09044', '1 set 2026', 'Componente variabile', 'Componente variabile · 3° trimestre (set–nov)', D.eur(trim), '30 set 2026', 'paid', true],
+      ['FT-2026-06071', '1 giu 2026', 'Componente variabile', 'Componente variabile · 2° trimestre (giu–ago)', D.eur(trim), '30 giu 2026', 'paid', true],
+      ['FT-2026-03182', '1 mar 2026', 'Componente variabile', 'Componente variabile · 1° trimestre (mar–mag)', D.eur(trim), '31 mar 2026', 'paid', true],
+      ['FT-2026-03181', '1 mar 2026', 'Canone periodico', 'Canone periodico · contratto 2026/27 · periodicità ' + D.periodicita, D.eur(ctr.canone), '31 mar 2026', 'paid', true]
     ].map(function (r) { var s = IS[r[6]], k = r[6]; return { num: r[0], date: r[1], type: r[2], desc: r[3], amount: r[4], due: r[5], state: s[0], bg: s[1], fg: s[2], hasDocs: r[7], noDocs: !r[7],
       sdi: r[7] ? 'Consegnata' : '—', sdiFg: r[7] ? '#1A6B4A' : '#4D5762',
       hasAct: k === 'topay' || k === 'approved', actLabel: k === 'topay' ? 'Approva' : 'Paga',
       act: function () { if (k === 'topay') self.setState({ approved: true }); else self.setState({ paid: true }); } }; });
     var n = function (x) { return x ? x.toLocaleString('it-IT') : '—'; };
     var eur = function (x) { return x ? '€ ' + x.toLocaleString('it-IT') : '—'; };
-    var overage = [
-      ['Nuovi Certificati FEA', '€ 3,00', 140, 420, 1802, 5405],
-      ['Identificazioni Full Prospect', '€ 1,20', 0, 0, 2505, 3006],
-      ['Full Prospect con funnel completato', '€ 0,80', 0, 0, 1402, 1122],
-      ['Verifiche Contatti', '€ 0,05', 0, 0, 7307, 365],
-      ['Contratti', '€ 0,50', 0, 0, 659, 329],
-      ['Apposizioni FEA con COD', '€ 0,15', 0, 0, 2014, 302],
-      ['Doc Composition Contratti', '€ 0,20', 0, 0, 871, 174],
-      ['Identificazioni Proprietarie', '€ 0,90', 0, 0, 0, 0],
-      ['Fatture Elettroniche', '€ 0,10', 0, 0, 0, 0]
-    ].map(function (r) { return { name: r[0], price: r[1], now: n(r[2]), nowEur: eur(r[3]), fc: n(r[4]), fcEur: eur(r[5]), fcColor: r[5] >= 1000 ? '#B03A0B' : '#1A1C1E' }; });
-    return { reminder: paid ? 'Nessun sollecito: tutte le fatture emesse risultano pagate.' : 'Nessun sollecito aperto. La fattura FT-2026-11012 scade il 30 nov 2026.', receipts: (paid ? [{ label: 'Ricevuta FT-2026-11012 · oggi' }] : []).concat([{ label: 'Ricevuta FT-2026-09044 · 28 set 2026' }, { label: 'Ricevuta FT-2026-06071 · 27 giu 2026' }, { label: 'Ricevuta FT-2026-03182 · 29 mar 2026' }]), who: WHO[P], subtabs: subtabs, money: money, noMoney: !money, tiles: tiles, invoices: invoices, overage: overage };
+    var overage = E.overage().slice().sort(function (a, b) { return b.fineEur - a.fineEur; }).map(function (o) {
+      return { name: o.name, price: '€ ' + o.unit.toLocaleString('it-IT', { minimumFractionDigits: 2 }), now: n(o.ora), nowEur: o.oraEur ? D.eur(o.oraEur) : '—', fc: n(o.fine), fcEur: o.fineEur ? D.eur(o.fineEur) : '—', fcColor: o.fineEur >= 1000 ? '#B03A0B' : '#1A1C1E' };
+    });
+    return { reminder: paid ? 'Nessun sollecito: tutte le fatture emesse risultano pagate.' : 'Nessun sollecito aperto. La fattura FT-2026-11012 scade il 30 nov 2026.', receipts: (paid ? [{ label: 'Ricevuta FT-2026-11012 · oggi' }] : []).concat([{ label: 'Ricevuta FT-2026-09044 · 28 set 2026' }, { label: 'Ricevuta FT-2026-06071 · 27 giu 2026' }, { label: 'Ricevuta FT-2026-03182 · 29 mar 2026' }, { label: 'Ricevuta FT-2026-03181 · 29 mar 2026' }]), who: WHO[P], subtabs: subtabs, money: money, noMoney: !money, tiles: tiles, invoices: invoices, overage: overage, ovNow: D.eur(ovNow), ovEnd: D.eur(E.overageTotale()) };
   }
 }
 

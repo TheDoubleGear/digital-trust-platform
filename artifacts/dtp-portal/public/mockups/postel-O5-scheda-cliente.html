@@ -15,6 +15,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
+<script src="dtp-catalogo.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -319,7 +320,7 @@ class Component extends DCLogic {
       { k: 'Rinnovo', v: '124 gg', sub: 'scadenza 28 feb 2027', color: '#1A1C1E' },
       { k: 'Servizio più urgente', v: 'ritmo 1,60', sub: 'Nuovi Certificati FEA, esaurito', color: '#A3201A' }
     ];
-    if (money) head.unshift({ k: 'Valore annuo', v: '€ 19.900', sub: 'overage YTD € 420', color: '#1A1C1E' });
+    if (money) head.unshift({ k: 'Valore annuo', v: DTP.eur(DTP.esempio.contratto().totale), sub: 'overage YTD ' + DTP.eur(DTP.esempio.overageOra()), color: '#1A1C1E' });
     var vtab = st.vtab || 'm1';
     var vRaw = [['m1', 'M1 Panoramica'], ['m2', 'M2 Dettaglio'], ['m3', 'M3 Qualità']];
     if (money) vRaw.push(['m4', 'M4 Fatture']);
@@ -338,7 +339,7 @@ class Component extends DCLogic {
       { label: 'Servizi in soglia', value: '6 di 9', color: '#1A1C1E' },
       { label: 'Primo esaurimento', value: '13 nov 2026', color: '#B03A0B' },
       { label: money ? 'Overage maturato' : 'Servizi in overage', value: money ? '€ 420' : '1 (140 unità)', color: '#1A1C1E' },
-      { label: money ? 'Overage previsto' : 'Oltre soglia a fine periodo', value: money ? '€ 10.703' : '7 servizi', color: '#1A1C1E' }
+      { label: money ? 'Overage previsto' : 'Oltre soglia a fine periodo', value: money ? DTP.eur(DTP.esempio.overageTotale()) : '7 servizi', color: '#1A1C1E' }
     ];
     var ST = { out: ['Esaurito', '#FBE3E1', '#A3201A', '#C7322A'], crit: ['Critico', '#FDE7DC', '#B03A0B', '#E8692A'], warn: ['Attenzione', '#FDF1D6', '#855800', '#E0A100'], ok: ['Regolare', '#E3F3EA', '#1A6B4A', '#2E8B62'] };
     var svc = [
@@ -354,10 +355,10 @@ class Component extends DCLogic {
     ].map(function (r) { var s = ST[r[4]]; return { name: r[0], used: r[1], incl: r[2], pct: r[3].toFixed(1).replace('.', ',') + '%', w: Math.min(r[3], 100) + '%', state: s[0], bg: s[1], fg: s[2], bar: s[3], ex: r[5], pace: r[6] }; });
     var OS = { act: ['In attivazione', '#E5EFFF', '#0047BB'], on: ['Attivo', '#E3F3EA', '#1A6B4A'], done: ['Concluso', '#EAEFF5', '#3A424C'] };
     var orders = [
-      ['24 ott 2026', 'Upgrade +500 Nuovi Certificati FEA', 'ORD-2026-1187 · modifica dell’offerta avviata da G. Marchetti (delegato amministrativo)', 'act', '€ 1.500'],
-      ['1 mar 2026', 'Contratto · 9 servizi configurati · 2026/27', 'CTR-2026-0418 · rinnovo firmato da P. Ferretti', 'on', '€ 19.900'],
+      ['24 ott 2026', 'Upgrade +500 Nuovi Certificati FEA', 'ORD-2026-1187 · modifica dell’offerta avviata da G. Marchetti (delegato amministrativo)', 'act', DTP.eur(DTP.esempio.upgradeInCorsoPrezzo())],
+      ['1 mar 2026', 'Contratto · 9 servizi configurati · 2026/27', 'CTR-2026-0418 · rinnovo firmato da P. Ferretti', 'on', DTP.eur(DTP.esempio.contratto().totale)],
       ['15 nov 2025', 'Upgrade +1.000 Identificazioni Full Prospect', 'ORD-2025-0866 · modifica dell’offerta firmata da P. Ferretti', 'done', '€ 1.200'],
-      ['1 mar 2025', 'Contratto · 9 servizi configurati · 2025/26', 'CTR-2025-0127 · primo contratto, firmato da P. Ferretti', 'done', '€ 19.900']
+      ['1 mar 2025', 'Contratto · 9 servizi configurati · 2025/26', 'CTR-2025-0127 · primo contratto con fee di attivazione, firmato da P. Ferretti', 'done', DTP.eur(DTP.esempio.primoContratto().totale)]
     ].map(function (r) { var s = OS[r[3]]; return { date: r[0], what: r[1], meta: r[2], state: s[0], bg: s[1], fg: s[2], amount: money ? r[4] : '' }; });
     var TS = { P3: ['#FDF1D6', '#855800'], P4: ['#EAEFF5', '#3A424C'] };
     var tickets = [
@@ -373,7 +374,7 @@ class Component extends DCLogic {
     ];
     return { adminNote: money ? 'Stato dei pagamenti e delle modifiche contrattuali richieste dal portale cliente.' : 'Per Operations lo stato dei pagamenti è indicato senza importi.',
       admin: [
-        { label: 'Richiesta in corso', value: 'Upgrade a Pro dal rinnovo', sub: 'RM-014 · in presa visione del legale rappresentante', color: '#855800' },
+        { label: 'Richiesta in corso', value: 'Upgrade Identificazioni Full Prospect: +3.000 unità', sub: 'RM-014 · in presa visione del legale rappresentante', color: '#855800' },
         { label: 'Origine del contratto', value: 'Commerciale', sub: 'stesso percorso della vetrina: firma del LR, controfirma Postel', color: '#1A1C1E' },
         { label: 'Pagamenti', value: money ? 'Nessun insoluto' : 'In regola', sub: money ? 'FT-2026-11012 da € 420 approvata, scade il 30 nov' : '1 fattura in scadenza, nessun sollecito', color: '#1A6B4A' },
         { label: 'Modalità di rinnovo', value: '[DA DEFINIRE]', sub: 'decisione del cliente attesa entro il 30 nov', color: '#1A1C1E' }
