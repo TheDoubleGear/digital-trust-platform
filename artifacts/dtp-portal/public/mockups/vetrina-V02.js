@@ -1,8 +1,12 @@
-/* V02 – attivazione servizio. Tutto in memoria: nessuno storage, nessuna rete. La password non viene mai conservata. */
+/* V02 – attivazione servizio: configurazione e carrello, dati, contratto, stato finale.
+   Tutto in memoria, tranne i codici di configurazione dimostrativi salvati in localStorage di questo browser.
+   La password non viene mai conservata. */
 (function () {
   var D = window.DTP, e = D.esc, $ = function (id) { return document.getElementById(id); };
   var FIELDS = ['ragione', 'piva', 'sdi', 'sede', 'pec', 'nome', 'cognome', 'cf', 'tel', 'email'];
   var MAX = 10 * 1024 * 1024;
+  var CODE_KEY = 'dtp-demo-config-codes';
+  var CODE_RE = /^DTP-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
   // Temporary preview aid: switch off to restore an empty registration form.
   var DEMO_PREFILL = true;
   if (DEMO_PREFILL) {
@@ -18,13 +22,13 @@
     $('demo-prefill').hidden = false;
   }
   var S = {
-    step: 1, data: null, pwOk: false, dirty: false, purchased: false,
-    qty: {},
-    contract: null, downloaded: false, downloadErr: '', file: null, fileErr: '', acks: [false, false], invalidNote: false,
+    step: 1, qty: {}, configured: false, autoAdded: [], code: null, codeErr: '', restored: '',
+    data: null, pwOk: false, dirty: false,
+    contract: null, downloaded: false, downloadErr: '', file: null, fileErr: '', acks: [false, false, false], invalidNote: false,
     submitted: false, ref: null
   };
 
-  /* ---------- carrello ---------- */
+  /* ---------- carrello e dipendenze ---------- */
   function items() {
     return D.lines(S.qty).map(function (l) {
       return { key: l.id, name: l.name, detail: D.num(l.qty) + ' unità × ' + D.unit3(l.unit) + ' €', price: l.amount };
@@ -32,14 +36,81 @@
   }
   function quote() { return D.price(S.qty); }
   function total() { return quote().totale; }
+  // Servizi nel carrello che richiedono il servizio id.
+  function requiredBy(id) {
+    return D.services.filter(function (s) { return S.qty[s.id] > 0 && s.deps.indexOf(id) >= 0; }).map(function (s) { return s.name; });
+  }
+  // Aggiunge un passo di quantità; i servizi richiesti entrano nel carrello con la quantità minima.
+  function addWithDeps(id) {
+    var s = D.byId(id);
+    S.qty[id] = (S.qty[id] || 0) + s.step;
+    s.deps.forEach(function (d) {
+      if (S.qty[d] > 0) return;
+      S.autoAdded.push({ dep: d, by: id });
+      addWithDeps(d);
+    });
+  }
   function invalidate() {
     if (S.contract || S.downloaded || S.file) S.invalidNote = true;
-    S.contract = null; S.downloaded = false; S.downloadErr = ''; S.file = null; S.fileErr = ''; S.acks = [false, false];
+    S.contract = null; S.downloaded = false; S.downloadErr = ''; S.file = null; S.fileErr = ''; S.acks = [false, false, false];
   }
-  function cartChanged() { S.dirty = true; S.purchased = false; invalidate(); render(); }
+  function cartChanged() {
+    S.dirty = true; S.configured = false; S.restored = '';
+    if (S.code) S.code.stale = true;
+    S.autoAdded = S.autoAdded.filter(function (a) { return S.qty[a.by] > 0 && S.qty[a.dep] > 0; });
+    invalidate(); render();
+  }
 
-  /* ---------- validazione ---------- */
+  /* ---------- codice di configurazione (dimostrativo, solo in questo browser) ---------- */
+  function readCodes() { var raw = localStorage.getItem(CODE_KEY); return raw ? JSON.parse(raw) : {}; }
+  function newCode() {
+    var A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', p = function () { var x = ''; for (var i = 0; i < 4; i++) x += A[Math.floor(Math.random() * A.length)]; return x; };
+    return 'DTP-' + p() + '-' + p();
+  }
+  function generateCode() {
+    S.codeErr = '';
+    if (!items().length) { S.code = null; S.codeErr = 'Aggiungi almeno un servizio prima di generare il codice.'; render(); return; }
+    try {
+      var all = readCodes(), code = newCode();
+      while (all[code]) code = newCode();
+      all[code] = { qty: JSON.parse(JSON.stringify(S.qty)), at: new Date().toISOString() };
+      localStorage.setItem(CODE_KEY, JSON.stringify(all));
+      S.code = { value: code, stale: false };
+    } catch (err) {
+      S.code = null;
+      S.codeErr = 'Non è possibile salvare il codice: il browser non consente di salvare i dati di questo sito. Consenti i dati del sito oppure esci dalla navigazione privata, poi riprova.';
+    }
+    render();
+    var out = $('code-copy') || $('gen-code'); if (out) out.focus();
+  }
+  function restoreCode() {
+    var v = $('code-in').value.trim().toUpperCase(), err = '', saved = null;
+    if (!v) err = 'Inserisci il codice di configurazione.';
+    else if (!CODE_RE.test(v)) err = 'Il codice ha il formato DTP-XXXX-XXXX.';
+    else {
+      try { saved = readCodes()[v]; } catch (x) { err = 'Non è possibile leggere i codici salvati: il browser non consente di accedere ai dati di questo sito.'; }
+      if (!err && !saved) err = 'Codice non trovato in questo browser. Controlla di averlo scritto correttamente.';
+    }
+    $('code-in').setAttribute('aria-invalid', err ? 'true' : 'false');
+    $('code-in-e').textContent = err;
+    if (err) { $('code-in').focus(); return; }
+    var q = {};
+    Object.keys(saved.qty || {}).forEach(function (id) { if (D.byId(id) && saved.qty[id] > 0) q[id] = saved.qty[id]; });
+    S.qty = q; S.autoAdded = [];
+    cartChanged();
+    S.restored = v; S.code = null;
+    $('code-in').value = '';
+    render();
+    $('t1').focus();
+  }
+  $('gen-code').addEventListener('click', function () { if (!S.submitted) generateCode(); });
+  $('code-apply').addEventListener('click', function () { if (!S.submitted) restoreCode(); });
+  $('code-in').addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); restoreCode(); } });
+  $('code-in').addEventListener('input', function () { $('code-in').setAttribute('aria-invalid', 'false'); $('code-in-e').textContent = ''; });
+
+  /* ---------- validazione dei dati, anche all'uscita da ogni campo ---------- */
   var EM = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var CF = /^[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$/;
   function val(id) { return $(id).value.trim(); }
   function check() {
     var er = {}, v = {};
@@ -52,7 +123,7 @@
     if (!EM.test(v.pec)) er.pec = 'Inserisci un indirizzo PEC valido.';
     if (v.nome.length < 2) er.nome = 'Inserisci il nome.';
     if (v.cognome.length < 2) er.cognome = 'Inserisci il cognome.';
-    if (!/^[A-Z0-9]{16}$/i.test(v.cf)) er.cf = 'Il codice fiscale deve avere 16 caratteri alfanumerici.';
+    if (!CF.test(v.cf.toUpperCase())) er.cf = 'Il codice fiscale non ha un formato valido.';
     var digits = v.tel.replace(/[\s+]/g, '');
     if (!/^\+?[\d\s]+$/.test(v.tel) || digits.length < 9 || digits.length > 15) er.tel = 'Inserisci un numero di cellulare valido.';
     if (!EM.test(v.email)) er.email = 'Inserisci un indirizzo e-mail valido.';
@@ -67,45 +138,54 @@
     return { er: er, v: v };
   }
   var LABELS = { ragione: 'Ragione sociale', piva: 'Partita IVA', sdi: 'Codice SdI', sede: 'Sede legale', pec: 'PEC', nome: 'Nome', cognome: 'Cognome', cf: 'Codice fiscale', tel: 'Cellulare', email: 'E-mail', pw: 'Password', pw2: 'Conferma password' };
+  function fieldError(f, msg) {
+    var bad = !!msg; $(f).setAttribute('aria-invalid', bad); $(f + '-e').textContent = msg || '';
+    var d = ($(f).getAttribute('aria-describedby') || '').split(' ').filter(function (x) { return x && x !== f + '-e'; });
+    if (bad) d.push(f + '-e'); if (d.length) $(f).setAttribute('aria-describedby', d.join(' ')); else $(f).removeAttribute('aria-describedby');
+  }
   function showErrors(er) {
-    FIELDS.concat(['pw', 'pw2']).forEach(function (f) {
-      var bad = !!er[f]; $(f).setAttribute('aria-invalid', bad); $(f + '-e').textContent = er[f] || '';
-      var d = ($(f).getAttribute('aria-describedby') || '').split(' ').filter(function (x) { return x && x !== f + '-e'; });
-      if (bad) d.push(f + '-e'); if (d.length) $(f).setAttribute('aria-describedby', d.join(' ')); else $(f).removeAttribute('aria-describedby');
-    });
+    FIELDS.concat(['pw', 'pw2']).forEach(function (f) { fieldError(f, er[f]); });
     var keys = Object.keys(er), box = $('errsum');
     if (!keys.length) { box.hidden = true; return; }
     box.innerHTML = '<strong>Controlla ' + (keys.length === 1 ? 'il campo evidenziato' : 'i ' + keys.length + ' campi evidenziati') + '</strong><ul>' + keys.map(function (k) { return '<li><a href="#' + k + '">' + LABELS[k] + ': ' + e(er[k]) + '</a></li>'; }).join('') + '</ul>';
     box.hidden = false; box.focus();
   }
   $('errsum').addEventListener('click', function (ev) { var a = ev.target.closest('a'); if (!a) return; ev.preventDefault(); $(a.getAttribute('href').slice(1)).focus(); });
-
+  // Controllo formale al momento dell'inserimento: alla perdita del focus di ogni campo.
+  $('f1').addEventListener('focusout', function (ev) {
+    var id = ev.target.id;
+    if (!LABELS[id] || S.submitted) return;
+    if ((id === 'pw' || id === 'pw2') && S.pwOk && !$('pw').value && !$('pw2').value) return;
+    if (id === 'pw' && !$('pw2').value) { fieldError('pw', check().er.pw); return; }
+    fieldError(id, check().er[id]);
+  });
   $('f1').addEventListener('submit', function (ev) {
     ev.preventDefault();
-    if (S.submitted) return;
+    if (S.submitted || !canGo(2)) return;
     var r = check();
     showErrors(r.er);
     if (Object.keys(r.er).length) return;
     var changed = !S.data || FIELDS.some(function (f) { return S.data[f] !== r.v[f]; });
-    if (changed && S.data) { S.purchased = false; invalidate(); }
+    if (changed && S.data) invalidate();
     S.data = r.v; S.pwOk = true;
     $('pw').value = ''; $('pw2').value = ''; $('pw-ok').hidden = false;
-    go(2);
+    if (!S.contract) S.contract = { id: 'DTP-BOZZA-' + String(Math.floor(100000 + Math.random() * 900000)), date: new Date() };
+    go(3);
   });
   $('f1').addEventListener('input', function (ev) {
     S.dirty = true;
     var id = ev.target.id;
-    if (ev.target.getAttribute('aria-invalid') === 'true') { ev.target.setAttribute('aria-invalid', 'false'); $(id + '-e').textContent = ''; }
-    if (id === 'pw' || id === 'pw2') { if (S.pwOk) { S.pwOk = false; $('pw-ok').hidden = true; S.data = null; S.purchased = false; invalidate(); render(); } return; }
-    if (S.data && S.data[id] !== undefined) { S.data = null; S.purchased = false; invalidate(); render(); }
+    if (ev.target.getAttribute('aria-invalid') === 'true') fieldError(id, '');
+    if (id === 'pw' || id === 'pw2') { if (S.pwOk) { S.pwOk = false; $('pw-ok').hidden = true; S.data = null; invalidate(); render(); } return; }
+    if (S.data && S.data[id] !== undefined) { S.data = null; invalidate(); render(); }
   });
 
   /* ---------- navigazione ---------- */
   function canGo(n) {
     if (S.submitted) return false;
     if (n === 1) return true;
-    if (n === 2) return !!S.data;
-    return !!S.data && S.purchased && items().length > 0;
+    if (n === 2) return S.configured && items().length > 0;
+    return S.configured && items().length > 0 && !!S.data;
   }
   function go(n) {
     if (!canGo(n)) return;
@@ -115,61 +195,83 @@
   document.addEventListener('click', function (ev) { var b = ev.target.closest('[data-go]'); if (b) go(+b.dataset.go); });
 
   function renderStepper() {
-    var L = [['Dati', 'Azienda, rappresentante, password'], ['Servizi', 'Catalogo e carrello'], ['Contratto', 'Bozza, firma, allegato']];
+    var L = [['Servizi', 'Configurazione e carrello'], ['Dati', 'Azienda, rappresentante, password'], ['Contratto', 'Bozza, firma, caricamento']];
     $('stepper').innerHTML = L.map(function (l, i) {
-      var n = i + 1, cur = !S.submitted && S.step === n, done = S.submitted || (n === 1 ? !!S.data : n === 2 ? S.purchased && items().length > 0 : false);
-      var why = !canGo(n) && !S.submitted ? (n === 2 ? ' (completa prima i dati)' : ' (scegli i servizi e premi Acquista)') : '';
+      var n = i + 1, cur = !S.submitted && S.step === n, done = S.submitted || (n === 1 ? S.configured && items().length > 0 : n === 2 ? !!S.data && S.configured : false);
+      var why = !canGo(n) && !S.submitted ? (n === 2 ? ' (conferma prima la configurazione)' : ' (completa prima configurazione e dati)') : '';
       return '<li><button type="button" class="' + (done ? 'done' : '') + '" data-step="' + n + '"' + (cur ? ' aria-current="step"' : '') + (canGo(n) ? '' : ' disabled') + ' aria-label="Passo ' + n + ': ' + l[0] + (done ? ', completato' : '') + why + '"><span class="dot" aria-hidden="true">' + (done && !cur ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>' : n) + '</span><span class="l"><b>' + l[0] + '</b><span>' + l[1] + '</span></span></button></li>';
     }).join('');
   }
   $('stepper').addEventListener('click', function (ev) { var b = ev.target.closest('[data-step]'); if (b && !b.disabled) go(+b.dataset.step); });
 
-  /* ---------- passo 2: catalogo ---------- */
+  /* ---------- passo 1: configurazione ---------- */
   function renderCat() {
-    var miss = D.missingDeps(S.qty), h = '';
+    var h = '', first = true;
+    if (S.restored) h += '<div class="okbox" role="status" style="margin-bottom:14px"><span>Configurazione ripristinata dal codice <strong>' + e(S.restored) + '</strong>. Controllala e conferma per proseguire.</span></div>';
     D.families.forEach(function (f) {
       var list = D.services.filter(function (s) { return s.family === f; });
-      h += '<h2 style="font-size:17px;margin:' + (h ? '22px' : '0') + ' 0 10px">' + e(f) + '</h2><div class="tscroll"><table class="tbl stack"><thead><tr><th>Servizio</th><th>Quantità</th><th class="r">Componente variabile</th></tr></thead><tbody>';
+      h += '<h2 style="font-size:17px;margin:' + (first ? '0' : '22px') + ' 0 10px">' + e(f) + '</h2><div class="tscroll"><table class="tbl stack"><thead><tr><th>Servizio</th><th>Quantità</th><th class="r">Componente variabile</th></tr></thead><tbody>';
+      first = false;
       list.forEach(function (s) {
-        var i = D.services.indexOf(s), q = S.qty[s.id] || 0;
+        var i = D.services.indexOf(s), q = S.qty[s.id] || 0, req = requiredBy(s.id);
+        var locked = q > 0 && q <= s.step && req.length > 0;
         var dep = s.deps.length ? ' · richiede ' + s.deps.map(function (d) { return D.byId(d).name; }).join(', ') : '';
-        h += '<tr class="' + (q ? '' : 'off') + '"><td><strong>' + e(s.name) + '</strong><small>' + D.unit3(s.unit) + ' € per unità · multipli di ' + D.num(s.step) + e(dep) + '</small></td><td><span class="qty"><button type="button" data-act="dec" data-i="' + i + '" aria-label="Riduci ' + e(s.name) + '"' + (q ? '' : ' disabled') + '>−</button><output aria-live="polite">' + (q ? D.num(q) : 'Non incluso') + '</output><button type="button" data-act="inc" data-i="' + i + '" aria-label="Aumenta ' + e(s.name) + '">+</button></span></td><td class="r"><strong>' + (q ? D.eur(Math.round(q * s.unit * 100) / 100) : '—') + '</strong></td></tr>';
+        h += '<tr class="' + (q ? '' : 'off') + '"><td><strong>' + e(s.name) + '</strong><small>' + D.unit3(s.unit) + ' € per unità · multipli di ' + D.num(s.step) + e(dep) + '</small>' +
+          (req.length && q ? '<span class="dep" id="lock-' + s.id + '">Necessario per ' + e(req.join(', ')) + ': non si può togliere finché ' + (req.length === 1 ? 'è' : 'sono') + ' nel carrello.</span>' : '') + '</td>' +
+          '<td><span class="qty"><button type="button" data-act="dec" data-i="' + i + '" aria-label="Riduci ' + e(s.name) + '"' + (locked ? ' aria-describedby="lock-' + s.id + '"' : '') + (q && !locked ? '' : ' disabled') + '>−</button><output aria-live="polite">' + (q ? D.num(q) : 'Non incluso') + '</output><button type="button" data-act="inc" data-i="' + i + '" aria-label="Aumenta ' + e(s.name) + '">+</button></span></td>' +
+          '<td class="r"><strong>' + (q ? D.eur(Math.round(q * s.unit * 100) / 100) : '—') + '</strong></td></tr>';
       });
       h += '</tbody></table></div>';
     });
-    if (miss.length) h += '<div class="info" role="status" style="margin-top:14px">' + miss.map(function (m) { return e(m.name) + ' richiede anche ' + e(m.missing.join(', ')) + '.'; }).join(' ') + '</div>';
+    var notes = S.autoAdded.map(function (a) { return '<div class="info" role="status">Aggiunto ' + e(D.byId(a.dep).name) + ': è necessario per ' + e(D.byId(a.by).name) + '. Puoi modificarne la quantità, ma non toglierlo finché ' + e(D.byId(a.by).name) + ' è nel carrello.</div>'; });
+    if (notes.length) h += '<div class="notes">' + notes.join('') + '</div>';
     $('cat').innerHTML = h;
+    var c = '';
+    if (S.codeErr) c = '<div class="ferr" role="alert">' + e(S.codeErr) + '</div>';
+    else if (S.code) c = '<div class="code" role="status"><span>Codice di configurazione</span><output id="code-value">' + e(S.code.value) + '</output><button type="button" class="btn btn-o" id="code-copy">Copia il codice</button>' +
+      '<p>' + (S.code.stale ? '<strong style="color:#855800">La configurazione è cambiata dopo la generazione: il codice conserva quella precedente. Generane uno nuovo per salvare quella attuale.</strong> ' : '') +
+      'Il codice registra la configurazione presente al momento della generazione e permette di riprendere il percorso. Validità del codice: [DA DEFINIRE]. Nel prototipo il codice è salvato solo in questo browser.</p></div>';
+    $('code-out').innerHTML = c;
+    var cp = $('code-copy');
+    if (cp) cp.onclick = function () {
+      var fail = function () { cp.textContent = 'Copia non riuscita: selezionalo e copialo'; };
+      try { navigator.clipboard.writeText(S.code.value).then(function () { cp.textContent = 'Codice copiato'; }, fail); } catch (x) { fail(); }
+    };
     var n = items().length;
-    $('buy').disabled = !n;
-    $('buy').textContent = n ? 'Acquista · ' + D.eur(total()) : 'Acquista';
-    $('buy').title = n ? '' : 'Aggiungi almeno un servizio al carrello';
+    $('confirm').disabled = !n;
+    $('confirm').textContent = n ? 'Conferma la configurazione · ' + D.eur(total()) : 'Conferma la configurazione';
+    $('confirm').title = n ? '' : 'Aggiungi almeno un servizio al carrello';
   }
   $('cat').addEventListener('click', function (ev) {
     var b = ev.target.closest('[data-act]'); if (!b || b.disabled || S.submitted) return;
     var a = b.dataset.act, i = +b.dataset.i, s = D.services[i];
-    var q = Math.max(0, (S.qty[s.id] || 0) + (a === 'inc' ? s.step : -s.step));
-    if (q) S.qty[s.id] = q; else delete S.qty[s.id];
+    if (a === 'inc') addWithDeps(s.id);
+    else {
+      var q = (S.qty[s.id] || 0) - s.step;
+      if (q <= 0 && requiredBy(s.id).length) return;
+      if (q > 0) S.qty[s.id] = q; else delete S.qty[s.id];
+    }
     cartChanged(); refocus(a, i);
   });
   function refocus(a, i) {
     var el = $('cat').querySelector('[data-act="' + a + '"][data-i="' + i + '"]');
     if (el && !el.disabled) el.focus(); else { var alt = $('cat').querySelector('[data-act="inc"][data-i="' + i + '"]'); if (alt) alt.focus(); }
   }
-  $('buy').addEventListener('click', function () {
-    if (!items().length || !S.data) return;
-    S.purchased = true;
-    if (!S.contract) { S.contract = { id: 'DTP-BOZZA-' + String(Math.floor(100000 + Math.random() * 900000)), date: new Date() }; }
-    go(3);
+  $('confirm').addEventListener('click', function () {
+    if (!items().length || S.submitted) return;
+    S.configured = true;
+    go(2);
   });
 
   /* ---------- riepilogo laterale ---------- */
   function renderSide() {
-    var it = items(), lock = S.submitted || S.step === 3;
-    var h = '<h2 id="t-side">Il tuo ordine</h2>';
-    if (!it.length) h += '<div class="cempty">Il carrello è vuoto.<br>' + (S.data ? 'Scegli i servizi e le quantità.' : 'Completa i dati per scegliere i servizi.') + '</div>';
+    var it = items();
+    var h = '<h2 id="t-side">Il tuo carrello</h2>';
+    if (!it.length) h += '<div class="cempty">Il carrello è vuoto.<br>Scegli i servizi e le quantità, oppure ripristina una configurazione con il codice.</div>';
     else h += '<ul class="citems">' + it.map(function (i) {
-      return '<li><div class="c"><strong>' + e(i.name) + '</strong><small>' + e(i.detail) + '</small><span style="font-weight:600">' + D.eur(i.price) + '</span></div>' +
-        (lock || S.step !== 2 ? '' : '<button type="button" class="x" data-rm="' + i.key + '" aria-label="Rimuovi ' + e(i.name) + '"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>') + '</li>';
+      var req = requiredBy(i.key);
+      return '<li><div class="c"><strong>' + e(i.name) + '</strong><small>' + e(i.detail) + '</small><span style="font-weight:600">' + D.eur(i.price) + '</span>' + (req.length ? '<small>Necessario per ' + e(req.join(', ')) + '</small>' : '') + '</div>' +
+        (req.length ? '' : '<button type="button" class="x" data-rm="' + i.key + '" aria-label="Rimuovi ' + e(i.name) + '"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>') + '</li>';
     }).join('') + '</ul>';
     if (it.length) {
       var p = quote();
@@ -177,38 +279,45 @@
       h += '<p class="muted" style="margin:0;font-size:12px">Fee di attivazione e canone: ' + e(D.SEGNAPOSTO) + '. Periodicità del canone: ' + e(D.periodicita) + '.</p>';
     }
     h += '<div class="tot"><span class="muted" style="font-size:14px">Totale, IVA esclusa</span><strong>' + D.eur(total()) + '</strong></div>';
-    if (S.step === 3 && !S.submitted) h += '<button type="button" class="btn btn-o" data-go="2">Modifica i servizi</button><p class="muted" style="margin:0;font-size:12px">Modificare servizi o dati annulla la bozza scaricata e il file allegato.</p>';
-    h += '<p class="muted" style="margin:0;font-size:12px">Durata 12 mesi dalla controfirma di Postel. Nessun addebito in questa fase.</p>';
+    h += '<p class="muted" style="margin:0;font-size:12px">Durata 12 mesi dalla controfirma di Postel. Nessun addebito in questa fase: la prima fattura si paga fuori dalla piattaforma.</p>';
     $('side').innerHTML = h;
   }
   $('side').addEventListener('click', function (ev) {
     var b = ev.target.closest('[data-rm]'); if (!b || S.submitted) return;
     var k = b.dataset.rm;
+    if (requiredBy(k).length) return;
     delete S.qty[k];
     cartChanged();
-    var next = $('side').querySelector('[data-rm]'); (next || $('t2')).focus();
+    var next = $('side').querySelector('[data-rm]'); (next || $('t1')).focus();
   });
 
   /* ---------- passo 3: contratto ---------- */
   function size(b) { return b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1024 / 1024).toFixed(1).replace('.', ',') + ' MB'; }
-  function ready() { return S.downloaded && !!S.file && S.acks[0] && S.acks[1]; }
+  function ready() { return S.downloaded && !!S.file && S.acks.every(Boolean); }
+  function ackTexts() {
+    return [
+      'Dichiaro di essere il legale rappresentante di ' + S.data.ragione + ' indicato nel contratto. Il primo acquisto può essere concluso solo dal legale rappresentante.',
+      'Confermo che il file caricato è il contratto generato per questa richiesta, firmato da me.',
+      'Prendo atto che l\'attivazione non è immediata: dopo la verifica della firma e dei dati e la controfirma di Postel riceverò via e-mail la prima fattura, da pagare fuori dalla piattaforma. Il servizio sarà abilitato e le credenziali inviate solo dopo il pagamento.'
+    ];
+  }
   function renderContract() {
     if (!S.contract) { $('contract').innerHTML = ''; return; }
     var c = S.contract, h = '';
-    if (S.invalidNote) h += '<div class="info" role="status">I dati o i servizi sono cambiati: abbiamo generato una nuova bozza. Scaricala di nuovo e allega la versione firmata aggiornata.</div>';
-    h += '<div class="task' + (S.downloaded ? ' ok' : '') + '"><span class="dot" aria-hidden="true">' + (S.downloaded ? '✓' : '1') + '</span><div class="b"><h2>Scarica la bozza di contratto</h2><p>Riferimento <strong>' + c.id + '</strong> · ' + items().length + (items().length === 1 ? ' servizio' : ' servizi') + ' · ' + D.eur(total()) + ' IVA esclusa. Formato: <strong>PDF</strong>, scaricabile direttamente. Bozza dimostrativa senza valore legale; termini da approvare, nessuna firma o attivazione reale.</p><div><button type="button" class="btn ' + (S.downloaded ? 'btn-o' : 'btn-p') + '" id="dl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16"/></svg>' + (S.downloaded ? 'Scarica di nuovo (PDF)' : 'Scarica la bozza (PDF)') + '</button></div>' + (S.downloadErr ? '<p role="alert">' + e(S.downloadErr) + '</p>' : '') + '</div></div>';
-    h += '<div class="task' + (S.file ? ' ok' : '') + '"><span class="dot" aria-hidden="true">' + (S.file ? '✓' : '2') + '</span><div class="b"><h2>Firma e allega il contratto firmato</h2><p>Firma il documento fuori da questa pagina con il tuo strumento di firma, poi allega il PDF firmato. Massimo 10 MB.</p>' +
-      '<input type="file" id="file" accept=".pdf,application/pdf" class="sr" aria-describedby="file-h"' + (S.downloaded ? '' : ' disabled') + '>' +
-      (!S.downloaded ? '<p id="file-h" class="muted" style="font-size:13px">Scarica prima la bozza per poter allegare il file firmato.</p>' :
-        S.file ? '<div class="file"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B42318" stroke-width="1.6" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z M14 3v5h5"/></svg><div class="n">' + e(S.file.name) + '<small>PDF · ' + size(S.file.size) + ' · tenuto solo in memoria, non caricato</small></div><button type="button" class="btn btn-o" id="replace">Sostituisci</button><button type="button" class="btn btn-o" id="rmfile">Rimuovi</button></div><span id="file-h" class="sr">File allegato</span>' :
-        '<label for="file" class="drop" id="drop"><strong style="color:#0047BB">Scegli il PDF firmato</strong><br><span class="muted" style="font-size:13px" id="file-h">oppure trascinalo qui · solo PDF, massimo 10 MB</span></label>') +
+    if (S.invalidNote) h += '<div class="info" role="status">I dati o i servizi sono cambiati: abbiamo generato un nuovo contratto. Scaricalo di nuovo e carica la versione firmata aggiornata.</div>';
+    h += '<div class="task' + (S.downloaded ? ' ok' : '') + '"><span class="dot" aria-hidden="true">' + (S.downloaded ? '✓' : '1') + '</span><div class="b"><h2>Scarica il contratto</h2><p>Riferimento <strong>' + c.id + '</strong> · ' + items().length + (items().length === 1 ? ' servizio configurato' : ' servizi configurati') + ' · ' + D.eur(total()) + ' IVA esclusa. Formato: <strong>PDF</strong>, scaricabile direttamente. Bozza dimostrativa senza valore legale; termini da approvare, nessuna firma o attivazione reale.</p><div><button type="button" class="btn ' + (S.downloaded ? 'btn-o' : 'btn-p') + '" id="dl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16"/></svg>' + (S.downloaded ? 'Scarica di nuovo (PDF)' : 'Scarica il contratto (PDF)') + '</button></div>' + (S.downloadErr ? '<p role="alert">' + e(S.downloadErr) + '</p>' : '') + '</div></div>';
+    h += '<div class="task' + (S.file ? ' ok' : '') + '"><span class="dot" aria-hidden="true">' + (S.file ? '✓' : '2') + '</span><div class="b"><h2>Firma e carica il contratto firmato</h2><p>Firma il documento fuori da questa pagina con il tuo strumento di firma, poi carica il file firmato in formato PDF o P7M. Tipologie di firma ammesse: [DA DEFINIRE]. Massimo 10 MB.</p>' +
+      '<input type="file" id="file" accept=".pdf,.p7m,application/pdf,application/pkcs7-mime" class="sr" aria-describedby="file-h"' + (S.downloaded ? '' : ' disabled') + '>' +
+      (!S.downloaded ? '<p id="file-h" class="muted" style="font-size:13px">Scarica prima il contratto per poter caricare il file firmato.</p>' :
+        S.file ? '<div class="file"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B42318" stroke-width="1.6" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z M14 3v5h5"/></svg><div class="n">' + e(S.file.name) + '<small>' + (/\.p7m$/i.test(S.file.name) ? 'P7M' : 'PDF') + ' · ' + size(S.file.size) + ' · tenuto solo in memoria, non caricato</small></div><button type="button" class="btn btn-o" id="replace">Sostituisci</button><button type="button" class="btn btn-o" id="rmfile">Rimuovi</button></div><span id="file-h" class="sr">File caricato</span>' :
+        '<label for="file" class="drop" id="drop"><strong style="color:#0047BB">Scegli il contratto firmato</strong><br><span class="muted" style="font-size:13px" id="file-h">oppure trascinalo qui · PDF o P7M, massimo 10 MB</span></label>') +
       (S.fileErr ? '<div class="ferr" role="alert">' + e(S.fileErr) + '</div>' : '') + '</div></div>';
-    h += '<fieldset class="task"><span class="dot" aria-hidden="true">3</span><div class="b"><legend style="font-size:16px;margin:0">Conferme</legend>' +
-      ['Confermo che il file allegato è il contratto generato per questa richiesta, firmato dal legale rappresentante indicato.', 'Prendo atto che la richiesta sarà soggetta a verifiche e che l\'attivazione non è immediata: riceverò un\'e-mail al termine dei controlli.'].map(function (t, i) {
-        return '<label class="chk"><input type="checkbox" data-ack="' + i + '"' + (S.acks[i] ? ' checked' : '') + '><span>' + t + '</span></label>';
+    h += '<fieldset class="task"><span class="dot" aria-hidden="true">3</span><div class="b"><legend style="font-size:16px;margin:0">Conferme del legale rappresentante</legend>' +
+      ackTexts().map(function (t, i) {
+        return '<label class="chk"><input type="checkbox" data-ack="' + i + '"' + (S.acks[i] ? ' checked' : '') + '><span>' + e(t) + '</span></label>';
       }).join('') + '</div></fieldset>';
     var miss = [];
-    if (!S.downloaded) miss.push('scarica la bozza'); if (!S.file) miss.push('allega il PDF firmato'); if (!(S.acks[0] && S.acks[1])) miss.push('seleziona le conferme');
+    if (!S.downloaded) miss.push('scarica il contratto'); if (!S.file) miss.push('carica il contratto firmato'); if (!S.acks.every(Boolean)) miss.push('seleziona le conferme');
     h += '<p id="sub-h" class="muted" style="margin:0;font-size:13px" aria-live="polite">' + (miss.length ? 'Per inviare: ' + miss.join(', ') + '.' : 'Tutto pronto per l\'invio.') + '</p>';
     $('contract').innerHTML = h;
     $('submit').disabled = !ready();
@@ -219,13 +328,14 @@
     S.fileErr = '';
     if (!f) return;
     S.file = null;
-    S.acks = [false, false];
+    S.acks = [false, false, false];
     var isPdf = /\.pdf$/i.test(f.name) && (!f.type || f.type === 'application/pdf' || f.type === 'application/octet-stream');
-    if (!isPdf) S.fileErr = 'Il file "' + f.name + '" non è un PDF. Allega il contratto firmato in formato PDF.';
+    var isP7m = /\.p7m$/i.test(f.name) && (!f.type || /^application\/(x-)?pkcs7-mime$/.test(f.type) || f.type === 'application/octet-stream');
+    if (!isPdf && !isP7m) S.fileErr = 'Il file "' + f.name + '" non è un PDF o un P7M. Carica il contratto firmato in uno di questi formati.';
     else if (f.size === 0) S.fileErr = 'Il file selezionato è vuoto.';
     else if (f.size > MAX) S.fileErr = 'Il file pesa ' + size(f.size) + ': il limite è 10 MB.';
     else S.file = { name: f.name, size: f.size, ref: f };
-    renderAll(); var t = $('replace') || $('drop'); if (t) t.focus();
+    render(); var t = $('replace') || $('drop'); if (t) t.focus();
   }
   function wireContract() {
     var dl = $('dl');
@@ -243,22 +353,22 @@
         if (a) a.remove();
         if (url) setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
       }
-      renderAll(); $('dl').focus();
+      render(); $('dl').focus();
     };
     var fi = $('file');
     if (fi) fi.onchange = function () { setFile(fi.files[0]); };
     var rp = $('replace'); if (rp) rp.onclick = function () { fi.click(); };
-    var rm = $('rmfile'); if (rm) rm.onclick = function () { S.file = null; S.fileErr = ''; renderAll(); var d = $('drop'); if (d) d.focus(); };
+    var rm = $('rmfile'); if (rm) rm.onclick = function () { S.file = null; S.fileErr = ''; render(); var d = $('drop'); if (d) d.focus(); };
     var dr = $('drop');
     if (dr) {
       dr.tabIndex = 0;
       dr.onkeydown = function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); fi.click(); } };
       dr.ondragover = function (ev) { ev.preventDefault(); dr.classList.add('over'); };
       dr.ondragleave = function () { dr.classList.remove('over'); };
-      dr.ondrop = function (ev) { ev.preventDefault(); dr.classList.remove('over'); if (ev.dataTransfer.files.length > 1) { S.fileErr = 'Allega un solo file.'; renderAll(); return; } setFile(ev.dataTransfer.files[0]); };
+      dr.ondrop = function (ev) { ev.preventDefault(); dr.classList.remove('over'); if (ev.dataTransfer.files.length > 1) { S.fileErr = 'Carica un solo file.'; render(); return; } setFile(ev.dataTransfer.files[0]); };
     }
     Array.prototype.forEach.call($('contract').querySelectorAll('[data-ack]'), function (cb) {
-      cb.onchange = function () { S.acks[+cb.dataset.ack] = cb.checked; var i = cb.dataset.ack; renderAll(); $('contract').querySelector('[data-ack="' + i + '"]').focus(); };
+      cb.onchange = function () { S.acks[+cb.dataset.ack] = cb.checked; var i = cb.dataset.ack; render(); $('contract').querySelector('[data-ack="' + i + '"]').focus(); };
     });
   }
   $('submit').addEventListener('click', function () {
@@ -266,31 +376,36 @@
     S.submitted = true;
     S.ref = 'RA-' + String(Math.floor(1000000 + Math.random() * 9000000));
     S.file = { name: S.file.name, size: S.file.size };
-    Array.prototype.forEach.call(document.querySelectorAll('#f1 input'), function (i) { i.disabled = true; });
-    renderAll(); openDialog();
+    Array.prototype.forEach.call(document.querySelectorAll('#f1 input, #code-in'), function (i) { i.disabled = true; });
+    render(); openDialog();
   });
 
   /* ---------- stato finale e dialogo ---------- */
   function timeline() {
-    return '<ol class="tl"><li class="ok"><span class="dot" aria-hidden="true">✓</span><div>Richiesta inviata<small>Contratto ' + S.contract.id + ' e allegato ' + e(S.file.name) + ' (' + size(S.file.size) + ')</small></div></li>' +
-      '<li><span class="dot" aria-hidden="true">2</span><div>Verifiche automatiche in attesa<small>Controllo del contratto firmato, dell\'identità e dei poteri del legale rappresentante.</small></div></li>' +
-      '<li><span class="dot" aria-hidden="true">3</span><div>E-mail di attivazione<small>Arriverà a ' + e(S.data.email) + ' dopo l’esito positivo dei controlli, con il nome utente (la tua e-mail) e le istruzioni per il primo accesso. Userai la password scelta: non sarà inclusa nell’e-mail.</small></div></li>' +
-      '<li><span class="dot" aria-hidden="true">4</span><div>Primo login del Rappresentante Legale<small>Dopo l’attivazione, al tuo primo accesso completerai PS-01 (Delegati) e poi PS-02 (Soglie e notifiche). Solo dopo il setup accederai alla homepage cliente. Queste fasi non iniziano durante l’attesa di verifica.</small></div></li></ol>';
+    var li = function (n, ok, title, sub) { return '<li' + (ok ? ' class="ok"' : '') + '><span class="dot" aria-hidden="true">' + (ok ? '✓' : n) + '</span><div>' + title + '<small>' + sub + '</small></div></li>'; };
+    return '<ol class="tl">' +
+      li(1, true, 'Richiesta inviata', 'Contratto ' + S.contract.id + ' e file firmato ' + e(S.file.name) + ' (' + size(S.file.size) + ')') +
+      li(2, false, 'Verifica della firma e dei dati', 'Controllo della firma del contratto e della sua corrispondenza con i dati di azienda e legale rappresentante inseriti.') +
+      li(3, false, 'Controfirma di Postel', 'Dopo l’esito positivo della verifica, Postel controfirma il contratto.') +
+      li(4, false, 'Prima fattura via e-mail', 'Arriverà a ' + e(S.data.email) + ' con il collegamento per il pagamento, che avviene fuori dalla piattaforma. Nessun addebito automatico.') +
+      li(5, false, 'Pagamento, abilitazione e credenziali', 'Ricevuto il pagamento, il servizio viene abilitato e ricevi via e-mail il nome utente (la tua e-mail) e le istruzioni per il primo accesso. Userai la password scelta: non sarà inclusa nell’e-mail.') +
+      li(6, false, 'Primo accesso del legale rappresentante', 'Al primo accesso completerai PS-01 (Delegati) e poi PS-02 (Soglie e notifiche). Solo dopo il setup accederai alla homepage cliente.') +
+      '</ol>';
   }
   function renderDone() {
     var el = $('done');
     if (!S.submitted) { el.hidden = true; return; }
     el.hidden = false;
     el.innerHTML = '<div><span class="pend">In attesa di verifica</span><h1 id="t4" tabindex="-1" style="margin-top:10px">Richiesta di attivazione inviata</h1><p class="lead">Riferimento <strong>' + S.ref + '</strong> · ' + e(S.data.ragione) + '. I servizi non sono ancora attivi e l\'accesso all\'area clienti non è ancora disponibile.</p></div>' + timeline() +
-      '<div class="demo" role="note"><span>Nel prototipo nessun file è stato caricato, nessuna e-mail è stata inviata e nessuna verifica è stata avviata. I dati restano in questa scheda fino alla chiusura o al ricaricamento.</span></div>' +
+      '<div class="demo" role="note"><span>Nel prototipo nessun file è stato caricato, nessuna e-mail è stata inviata, nessuna verifica è stata avviata e nessuna fattura è stata emessa. I dati restano in questa scheda fino alla chiusura o al ricaricamento.</span></div>' +
       '<div class="actions" style="justify-content:flex-start"><button type="button" class="btn btn-o" id="reopen">Rivedi la conferma</button><a class="btn btn-o" href="vetrina-V01-catalogo.html">Torna alla vetrina</a></div>';
     $('reopen').onclick = openDialog;
   }
   function openDialog() {
     var root = $('dlg-root');
     root.innerHTML = '<div class="scrim" id="scrim"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-t" aria-describedby="dlg-d"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><div><span class="pend">In attesa di verifica</span><h2 id="dlg-t" style="margin-top:10px">Grazie, abbiamo ricevuto la richiesta</h2></div><button type="button" class="x" id="dlg-x" aria-label="Chiudi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>' +
-      '<p id="dlg-d" style="margin:0;font-size:14px;color:#3A424C">La richiesta ' + S.ref + ' passa ora alle verifiche automatiche. Al termine riceverai un\'e-mail di attivazione: fino ad allora i servizi non sono attivi e non è possibile accedere all\'area clienti.</p>' + timeline() +
-      '<div class="demo" role="note"><span><strong>Demo:</strong> nessun caricamento, invio di e-mail o verifica è stato eseguito.</span></div><button type="button" class="btn btn-p" id="dlg-ok">Ho capito</button></div></div>';
+      '<p id="dlg-d" style="margin:0;font-size:14px;color:#3A424C">La richiesta ' + S.ref + ' passa ora alla verifica della firma e dei dati. Seguiranno la controfirma di Postel e la prima fattura via e-mail, da pagare fuori dalla piattaforma: i servizi non sono attivi e l\'area clienti non è accessibile fino al pagamento.</p>' + timeline() +
+      '<div class="demo" role="note"><span><strong>Demo:</strong> nessun caricamento, invio di e-mail, verifica o fattura è stato eseguito.</span></div><button type="button" class="btn btn-p" id="dlg-ok">Ho capito</button></div></div>';
     var dlg = root.querySelector('.dlg');
     function close() { root.innerHTML = ''; document.removeEventListener('keydown', key); $('t4').focus(); }
     function key(ev) {
@@ -308,20 +423,19 @@
   }
 
   /* ---------- render ---------- */
-  function renderAll() { render(); }
   function render() {
-    if (S.step === 3 && !canGo(3)) S.step = S.data ? 2 : 1;
+    if (S.step === 3 && !canGo(3)) S.step = canGo(2) ? 2 : 1;
     if (S.step === 2 && !canGo(2)) S.step = 1;
     renderStepper();
     $('s1').hidden = S.submitted || S.step !== 1;
     $('s2').hidden = S.submitted || S.step !== 2;
     $('s3').hidden = S.submitted || S.step !== 3;
-    var showOrder = S.step === 2 && !S.submitted;
-    $('side').hidden = !showOrder;
-    $('activation-layout').classList.toggle('layout-single', !showOrder);
-    if (S.step === 2 && !S.submitted) renderCat();
+    var showCart = S.step === 1 && !S.submitted;
+    $('side').hidden = !showCart;
+    $('activation-layout').classList.toggle('layout-single', !showCart);
+    if (S.step === 1 && !S.submitted) { renderCat(); renderSide(); }
     if (S.step === 3 && !S.submitted) renderContract();
-    renderSide(); renderDone();
+    renderDone();
   }
   window.addEventListener('beforeunload', function (ev) {
     if (S.submitted || !(S.dirty || items().length)) return;
