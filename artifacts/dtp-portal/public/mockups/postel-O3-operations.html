@@ -352,7 +352,7 @@ class Component extends DCLogic {
     var filters = [
       { label: 'Periodo', value: 'Ultimi 30 giorni' }, { label: 'Famiglia', value: 'Tutte' },
       { label: 'Servizio', value: 'Tutti' }, { label: 'Canale', value: 'Tutti' },
-      { label: 'Cliente', value: 'Tutti' }, { label: 'Bundle', value: 'Tutti' }
+      { label: 'Cliente', value: 'Tutti' }, { label: 'Servizio', value: 'Tutti' }
     ];
     var kpis = [
       { label: 'Transazioni', value: '1,09 M', color: '#1A1C1E', sub: '+8,1% rispetto ai 30 giorni precedenti' },
@@ -409,9 +409,9 @@ class Component extends DCLogic {
     var AS = { todo: ['Da prendere in carico', '#FDF1D6', '#855800', 'Prendi in carico'], cfg: ['In configurazione', '#E5EFFF', '#0047BB', 'Aggiorna stato'], test: ['In collaudo', '#E5EFFF', '#0047BB', 'Aggiorna stato'], act: ['In attivazione', '#E5EFFF', '#0047BB', 'Completa attivazione'], block: ['Bloccata · PIX-48213', '#FBE3E1', '#A3201A', 'Apri ticket'] };
     var acts = [
       ['ORD-2026-1172', 'Farmacie Riunite Sud S.r.l.', 'Nuovo servizio: Identificazioni Proprietarie', '15 ott 2026', 'block', 12, 'C. Ferri'],
-      ['ORD-2026-1179', 'Banca Levante S.p.A.', 'Upgrade a Enterprise', '20 ott 2026', 'cfg', 7, 'F. Moro'],
-      ['CTR-2026-0532', 'Studio Notarile Ricci', 'Nuovo contratto: bundle Base', '22 ott 2026', 'test', 5, 'C. Ferri'],
-      ['ORD-2026-1187', 'Assicurazioni Aurora S.p.A.', 'Ricarica 500 Nuovi Certificati FEA', '24 ott 2026', 'act', 3, 'C. Ferri'],
+      ['ORD-2026-1179', 'Banca Levante S.p.A.', 'Modifica dell’offerta: 3 servizi aggiunti', '20 ott 2026', 'cfg', 7, 'F. Moro'],
+      ['CTR-2026-0532', 'Studio Notarile Ricci', 'Nuovo contratto: 3 servizi configurati', '22 ott 2026', 'test', 5, 'C. Ferri'],
+      ['ORD-2026-1187', 'Assicurazioni Aurora S.p.A.', 'Upgrade +500 Nuovi Certificati FEA', '24 ott 2026', 'act', 3, 'C. Ferri'],
       ['ORD-2026-1190', 'Logistica Adriatica S.r.l.', 'Upgrade a Medium', '26 ott 2026', 'todo', 1, '—']
     ].map(function (r) {
       var a = AS[r[4]], urgent = r[4] === 'block' || r[4] === 'todo';

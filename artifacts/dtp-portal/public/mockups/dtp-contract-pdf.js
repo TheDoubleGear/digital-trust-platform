@@ -46,24 +46,22 @@
     field('Codice fiscale', d.cf);
     field('E-mail', d.email);
     field('Cellulare', d.tel);
-    heading('3. Servizi oggetto del contratto (Allegato A)');
-    input.items.forEach(function (item, index) {
+    var pr = D.price(input.config);
+    heading('3. Servizi configurati e quantità (Allegato A)');
+    pr.lines.forEach(function (line, index) {
       if (y + 30 > bottom) newPage();
-      text((index + 1) + '. ' + item.name, true);
-      text(item.detail);
-      text('Importo annuo, IVA esclusa: ' + D.eur(item.price));
+      text((index + 1) + '. ' + line.name, true);
+      text('Quantità: ' + D.num(line.qty) + ' unità · prezzo unitario di listino ' + D.unit3(line.unit) + ' €');
+      text('Importo, IVA esclusa: ' + D.eur(line.amount));
     });
-    if (input.bundle === 'Enterprise') {
-      heading('Composizione Enterprise - prezzo indicativo');
-      D.services.forEach(function (service, index) {
-        if (input.entQty[index] > 0) field(service.name, D.num(input.entQty[index]) + ' unità');
-      });
-    }
-    heading('Totale annuo, IVA esclusa: ' + D.eur(input.items.reduce(function (sum, item) { return sum + item.price; }, 0)));
-    heading('4. Durata');
+    heading('4. Corrispettivi, IVA esclusa');
+    field('Componente variabile (quantità × prezzo unitario)', D.eur(pr.variabile));
+    field('Fee di attivazione', D.eur(pr.fee) + ' (' + D.SEGNAPOSTO + ')');
+    field('Canone periodico', D.eur(pr.canone) + ' (' + D.SEGNAPOSTO + ') · periodicità ' + D.periodicita);
+    heading('Totale, IVA esclusa: ' + D.eur(pr.totale));
+    text('Oltre le quantità configurate si applica l\'overage al prezzo unitario di listino. Ogni variazione successiva è una modifica dell\'offerta e del contratto. Modalità di fatturazione: [DA DEFINIRE].');
+    heading('5. Durata');
     text('12 mesi dalla data di controfirma di Postel. Modalità di rinnovo: [DA DEFINIRE].');
-    heading('5. Corrispettivi e fatturazione');
-    text('Prezzi IVA esclusa secondo il listino in vigore. Il prezzo di Enterprise è indicativo e viene confermato da Postel. Modalità di fatturazione: [DA DEFINIRE].');
     heading('6. Attivazione');
     text("Nel processo definitivo la richiesta sarà soggetta alle verifiche di Postel. L'esito e le istruzioni di accesso saranno comunicati all'e-mail del legale rappresentante. Questa bozza non avvia alcuna attivazione.");
     heading('7. Condizioni generali e trattamento dei dati');

@@ -78,7 +78,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 </label>
 <label style="display: flex; flex-direction: column; gap: 8px; padding: 16px; border: 1px solid #F3C2A8; background: #FFF6F1; border-radius: 6px">
 <span style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600"><span style="width: 10px; height: 10px; border-radius: 5px; background: #E8692A"></span>Soglia critica</span>
-<span style="font-size: 13px; color: #4D5762; line-height: 1.4">Avviso da gestire: il servizio è vicino all'esaurimento, valutare una ricarica.</span>
+<span style="font-size: 13px; color: #4D5762; line-height: 1.4">Avviso da gestire: il servizio è vicino all'esaurimento, valutare un upgrade.</span>
 <span style="display: flex; align-items: center; gap: 8px; font-size: 15px"><input type="number" defaultValue="90" min="10" max="99" style="width: 96px; min-height: 44px; padding: 0 10px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 16px"> %</span>
 </label>
 </div>
@@ -150,7 +150,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div style="padding: 16px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; line-height: 1.5">
 <span style="display: inline-flex; align-self: flex-start; padding: 3px 9px; border-radius: 999px; background: #FDE7DC; color: #B03A0B; font-size: 12px; font-weight: 600">Critico</span>
 <span><strong style="font-weight: 600">Identificazioni Full Prospect</strong> ha raggiunto il 90% della quantità inclusa. Al ritmo attuale si esaurirà prima del rinnovo.</span>
-<span style="display: inline-flex; align-self: flex-start; min-height: 40px; align-items: center; padding: 0 14px; border-radius: 6px; background: #0047BB; color: #FFFFFF; font-size: 13px; font-weight: 600">Valuta una ricarica</span>
+<span style="display: inline-flex; align-self: flex-start; min-height: 40px; align-items: center; padding: 0 14px; border-radius: 6px; background: #0047BB; color: #FFFFFF; font-size: 13px; font-weight: 600">Valuta un upgrade</span>
 </div>
 </div>
 <p style="margin: 0; font-size: 12px; color: #4D5762; line-height: 1.5">Gli avvisi contengono solo dati aggregati del contratto, mai dati degli utenti finali.</p>
@@ -281,8 +281,8 @@ class Component extends DCLogic {
       ['Soglia critica superata o servizio esaurito', 'per singolo servizio', true, true, true, true],
       ['Esaurimento previsto prima del rinnovo', 'calcolato sul ritmo recente', true, true, false, true],
       ['Richieste di acquisto dei delegati', 'inviate dal delegato operativo', true, true, false, false],
-      ['Ordini confermati, attivati o bloccati', 'ricariche, offerte, cambi di bundle', true, true, false, false],
-      ['Fatture emesse', 'canone, overage, ricariche', false, true, false, false],
+      ['Ordini confermati, attivati o bloccati', 'upgrade e modifiche dell’offerta', true, true, false, false],
+      ['Fatture emesse', 'canone, overage, componente variabile', false, true, false, false],
       ['Scadenza del contratto', 'entro le finestre di preavviso', true, true, false, false]
     ].map(function (e) { return { name: e[0], sub: e[1], lr: e[2], amm: e[3], op: e[4], opAllowed: e[5], opNo: !e[5] }; });
     return {

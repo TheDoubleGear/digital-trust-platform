@@ -103,7 +103,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px">
 <div>
 <h2 id="titolo-servizi" style="margin: 0; font-size: 18px; font-weight: 600">Identificazioni Proprietarie trattiene solo il 17,5% dei ricavi</h2>
-<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Margine lordo per componente del bundle, dal più basso · ogni barra è il ricavo del servizio, diviso in costo diretto e margine</p>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Margine lordo per servizio, dal più basso · ogni barra è il ricavo del servizio, diviso in costo diretto e margine</p>
 </div>
 <div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; align-items: center">
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #E8692A"></span>Costo diretto</span>
@@ -126,20 +126,20 @@ a{color:#0047BB}a:hover{color:#003A99}
 </section>
 
 <div style="display: flex; flex-wrap: wrap; gap: 16px">
-<section class="dtp-card" aria-labelledby="titolo-bundle" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<section class="dtp-card" aria-labelledby="titolo-settore" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
 <div>
-<h2 id="titolo-bundle" style="margin: 0; font-size: 18px; font-weight: 600">Base è il bundle meno redditizio: 44% di margine</h2>
-<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Ricavi, costi diretti e margine per bundle (migliaia di €, canoni e overage)</p>
+<h2 id="titolo-settore" style="margin: 0; font-size: 18px; font-weight: 600">Retail e servizi è il settore meno redditizio: 44% di margine</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Ricavi, costi diretti e margine per settore (migliaia di €, canone periodico, componente variabile e overage)</p>
 </div>
-<div role="table" aria-label="Margine per bundle" style="font-size: 14px">
+<div role="table" aria-label="Margine per settore" style="font-size: 14px">
 <div role="row" style="display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 1.6fr; color: #4D5762; font-size: 12px; border-bottom: 1px solid #D9E1EC; text-align: right">
-<span role="columnheader" style="padding: 8px; text-align: left">Bundle</span>
+<span role="columnheader" style="padding: 8px; text-align: left">Settore</span>
 <span role="columnheader" style="padding: 8px">Ricavi</span>
 <span role="columnheader" style="padding: 8px">Costi</span>
 <span role="columnheader" style="padding: 8px">Margine</span>
 <span role="columnheader" style="padding: 8px; text-align: left">Margine %</span>
 </div>
-<sc-for list="{{byBundle}}" as="b" hint-placeholder-count="4">
+<sc-for list="{{bySector}}" as="b" hint-placeholder-count="5">
 <div role="row" style="display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 1.6fr; align-items: center; border-bottom: 1px solid #EAEFF5; text-align: right">
 <span role="rowheader" style="padding: 10px 8px; text-align: left; font-weight: 600">{{b.name}}</span>
 <span role="cell" style="padding: 10px 8px">{{b.rev}}</span>
@@ -355,7 +355,7 @@ class Component extends DCLogic {
     var EXT = { com: [['co', 'Commercial orchestration']], ops: [['pix', 'PIX · assistenza']], cdg: [['rf', 'Rating e fatturazione'], ['co', 'Commercial orchestration']] };
     var ext = EXT[P].map(function (e) { return { id: e[0], label: e[1] }; });
     var isCdg = P === 'cdg';
-    var filters = [{ label: 'Periodo', value: 'Gen → ott 2026' }, { label: 'Bundle', value: 'Tutti' }, { label: 'Servizio', value: 'Tutti' }, { label: 'Cliente', value: 'Tutti' }];
+    var filters = [{ label: 'Periodo', value: 'Gen → ott 2026' }, { label: 'Settore', value: 'Tutti' }, { label: 'Servizio', value: 'Tutti' }, { label: 'Cliente', value: 'Tutti' }];
     if (isCdg) filters.push({ label: 'Fornitore', value: 'Tutti' });
     var kpis = [
       { label: 'Ricavi YTD', value: '€ 3,69 M', color: '#1A1C1E', sub: 'canoni € 3,33 M · overage € 357k' },
@@ -393,7 +393,7 @@ class Component extends DCLogic {
       var mu = s[4] - s[5];
       return { name: s[0], vol: s[3].toLocaleString('it-IT', { minimumFractionDigits: 2 }) + ' M', price: eu(s[4]), cost: eu(s[5]), marg: eu(mu), color: mu / s[4] < 0.3 ? '#A3201A' : '#1A1C1E' };
     });
-    var byBundle = [['Base', 336.2, 188.3], ['Medium', 1013.8, 456.2], ['Pro', 1441.4, 533.3], ['Enterprise', 898.1, 335.5]].map(function (b) {
+    var bySector = [['Retail e servizi', 277.3, 155.0], ['Energia e utility', 512.3, 249.8], ['Telecomunicazioni', 581.9, 245.3], ['Assicurazioni', 1102.4, 440.1], ['Banche e finanza', 1215.6, 423.1]].map(function (b) {
       var m = (b[1] - b[2]) / b[1] * 100;
       return { name: b[0], rev: k(b[1]), cost: k(b[2]), marg: k(b[1] - b[2]), pct: pct(m), w: m.toFixed(1) + '%', color: m < 50 ? '#B03A0B' : '#1A1C1E' };
     });
@@ -428,7 +428,7 @@ class Component extends DCLogic {
         { label: 'Scarti SdI', value: '3', sub: 'su 1.912 · tutti riemessi', color: '#855800' }
       ],
       who: WHO[P], nav: nav, ext: ext, isCdg: isCdg,
-      filters: filters, kpis: kpis, bySvc: bySvc, unit: unit, byBundle: byBundle, t: t, suppliers: suppliers
+      filters: filters, kpis: kpis, bySvc: bySvc, unit: unit, bySector: bySector, t: t, suppliers: suppliers
     };
   }
 }

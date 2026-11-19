@@ -15,6 +15,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
+<script src="dtp-catalogo.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -63,7 +64,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <section class="dtp-hero dtp-hero-bleed" aria-label="Benvenuto" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
 <div>
 <h1 style="margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.01em">Buongiorno, {{who.first}}</h1>
-<p style="margin: 6px 0 0; font-size: 14px; color: #4D5762">Assicurazioni Aurora S.p.A. · Bundle Medium attivo fino al 28 feb 2027 · rinnovo tra 124 giorni · dati al 27 ott 2026</p>
+<p style="margin: 6px 0 0; font-size: 14px; color: #4D5762">Assicurazioni Aurora S.p.A. · {{svcCount}} servizi configurati · contratto attivo fino al 28 feb 2027 · rinnovo tra 124 giorni · dati al 27 ott 2026</p>
 </div>
 <div style="display: flex; flex-wrap: wrap; gap: 10px">
 <a class="dtp-linkcard" href="cliente-M1-panoramica.html" style="display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: 6px; background: #FFFFFF; border: 1px solid #D9E1EC; text-decoration: none; color: #1A1C1E; min-width: 150px"><span style="font-size: 20px; font-weight: 600">6 di 9</span><span style="font-size: 12px; color: #4D5762">servizi in soglia</span></a>
@@ -105,19 +106,19 @@ a{color:#0047BB}a:hover{color:#003A99}
 
 <section class="dtp-card" aria-labelledby="titolo-attive" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 22px; display: flex; flex-direction: column; gap: 14px">
 <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
-<h2 id="titolo-attive" style="margin: 0; font-size: 18px; font-weight: 600">Le tue offerte attive</h2>
+<h2 id="titolo-attive" style="margin: 0; font-size: 18px; font-weight: 600">La tua offerta</h2>
 <a href="cliente-M1-panoramica.html" style="font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 0">Consumi e soglie →</a>
 </div>
 <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: center; padding: 16px; border-radius: 6px; border: 1px solid #0047BB; background: #F2F8FF">
 <div style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 4px">
-<div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 16px; font-weight: 600">Bundle Medium</span><span style="padding: 2px 8px; border-radius: 999px; background: #E3F3EA; color: #1A6B4A; font-size: 12px; font-weight: 600">Attivo</span></div>
-<span style="font-size: 13px; color: #4D5762">9 servizi inclusi · 01 mar 2026 → 28 feb 2027 · contratto DTP-2026-0418</span>
+<div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 16px; font-weight: 600">{{svcCount}} servizi configurati</span><span style="padding: 2px 8px; border-radius: 999px; background: #E3F3EA; color: #1A6B4A; font-size: 12px; font-weight: 600">Attivo</span></div>
+<span style="font-size: 13px; color: #4D5762">01 mar 2026 → 28 feb 2027 · contratto DTP-2026-0418</span>
 </div>
 <sc-if value="{{f.money}}" hint-placeholder-val="{{ true }}">
-<div style="text-align: right"><div style="font-size: 18px; font-weight: 600">€ 19.900 / anno</div><div style="font-size: 12px; color: #4D5762">canone fatturato a trimestri</div></div>
+<div style="text-align: right"><div style="font-size: 18px; font-weight: 600">€ 19.900 / anno</div><div style="font-size: 12px; color: #4D5762">valore del contratto · canone periodico e componente variabile</div></div>
 </sc-if>
 </div>
-<p style="margin: 0; font-size: 13px; color: #4D5762">Offerte singole e ricariche attive: nessuna. Tutti i servizi del catalogo sono inclusi nel tuo bundle.</p>
+<p style="margin: 0; font-size: 13px; color: #4D5762">Ogni aumento di quantità o variazione dei servizi è un upgrade o una modifica dell'offerta e del contratto.</p>
 </section>
 
 <section class="dtp-card" id="ordini" aria-labelledby="titolo-ordini" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 22px; display: flex; flex-direction: column; gap: 10px">
@@ -140,9 +141,9 @@ a{color:#0047BB}a:hover{color:#003A99}
 <aside aria-label="Riepilogo" style="flex: 1 1 340px; min-width: 0">
 <sc-if value="{{f.buy}}" hint-placeholder-val="{{ true }}">
 <section class="dtp-card" aria-labelledby="titolo-carrello" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 22px; display: flex; flex-direction: column; gap: 14px">
-<h2 id="titolo-carrello" style="margin: 0; font-size: 18px; font-weight: 600">Riepilogo ordine</h2>
+<h2 id="titolo-carrello" style="margin: 0; font-size: 18px; font-weight: 600">Riepilogo della modifica</h2>
 <sc-if value="{{cart.empty}}" hint-placeholder-val="{{ false }}">
-<p style="margin: 0; font-size: 14px; color: #4D5762">Nessun articolo. Aggiungi una ricarica o un bundle dal catalogo qui sotto.</p>
+<p style="margin: 0; font-size: 14px; color: #4D5762">Nessuna modifica. Aggiungi un upgrade dal catalogo qui sotto.</p>
 </sc-if>
 <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
 <sc-for list="{{cart.items}}" as="c" hint-placeholder-count="1">
@@ -155,16 +156,16 @@ a{color:#0047BB}a:hover{color:#003A99}
 </ul>
 <div style="display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid #EAEFF5; font-size: 15px"><span>Totale IVA esclusa</span><strong style="font-weight: 700">{{cart.total}}</strong></div>
 <label style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #1A1C1E; line-height: 1.4"><input type="checkbox" style="width: 18px; height: 18px; margin-top: 1px"> Accetto le condizioni d'uso e il listino in vigore</label>
-<button class="dtp-btn dtp-btn-p" type="button" onClick="{{cart.confirm}}" style="min-height: 48px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Conferma ordine</button>
+<button class="dtp-btn dtp-btn-p" type="button" onClick="{{cart.confirm}}" style="min-height: 48px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Conferma la modifica</button>
 <sc-if value="{{cart.done}}" hint-placeholder-val="{{ false }}">
-<p role="status" style="margin: 0; padding: 10px 12px; border-radius: 6px; background: #E3F3EA; color: #1A6B4A; font-size: 13px; font-weight: 500">Ordine inviato. Lo trovi negli ordini con stato «In attivazione».</p>
+<p role="status" style="margin: 0; padding: 10px 12px; border-radius: 6px; background: #E3F3EA; color: #1A6B4A; font-size: 13px; font-weight: 500">Modifica inviata. La trovi negli ordini con stato «In attivazione».</p>
 </sc-if>
 </section>
 </sc-if>
 <sc-if value="{{f.noBuy}}" hint-placeholder-val="{{ false }}">
 <section class="dtp-card" aria-labelledby="titolo-richieste" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 22px; display: flex; flex-direction: column; gap: 12px">
 <h2 id="titolo-richieste" style="margin: 0; font-size: 18px; font-weight: 600">Le tue richieste</h2>
-<p style="margin: 0; font-size: 13px; color: #4D5762; line-height: 1.45">Gli acquisti li conferma il delegato amministrativo o il legale rappresentante. Le richieste che invii arrivano a entrambi.</p>
+<p style="margin: 0; font-size: 13px; color: #4D5762; line-height: 1.45">Upgrade e modifiche dell'offerta li conferma il delegato amministrativo o il legale rappresentante. Le richieste che invii arrivano a entrambi.</p>
 <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
 <sc-for list="{{requests}}" as="r" hint-placeholder-count="1">
 <li style="display: flex; justify-content: space-between; gap: 8px; font-size: 14px; padding: 8px 0; border-bottom: 1px solid #EAEFF5"><span>{{r.name}}</span><span style="font-size: 12px; font-weight: 600; color: #855800">Inviata</span></li>
@@ -178,20 +179,20 @@ a{color:#0047BB}a:hover{color:#003A99}
 </aside>
 </div>
 
-<section aria-labelledby="titolo-catalogo" style="display: flex; flex-direction: column; gap: 16px">
+<section id="catalogo" aria-labelledby="titolo-catalogo" style="display: flex; flex-direction: column; gap: 16px">
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
 <div>
 <h2 id="titolo-catalogo" style="margin: 0; font-size: 22px; font-weight: 600">Catalogo</h2>
-<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Bundle annuali, offerte singole e ricariche dei servizi Digital Trust</p>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Tutti i servizi Digital Trust, con la quantità configurata nella tua offerta e le proposte di upgrade</p>
 </div>
 <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
-<div class="dtp-seg" role="group" aria-label="Tipo di offerta" style="display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: #E4EAF2">
+<div class="dtp-seg" role="group" aria-label="Stato del servizio" style="display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: #E4EAF2">
 <sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
 <button class="dtp-btn" type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="min-height: 40px; padding: 0 18px; border-radius: 999px; border: 0; background: {{t.bg}}; color: #1A1C1E; font: inherit; font-size: 13px; font-weight: {{t.weight}}; cursor: pointer">{{t.label}}</button>
 </sc-for>
 </div>
 <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4D5762; font-weight: 500">Famiglia di servizi
-<select style="min-height: 44px; min-width: 200px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E"><option>Tutte</option><option>Identità e verifica</option><option>Contratti e documenti</option><option>Firma elettronica</option><option>Fatturazione</option></select>
+<select onChange="{{pickFam}}" style="min-height: 44px; min-width: 200px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; color: #1A1C1E"><sc-for list="{{famOpts}}" as="o" hint-placeholder-count="5"><option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option></sc-for></select>
 </label>
 </div>
 </div>
@@ -201,129 +202,37 @@ a{color:#0047BB}a:hover{color:#003A99}
 <p style="margin: 0; font-size: 14px; line-height: 1.5">{{advice}}</p>
 </div>
 
-<sc-if value="{{show.bundles}}" hint-placeholder-val="{{ true }}">
-<div style="display: flex; flex-direction: column; gap: 12px">
-<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
-<h3 style="margin: 0; font-size: 16px; font-weight: 600">Bundle</h3>
-<button class="dtp-btn dtp-btn-o" type="button" onClick="{{toggleCompare}}" aria-expanded="{{compareOpen}}" style="min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #0047BB; cursor: pointer">{{compareLabel}}</button>
-</div>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px">
-<sc-for list="{{bundles}}" as="b" hint-placeholder-count="4">
-<article class="dtp-card" style="background: #FFFFFF; border: {{b.border}}; border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
-<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 24px">
-<h4 style="margin: 0; font-size: 17px; font-weight: 600">{{b.name}}</h4>
-<sc-if value="{{b.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: {{b.badgeBg}}; color: {{b.badgeFg}}">{{b.badge}}</span></sc-if>
-</div>
-<sc-if value="{{f.money}}" hint-placeholder-val="{{ true }}">
-<div style="font-size: 22px; font-weight: 600; letter-spacing: -0.01em">{{b.price}}</div>
+<sc-if value="{{noSvc}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; padding: 18px; border-radius: 6px; background: #FFFFFF; border: 1px dashed #B8C2CF; font-size: 14px; color: #4D5762">{{noSvcText}}</p>
 </sc-if>
-<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px">
-<sc-for list="{{b.lines}}" as="l" hint-placeholder-count="3">
-<li style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #4D5762">{{l.k}}</span><strong style="font-weight: 600">{{l.v}}</strong></li>
-</sc-for>
-</ul>
-<button class="dtp-btn" type="button" onClick="{{b.act}}" style="margin-top: auto; min-height: 44px; border-radius: 999px; border: 1px solid {{b.btnBorder}}; background: {{b.btnBg}}; color: {{b.btnFg}}; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{b.btn}}</button>
-</article>
-</sc-for>
-</div>
-<sc-if value="{{compareOpen}}" hint-placeholder-val="{{ false }}">
-<div class="dtp-card" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 18px; overflow-x: auto">
-<div role="table" aria-label="Confronto delle quantità annue per bundle" style="min-width: 820px; font-size: 13px">
-<div role="row" style="display: grid; grid-template-columns: 2.2fr repeat(5, minmax(0, 1fr)); color: #4D5762; font-size: 12px; border-bottom: 1px solid #D9E1EC; text-align: right">
-<span role="columnheader" style="padding: 10px; text-align: left">Servizio (unità / anno)</span>
-<span role="columnheader" style="padding: 10px">Base</span>
-<span role="columnheader" style="padding: 10px; color: #0047BB; font-weight: 600">Medium (tuo)</span>
-<span role="columnheader" style="padding: 10px">Pro</span>
-<span role="columnheader" style="padding: 10px">Enterprise</span>
-<span role="columnheader" style="padding: 10px; color: #1A1C1E; font-weight: 600">Tuo consumo previsto</span>
-</div>
-<sc-for list="{{compare}}" as="r" hint-placeholder-count="9">
-<div role="row" style="display: grid; grid-template-columns: 2.2fr repeat(5, minmax(0, 1fr)); border-bottom: 1px solid #EAEFF5; text-align: right">
-<span role="rowheader" style="padding: 10px; text-align: left; font-weight: 500">{{r.name}}</span>
-<span role="cell" style="padding: 10px">{{r.s}}</span>
-<span role="cell" style="padding: 10px; background: #F2F8FF; font-weight: 600">{{r.b}}</span>
-<span role="cell" style="padding: 10px">{{r.p}}</span>
-<span role="cell" style="padding: 10px">{{r.e}}</span>
-<span role="cell" style="padding: 10px; font-weight: 600; color: {{r.fcColor}}">{{r.fc}}</span>
-</div>
-</sc-for>
-</div>
-</div>
-</sc-if>
-</div>
-</sc-if>
-
-<sc-if value="{{show.singles}}" hint-placeholder-val="{{ true }}">
-<div style="display: flex; flex-direction: column; gap: 12px">
-<h3 style="margin: 0; font-size: 16px; font-weight: 600">Offerte singole e ricariche</h3>
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px">
-<sc-for list="{{singles}}" as="s" hint-placeholder-count="9">
+<sc-for list="{{svc}}" as="s" hint-placeholder-count="9">
 <article class="dtp-card" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
 <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
 <span style="font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #4D5762; font-weight: 600">{{s.family}}</span>
-<sc-if value="{{s.reco}}" hint-placeholder-val="{{ false }}"><span style="padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #FDE7DC; color: #B03A0B">Consigliato</span></sc-if>
+<sc-if value="{{s.reco}}" hint-placeholder-val="{{ false }}"><span style="white-space: nowrap; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #FDE7DC; color: #B03A0B">Upgrade consigliato</span></sc-if>
 </div>
-<h4 style="margin: 0; font-size: 15px; font-weight: 600; line-height: 1.3; min-height: 40px">{{s.name}}</h4>
-<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #4D5762"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{s.dot}}"></span>Incluso nel bundle · {{s.state}}</div>
-<div style="display: flex; flex-direction: column; gap: 8px">
-<sc-for list="{{s.packs}}" as="k" hint-placeholder-count="2">
-<div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; border: 1px solid #DDE4EE">
-<div style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 14px; font-weight: 600">Ricarica {{k.qty}}</span><span style="font-size: 12px; color: #4D5762">{{k.sub}}</span></div>
-<button class="dtp-btn" type="button" onClick="{{k.act}}" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid {{k.btnBorder}}; background: {{k.btnBg}}; color: {{k.btnFg}}; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{k.btn}}</button>
-</div>
+<h3 style="margin: 0; font-size: 15px; font-weight: 600; line-height: 1.3; min-height: 40px">{{s.name}}</h3>
+<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #4D5762"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{s.dot}}"></span>{{s.stateLine}}</div>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px">
+<sc-for list="{{s.kv}}" as="l" hint-placeholder-count="2">
+<li style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #4D5762">{{l.k}}</span><strong style="font-weight: 600; text-align: right">{{l.v}}</strong></li>
 </sc-for>
+</ul>
+<div style="margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; border: 1px solid {{s.boxBorder}}; background: {{s.boxBg}}">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 14px; font-weight: 600">{{s.upTitle}}</span><span style="font-size: 12px; color: #4D5762">{{s.upSub}}</span></div>
+<button class="dtp-btn" type="button" onClick="{{s.act}}" aria-label="{{s.btnLabel}}" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid {{s.btnBorder}}; background: {{s.btnBg}}; color: {{s.btnFg}}; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{s.btn}}</button>
 </div>
 </article>
 </sc-for>
 </div>
-</div>
-</sc-if>
 </section>
 
 <footer style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 12px; color: #4D5762; padding-top: 8px">
-<span>Prezzi IVA esclusa, secondo il listino in vigore. Le ricariche valgono fino al termine del periodo contrattuale.</span>
+<span>Prezzi IVA esclusa, secondo il listino in vigore. Upgrade e modifiche valgono fino al termine del periodo contrattuale e aggiornano offerta e contratto.</span>
 <span style="display: flex; gap: 16px"><a href="#condizioni">Condizioni d'uso</a><a href="cliente-A-assistenza.html">Assistenza</a></span>
 </footer>
 </main>
-<sc-if value="{{ent.open}}" hint-placeholder-val="{{ false }}">
-<div style="position: fixed; inset: 0; z-index: 50; overflow-y: auto; background: rgba(11, 31, 77, 0.55); display: flex; justify-content: center; align-items: flex-start; padding: 40px 16px">
-<div class="dtp-dialog" role="dialog" aria-modal="true" aria-labelledby="titolo-enterprise" style="width: 100%; max-width: 760px; background: #FFFFFF; border-radius: 6px; padding: 28px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 12px 40px rgba(11, 31, 77, 0.25)">
-<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px">
-<div>
-<h2 id="titolo-enterprise" style="margin: 0; font-size: 22px; font-weight: 600">Componi il tuo bundle Enterprise</h2>
-<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">Scegli i servizi da includere e le quantità annue. Puoi escludere un servizio portandolo a zero.</p>
-</div>
-<button class="dtp-btn dtp-btn-o" type="button" onClick="{{ent.close}}" aria-label="Chiudi" style="width: 44px; height: 44px; border-radius: 999px; border: 1px solid #D9E1EC; background: #FFFFFF; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A1C1E" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
-</div>
-<div role="table" aria-label="Servizi e quantità del bundle Enterprise" style="font-size: 14px">
-<div role="row" style="display: grid; grid-template-columns: 2fr 1.4fr 0.9fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid #D9E1EC; color: #4D5762; font-size: 12px">
-<span role="columnheader">Servizio</span><span role="columnheader">Quantità annua</span><span role="columnheader" style="text-align: right">Importo indicativo</span>
-</div>
-<sc-for list="{{ent.rows}}" as="r" hint-placeholder-count="9">
-<div role="row" style="display: grid; grid-template-columns: 2fr 1.4fr 0.9fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EAEFF5; align-items: center; opacity: {{r.op}}">
-<span role="cell" style="display: flex; flex-direction: column; gap: 1px"><span style="font-weight: 600">{{r.name}}</span><span style="font-size: 12px; color: #4D5762">{{r.unit}}</span></span>
-<span role="cell" style="display: flex; align-items: center; gap: 8px">
-<button class="dtp-btn dtp-btn-o" type="button" onClick="{{r.dec}}" aria-label="Riduci {{r.name}}" style="width: 40px; height: 40px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 18px; cursor: pointer">−</button>
-<span style="min-width: 76px; text-align: center; font-weight: 600">{{r.qty}}</span>
-<button class="dtp-btn dtp-btn-o" type="button" onClick="{{r.inc}}" aria-label="Aumenta {{r.name}}" style="width: 40px; height: 40px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 18px; cursor: pointer">+</button>
-</span>
-<span role="cell" style="text-align: right; font-weight: 600">{{r.amount}}</span>
-</div>
-</sc-for>
-</div>
-<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
-<div style="display: flex; flex-direction: column; gap: 2px">
-<span style="font-size: 13px; color: #4D5762">Canone annuo indicativo · {{ent.count}} servizi inclusi</span>
-<strong style="font-size: 24px; font-weight: 600">{{ent.total}}</strong>
-</div>
-<div style="display: flex; gap: 8px">
-<button class="dtp-btn dtp-btn-o" type="button" onClick="{{ent.close}}" style="min-height: 48px; padding: 0 22px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600; color: #1A1C1E; cursor: pointer">Annulla</button>
-<button class="dtp-btn dtp-btn-p" type="button" onClick="{{ent.confirm}}" style="min-height: 48px; padding: 0 22px; border-radius: 999px; border: 0; background: #0047BB; font: inherit; font-size: 15px; font-weight: 600; color: #FFFFFF; cursor: pointer">Conferma e aggiungi al riepilogo</button>
-</div>
-</div>
-</div>
-</div>
-</sc-if>
 
 </div>
 </template>
@@ -425,69 +334,70 @@ class Component extends DCLogic {
     var st = this.state || {};
     var P = this.props.persona;
     var set = function (o) { self.setState(o); };
+    var C = window.DTP;
     var WHO = {
       lr: { name: 'Paolo Ferretti', first: 'Paolo', role: 'Legale rappresentante', ini: 'PF' },
       amm: { name: 'Giulia Marchetti', first: 'Giulia', role: 'Delegato amministrativo', ini: 'GM' },
       op: { name: 'Davide Sala', first: 'Davide', role: 'Delegato operativo', ini: 'DS' }
     };
     var buy = P !== 'op', money = P !== 'op';
-    var eur = function (n) { return '€ ' + n.toLocaleString('it-IT', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); };
-    var cartIds = st.cart || ['fp-2500'];
+    var eur = C.eur, n = C.num;
+    var cartIds = st.cart || ['fp'];
     var reqs = st.requests || [];
     var addReq = function (name) { if (reqs.indexOf(name) < 0) set({ requests: reqs.concat([name]) }); };
     var add = function (id) { if (cartIds.indexOf(id) < 0) set({ cart: cartIds.concat([id]), done: false }); };
-    var DOT = { out: '#C7322A', crit: '#E8692A', warn: '#E0A100', ok: '#2E8B62' };
+    var DOT = { out: '#C7322A', crit: '#E8692A', warn: '#E0A100', ok: '#2E8B62', off: '#9AA6B8' };
     var STATE = { out: 'esaurito', crit: 'critico', warn: 'in attenzione', ok: 'regolare' };
-    var S = [
-      ['cert', 'Firma elettronica', 'Nuovi Certificati FEA', 'out', true, [[500, 1275], [1000, 2550]]],
-      ['fp', 'Identità e verifica', 'Identificazioni Full Prospect', 'crit', true, [[1000, 1020], [2500, 2550]]],
-      ['fun', 'Identità e verifica', 'Full Prospect con funnel completato', 'warn', false, [[1000, 680], [2500, 1700]]],
-      ['ver', 'Identità e verifica', 'Verifiche Contatti', 'warn', false, [[10000, 425], [25000, 1000]]],
-      ['doc', 'Contratti e documenti', 'Doc Composition Contratti', 'warn', false, [[1000, 170], [2500, 425]]],
-      ['app', 'Firma elettronica', 'Apposizioni FEA con COD', 'warn', false, [[5000, 640], [12500, 1600]]],
-      ['con', 'Contratti e documenti', 'Contratti', 'ok', false, [[1000, 425], [2500, 1060]]],
-      ['pro', 'Identità e verifica', 'Identificazioni Proprietarie', 'ok', false, [[500, 385], [1000, 765]]],
-      ['fat', 'Fatturazione', 'Fatture Elettroniche', 'ok', false, [[2000, 170], [6000, 480]]]
+    /* Offerta configurata del cliente: [id, quantità configurata, stato consumi, consumo previsto a fine periodo] */
+    var CFG = [
+      ['cert', 2500, 'out', 4302], ['fp', 5000, 'crit', 7505], ['fun', 4000, 'warn', 5402], ['ver', 25000, 'warn', 32307],
+      ['doc', 5000, 'warn', 5871], ['app', 12500, 'warn', 14514], ['con', 5000, 'ok', 5659], ['pro', 2500, 'ok', 1857], ['fat', 6000, 'ok', 3869]
     ];
+    var conf = {};
+    CFG.forEach(function (c) { conf[c[0]] = { qty: c[1], state: c[2], fc: c[3] }; });
+    /* Upgrade proposto: quantità mancante arrotondata al passo del servizio, prezzo ricalcolato e overage evitato. */
+    var up = {};
+    C.services.forEach(function (sv) {
+      var c = conf[sv.id];
+      if (!c) { up[sv.id] = { add: sv.step, reco: false }; return; }
+      var gap = c.fc - c.qty, reco = gap > 0 && c.state !== 'ok';
+      var addQ = reco ? Math.ceil(gap / sv.step) * sv.step : sv.step;
+      up[sv.id] = { add: addQ, reco: reco, price: Math.round(addQ * sv.unit * 100) / 100, overage: reco ? Math.round(gap * sv.unit * 100) / 100 : 0,
+        from: c.qty, to: c.qty + addQ };
+    });
+    var ovTot = C.services.reduce(function (a, sv) { return a + (up[sv.id].overage || 0); }, 0);
+    var upName = function (id) { var sv = C.byId(id); return 'Upgrade ' + sv.name + ' · +' + n(up[id].add); };
     var catalog = {};
-    var singles = S.map(function (s) {
+    C.services.forEach(function (sv) {
+      var u = up[sv.id], c = conf[sv.id];
+      catalog[sv.id] = { name: sv.name, pack: c ? 'upgrade +' + n(u.add) + ' unità · da ' + n(u.from) + ' a ' + n(u.to) : 'nuovo servizio · ' + n(u.add) + ' unità', price: Math.round(u.add * sv.unit * 100) / 100 };
+    });
+    var tab = st.tab || 'all', fam = st.fam || 'all';
+    var svc = C.services.filter(function (sv) {
+      var on = !!conf[sv.id];
+      return (fam === 'all' || sv.family === fam) && (tab === 'all' || (tab === 'on') === on);
+    }).map(function (sv) {
+      var c = conf[sv.id], u = up[sv.id], inCart = cartIds.indexOf(sv.id) >= 0, requested = reqs.indexOf(upName(sv.id)) >= 0;
+      var active = buy ? inCart : requested;
+      var kv = [{ k: 'Quantità configurata', v: c ? n(c.qty) + ' unità' : 'Non attivo' }];
+      if (c) kv.push({ k: 'Consumo previsto a fine periodo', v: n(c.fc) + ' unità' });
+      if (money) kv.push({ k: 'Prezzo unitario di listino', v: C.unit3(sv.unit) + ' €' });
+      var sub = u.reco
+        ? 'Nuova quantità ' + n(u.to) + (money ? ' · prezzo ricalcolato ' + eur(u.price) + ' · overage evitato ' + eur(u.overage) : ' · evita l’overage previsto')
+        : (c ? 'Da ' + n(u.from) + ' a ' + n(u.to) + ' unità' : 'Aggiunta all’offerta') + (money ? ' · ' + eur(u.price) : '');
       return {
-        family: s[1], name: s[2], reco: s[4], dot: DOT[s[3]], state: STATE[s[3]],
-        packs: s[5].map(function (k) {
-          var id = s[0] + '-' + k[0];
-          var label = s[2];
-          catalog[id] = { name: label, pack: 'Ricarica ' + k[0].toLocaleString('it-IT') + ' unità', price: k[1] };
-          var inCart = cartIds.indexOf(id) >= 0, requested = reqs.indexOf(label + ' · ' + k[0].toLocaleString('it-IT')) >= 0;
-          var btn = buy ? (inCart ? 'Aggiunto' : 'Aggiungi') : (requested ? 'Richiesta inviata' : 'Richiedi');
-          var active = buy ? inCart : requested;
-          return {
-            qty: k[0].toLocaleString('it-IT'),
-            sub: money ? eur(k[1]) + ' · ' + (k[1] / k[0]).toLocaleString('it-IT', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' € per unità' : 'valida fino al 28 feb 2027',
-            btn: btn,
-            btnBg: active ? '#E5EFFF' : '#FFFFFF', btnFg: '#0047BB', btnBorder: active ? '#0047BB' : '#B8C2CF',
-            act: function () { if (buy) add(id); else addReq(label + ' · ' + k[0].toLocaleString('it-IT')); }
-          };
-        })
+        family: sv.family, name: sv.name, reco: u.reco, kv: kv,
+        dot: c ? DOT[c.state] : DOT.off,
+        stateLine: c ? 'Configurato · consumi ' + STATE[c.state] : 'Non attivo nella tua offerta',
+        upTitle: (u.reco ? 'Upgrade consigliato +' : (c ? 'Upgrade +' : 'Attiva ')) + n(u.add) + ' unità',
+        upSub: sub,
+        boxBorder: u.reco ? '#F3C2A8' : '#DDE4EE', boxBg: u.reco ? '#FFF8F4' : '#FFFFFF',
+        btn: buy ? (inCart ? 'Aggiunto' : 'Aggiungi') : (requested ? 'Richiesta inviata' : 'Richiedi'),
+        btnLabel: (buy ? (inCart ? 'Aggiunto: ' : 'Aggiungi upgrade di ') : (requested ? 'Richiesta inviata: ' : 'Richiedi upgrade di ')) + sv.name,
+        btnBg: active ? '#E5EFFF' : '#FFFFFF', btnFg: '#0047BB', btnBorder: active ? '#0047BB' : '#B8C2CF',
+        act: function () { if (buy) add(sv.id); else addReq(upName(sv.id)); }
       };
     });
-    catalog['prof'] = { name: 'Upgrade a bundle Pro', pack: 'dal prossimo rinnovo o subito, pro rata', price: 45000 };
-    if (st.entItem) catalog['ent'] = st.entItem;
-    var ES = [['Nuovi Certificati FEA', 3.00, 2500], ['Apposizioni FEA con COD', 0.15, 12500], ['Identificazioni Full Prospect', 1.20, 5000], ['Full Prospect con funnel completato', 0.80, 4000], ['Identificazioni Proprietarie', 0.90, 2500], ['Verifiche Contatti', 0.05, 25000], ['Doc Composition Contratti', 0.20, 5000], ['Contratti', 0.50, 5000], ['Fatture Elettroniche', 0.10, 6000]];
-    var eq = st.entQty || [7500, 25000, 10000, 8000, 2500, 50000, 10000, 10000, 6000];
-    var D = 0.8;
-    var eRows = ES.map(function (s, i) {
-      var q = eq[i];
-      return { name: s[0], qty: q ? q.toLocaleString('it-IT') : 'Escluso', op: q ? 1 : 0.55,
-        unit: (s[1] * D).toLocaleString('it-IT', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' € per unità · passo ' + s[2].toLocaleString('it-IT'),
-        amount: q ? eur(Math.round(q * s[1] * D)) : '—',
-        dec: function () { var n = eq.slice(); n[i] = Math.max(0, q - s[2]); set({ entQty: n }); },
-        inc: function () { var n = eq.slice(); n[i] = q + s[2]; set({ entQty: n }); } };
-    });
-    var eTot = ES.reduce(function (a, s, i) { return a + Math.round(eq[i] * s[1] * D); }, 0);
-    var eCount = eq.filter(function (q) { return q > 0; }).length;
-    var ent = { open: !!st.entOpen, rows: eRows, total: eur(eTot) + ' / anno', count: eCount,
-      close: function () { set({ entOpen: false }); },
-      confirm: function () { set({ entOpen: false, done: false, entItem: { name: 'Bundle Enterprise personalizzato', pack: eCount + ' servizi · quantità personalizzate · dal prossimo rinnovo', price: eTot }, cart: cartIds.filter(function (x) { return x !== 'prof' && x !== 'ent'; }).concat(['ent']) }); } };
     var items = cartIds.filter(function (id) { return catalog[id]; }).map(function (id) {
       var c = catalog[id];
       return { name: c.name, pack: c.pack, price: eur(c.price), remove: function () { set({ cart: cartIds.filter(function (x) { return x !== id; }) }); } };
@@ -498,15 +408,15 @@ class Component extends DCLogic {
       items: items, empty: items.length === 0, total: eur(total), done: !!st.done,
       confirm: function () {
         if (!items.length) return;
-        var names = cartIds.filter(function (id) { return catalog[id]; }).map(function (id) { return catalog[id].name + ' · ' + catalog[id].pack.toLowerCase(); });
-        set({ placed: placed.concat([{ what: names.join(' + '), total: total }]), cart: [], done: true });
+        var names = cartIds.filter(function (id) { return catalog[id]; }).map(function (id) { return catalog[id].name + ' · ' + catalog[id].pack; });
+        set({ placed: placed.concat([{ what: 'Modifica dell’offerta: ' + names.join(' + '), total: total }]), cart: [], done: true });
       }
     };
     var orders = placed.map(function (o, i) {
-      return { what: o.what, meta: 'ORD-2026-' + (1201 + i) + ' · oggi · ordinato da ' + WHO[P].name, state: 'In attivazione', bg: '#FDF1D6', fg: '#855800', amount: money ? eur(o.total) : '' };
+      return { what: o.what, meta: 'ORD-2026-' + (1201 + i) + ' · oggi · avviata da ' + WHO[P].name, state: 'In attivazione', bg: '#FDF1D6', fg: '#855800', amount: money ? eur(o.total) : '' };
     }).reverse().concat([
-      { what: 'Ricarica 500 Nuovi Certificati FEA', meta: 'ORD-2026-1187 · 24 ott 2026 · ordinato da Giulia Marchetti', state: 'In attivazione', bg: '#FDF1D6', fg: '#855800', amount: money ? '€ 1.275' : '' },
-      { what: 'Bundle Medium · rinnovo annuale', meta: 'ORD-2026-0311 · 1 mar 2026 · firmato da Paolo Ferretti', state: 'Attivo', bg: '#E3F3EA', fg: '#1A6B4A', amount: money ? '€ 19.900' : '' }
+      { what: 'Upgrade Nuovi Certificati FEA · +500 unità', meta: 'ORD-2026-1187 · 24 ott 2026 · avviato da Giulia Marchetti', state: 'In attivazione', bg: '#FDF1D6', fg: '#855800', amount: money ? '€ 1.500' : '' },
+      { what: 'Offerta componibile · rinnovo annuale · 9 servizi', meta: 'ORD-2026-0311 · 1 mar 2026 · firmato da Paolo Ferretti', state: 'Attivo', bg: '#E3F3EA', fg: '#1A6B4A', amount: money ? '€ 19.900' : '' }
     ]);
     if (P === 'op') {
       orders = reqs.map(function (r) { return { what: r, meta: 'richiesta inviata oggi a G. Marchetti e P. Ferretti', state: 'Richiesta', bg: '#E5EFFF', fg: '#0047BB', amount: '' }; }).concat(orders);
@@ -514,79 +424,42 @@ class Component extends DCLogic {
     var alerts = [
       {
         title: 'Nuovi Certificati FEA esaurito dal 17 ott.',
-        text: money ? 'L’overage è attivo a € 3,00 per certificato; una ricarica da 500 è già in attivazione.' : 'Oltre la quantità inclusa i certificati sono conteggiati a consumo; una ricarica è già in attivazione.',
+        text: money ? 'L’overage è attivo a € 3,00 per certificato; un upgrade di 500 certificati è già in attivazione.' : 'Oltre la quantità configurata i certificati sono conteggiati a consumo; un upgrade è già in attivazione.',
         bg: '#FBE3E1', border: '#F2BDB8', fg: '#A3201A', btnBg: '#A3201A',
-        btn: buy ? 'Aggiungi ricarica 1.000' : 'Segnala all’amministrativo',
-        act: function () { if (buy) add('cert-1000'); else addReq('Nuovi Certificati FEA · 1.000'); }
+        btn: buy ? 'Aggiungi upgrade +' + n(up.cert.add) : 'Segnala all’amministrativo',
+        act: function () { if (buy) add('cert'); else addReq(upName('cert')); }
       },
       {
         title: 'Identificazioni Full Prospect si esaurirà il 13 nov,',
-        text: money ? '107 giorni prima del rinnovo: al ritmo attuale l’overage previsto è € 3.006.' : '107 giorni prima del rinnovo: al ritmo attuale serviranno circa 2.500 identificazioni in più.',
+        text: money ? '107 giorni prima del rinnovo: al ritmo attuale l’overage previsto è ' + eur(up.fp.overage) + '.' : '107 giorni prima del rinnovo: al ritmo attuale serviranno circa 2.500 identificazioni in più.',
         bg: '#FDE7DC', border: '#F3C2A8', fg: '#B03A0B', btnBg: '#B03A0B',
-        btn: buy ? 'Aggiungi ricarica 2.500' : 'Segnala all’amministrativo',
-        act: function () { if (buy) add('fp-2500'); else addReq('Identificazioni Full Prospect · 2.500'); }
+        btn: buy ? 'Aggiungi upgrade +' + n(up.fp.add) : 'Segnala all’amministrativo',
+        act: function () { if (buy) add('fp'); else addReq(upName('fp')); }
       }
     ];
-    var tab = st.tab || 'all';
-    var tabs = [['all', 'Tutte'], ['bundle', 'Bundle'], ['single', 'Offerte singole e ricariche']].map(function (t) {
+    var tabs = [['all', 'Tutti'], ['on', 'Attivi'], ['off', 'Non attivi']].map(function (t) {
       var on = t[0] === tab;
       return { label: t[1], pressed: on ? 'true' : 'false', bg: on ? '#FFFFFF' : 'transparent', weight: on ? 600 : 500, pick: function () { set({ tab: t[0] }); } };
     });
-    var B = [
-      ['Base', 4900, ['1.000', '500', '2.500'], 'Disponibile al rinnovo', 'low'],
-      ['Medium', 19900, ['5.000', '2.500', '12.500'], 'Il tuo bundle', 'cur'],
-      ['Pro', 64900, ['20.000', '10.000', '50.000'], buy ? 'Passa a Pro' : 'Richiedi upgrade', 'up'],
-      ['Enterprise', null, ['a scelta', 'a scelta', 'a scelta'], buy ? 'Componi il tuo bundle' : 'Richiedi informazioni', 'ent']
-    ];
-    var bundles = B.map(function (b) {
-      var cur = b[4] === 'cur', low = b[4] === 'low';
-      return {
-        name: b[0], price: b[1] ? eur(b[1]) + ' / anno' : 'Su misura',
-        hasBadge: cur, badge: 'Attuale', badgeBg: '#E5EFFF', badgeFg: '#0047BB',
-        border: cur ? '2px solid #0047BB' : '1px solid #D9E1EC',
-        lines: [{ k: 'Identificazioni Full Prospect', v: b[2][0] }, { k: 'Nuovi Certificati FEA', v: b[2][1] }, { k: 'Apposizioni FEA con COD', v: b[2][2] }],
-        btn: b[3],
-        btnBg: (cur || low) ? '#F3F7FC' : (buy ? '#0047BB' : '#FFFFFF'),
-        btnFg: (cur || low) ? '#4D5762' : (buy ? '#FFFFFF' : '#0047BB'),
-        btnBorder: (cur || low) ? '#DDE4EE' : (buy ? '#0047BB' : '#B8C2CF'),
-        act: function () { if (b[4] === 'up') { if (buy) add('prof'); else addReq('Upgrade a Pro'); } if (b[4] === 'ent') { if (buy) set({ entOpen: true }); else addReq('Informazioni su Enterprise'); } }
-      };
-    });
-    var cmpRaw = [
-      ['Verifiche Contatti', 5000, 25000, 100000, 500000, 32307],
-      ['Identificazioni Full Prospect', 1000, 5000, 20000, 100000, 7505],
-      ['Full Prospect con funnel completato', 800, 4000, 16000, 80000, 5402],
-      ['Identificazioni Proprietarie', 500, 2500, 10000, 50000, 1857],
-      ['Contratti', 1000, 5000, 20000, 100000, 5659],
-      ['Doc Composition Contratti', 1000, 5000, 20000, 100000, 5871],
-      ['Nuovi Certificati FEA', 500, 2500, 10000, 50000, 4302],
-      ['Apposizioni FEA con COD', 2500, 12500, 50000, 250000, 14514],
-      ['Fatture Elettroniche', 1200, 6000, 24000, 120000, 3869]
-    ];
-    var n = function (x) { return x.toLocaleString('it-IT'); };
-    var compare = cmpRaw.map(function (r) {
-      return { name: r[0], s: n(r[1]), b: n(r[2]), p: n(r[3]), e: n(r[4]), fc: n(r[5]), fcColor: r[5] > r[2] ? '#B03A0B' : '#1A6B4A' };
-    });
-    var compareOpen = !!st.compare;
-    return { ent: ent,
+    var famOpts = [{ v: 'all', label: 'Tutte' }].concat(C.families.map(function (f) { return { v: f, label: f }; })).map(function (o) { o.sel = o.v === fam; return o; });
+    return {
       who: WHO[P],
+      svcCount: CFG.length,
       f: { buy: buy, noBuy: !buy, money: money, lr: P === 'lr' },
       decide: [
-        { kind: 'Richiesta', what: 'Davide Sala chiede una ricarica di 2.500 Identificazioni Full Prospect', meta: 'oggi · delegato operativo · al ritmo attuale il servizio si esaurisce il 13 nov', btn: 'Aggiungi al riepilogo', act: function () { add('fp-2500'); } },
-        { kind: 'Rinnovo', what: 'Decidi sul rinnovo del contratto entro il 30 nov 2026', meta: 'scadenza 28 feb 2027 · overage previsto con il bundle attuale € 10.703', btn: 'Confronta i bundle', act: function () { set({ compare: true, tab: 'all' }); } },
-        { kind: 'Condizioni', what: 'Nuove condizioni generali in vigore dal 1 dic 2026', meta: 'da accettare prima del prossimo acquisto', btn: 'Leggi e accetta', act: function () {} }
+        { kind: 'Richiesta', what: 'Davide Sala chiede un upgrade di ' + n(up.fp.add) + ' Identificazioni Full Prospect', meta: 'oggi · delegato operativo · al ritmo attuale il servizio si esaurisce il 13 nov', btn: 'Aggiungi al riepilogo', act: function () { add('fp'); } },
+        { kind: 'Rinnovo', what: 'Decidi sul rinnovo del contratto entro il 30 nov 2026', meta: 'scadenza 28 feb 2027 · overage previsto con le quantità attuali ' + eur(ovTot), btn: 'Vedi le proposte di upgrade', act: function () { set({ tab: 'on', fam: 'all' }); var c = document.getElementById('catalogo'); if (c) c.scrollIntoView({ behavior: 'smooth' }); } },
+        { kind: 'Condizioni', what: 'Nuove condizioni generali in vigore dal 1 dic 2026', meta: 'da accettare prima della prossima modifica dell’offerta', btn: 'Leggi e accetta', act: function () {} }
       ],
       alerts: alerts, orders: orders, orderCount: 1 + placed.length,
       ordersTitle: P === 'op' ? 'Ordini e richieste' : 'Ordini recenti',
       cart: cart, requests: reqs.map(function (r) { return { name: r }; }), noRequests: reqs.length === 0,
-      tabs: tabs, show: { bundles: tab !== 'single', singles: tab !== 'bundle' },
+      tabs: tabs, famOpts: famOpts, pickFam: function (ev) { set({ fam: ev.target.value }); },
+      svc: svc, noSvc: svc.length === 0,
+      noSvcText: tab === 'off' ? 'Tutti i servizi del catalogo sono già configurati nella tua offerta.' : 'Nessun servizio corrisponde ai filtri.',
       advice: money
-        ? 'Per il tuo consumo previsto conviene ricaricare i servizi in esaurimento: passare a Pro costerebbe € 45.000 in più all’anno, contro € 10.703 di overage previsto con il bundle attuale.'
-        : 'Per il consumo previsto conviene ricaricare i servizi in esaurimento piuttosto che cambiare bundle. Le richieste che invii arrivano al delegato amministrativo.',
-      bundles: bundles, compare: compare, compareOpen: compareOpen,
-      compareLabel: compareOpen ? 'Chiudi il confronto' : 'Confronta i bundle',
-      toggleCompare: function () { set({ compare: !compareOpen }); },
-      singles: singles
+        ? 'Per il tuo consumo previsto conviene un upgrade dei servizi in esaurimento: con le quantità attuali l’overage previsto a fine periodo è ' + eur(ovTot) + '. Le proposte indicano quantità consigliata, prezzo ricalcolato e overage evitato.'
+        : 'Per il consumo previsto conviene un upgrade dei servizi in esaurimento. Le richieste che invii arrivano al delegato amministrativo.'
     };
   }
 }

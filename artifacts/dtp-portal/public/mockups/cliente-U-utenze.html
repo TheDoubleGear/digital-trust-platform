@@ -323,8 +323,8 @@ class Component extends DCLogic {
     var powers = [
       ['Firmare il primo contratto e gli atti di delega', Y, N, N, N],
       ['Prendere visione e autorizzare le modifiche al contratto', Y, N, N, N],
-      ['Firmare rinnovi, cambi di bundle e modifiche autorizzate', Y, Y, N, N],
-      ['Acquistare bundle, offerte singole e ricariche', Y, Y, N, N],
+      ['Firmare rinnovi e modifiche approvate', Y, Y, N, N],
+      ['Comporre e avviare upgrade e modifiche dell’offerta', Y, Y, N, N],
       ['Gestire soglie e destinatari delle notifiche', Y, Y, N, N],
       ['Consultare consumi e previsioni', Y, Y, Y, Y],
       ['Consultare e pagare le fatture', Y, Y, N, N],
@@ -334,7 +334,7 @@ class Component extends DCLogic {
     ].map(function (r) { return { name: r[0], v1: r[1][0], c1: r[1][1], v2: r[2][0], c2: r[2][1], v3: r[3][0], c3: r[3][1], v4: r[4][0], c4: r[4][1] }; });
     var log = [
       { who: 'Giulia Marchetti', what: 'ha chiesto l’upgrade a Pro dal prossimo rinnovo (in attesa di presa visione)', when: 'oggi, 09:14' },
-      { who: 'Giulia Marchetti', what: 'ha confermato l’ordine di una ricarica di Nuovi Certificati FEA', when: '24 ott 2026, 11:30' },
+      { who: 'Giulia Marchetti', what: 'ha avviato l’upgrade di 500 Nuovi Certificati FEA', when: '24 ott 2026, 11:30' },
       { who: 'Giulia Marchetti', what: 'ha modificato la soglia di attenzione di Apposizioni FEA con COD', when: '15 ott 2026, 09:47' },
       { who: 'Davide Sala', what: 'ha aggiornato il journey di onboarding del canale app', when: '9 ott 2026, 16:05' },
       { who: 'Giulia Marchetti', what: 'ha esportato il report mensile dei consumi', when: '1 ott 2026, 08:50' },

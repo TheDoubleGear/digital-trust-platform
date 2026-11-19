@@ -69,7 +69,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <sc-if value="{{noMoney}}" hint-placeholder-val="{{ false }}">
 <section class="dtp-card" role="note" aria-labelledby="titolo-nonvisibile" style="background: #FFFFFF; border: 1px dashed #9AA6B8; border-radius: 6px; padding: 32px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
 <h1 id="titolo-nonvisibile" style="margin: 0; font-size: 20px; font-weight: 600">Il contratto non è visibile per il delegato operativo</h1>
-<p style="margin: 0; font-size: 14px; color: #4D5762; line-height: 1.5; max-width: 640px">La scheda «Contratto» è riservata al legale rappresentante e al delegato amministrativo: rinnovo, cambio di bundle e recesso restano a loro.</p>
+<p style="margin: 0; font-size: 14px; color: #4D5762; line-height: 1.5; max-width: 640px">La scheda «Contratto» è riservata al legale rappresentante e al delegato amministrativo: rinnovo, modifiche dell'offerta e recesso restano a loro.</p>
 <a href="cliente-M1-panoramica.html" style="font-size: 14px; font-weight: 600; text-decoration: none; padding: 10px 0">Torna alla panoramica →</a>
 </section>
 </sc-if>
@@ -80,7 +80,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div class="dtp-hero" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
 <div>
 <h1 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em">Contratto</h1>
-<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">DTP-2026-0418 · Bundle Medium · dal 1 mar 2026 al 28 feb 2027 · firmato da Paolo Ferretti, controfirmato da Postel</p>
+<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">DTP-2026-0418 · 9 servizi configurati · dal 1 mar 2026 al 28 feb 2027 · firmato da Paolo Ferretti, controfirmato da Postel</p>
 </div>
 <a class="dtp-btn dtp-btn-o" href="#contratto-pdf" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font-size: 14px; font-weight: 600; color: #1A1C1E; text-decoration: none; display: flex; align-items: center">Scarica il contratto firmato</a>
 </div>
@@ -93,6 +93,25 @@ a{color:#0047BB}a:hover{color:#003A99}
 <span style="font-size: 13px; color: #4D5762">{{k.sub}}</span>
 </div>
 </sc-for>
+</section>
+
+<section class="dtp-card" aria-labelledby="titolo-offerta" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div>
+<h2 id="titolo-offerta" style="margin: 0; font-size: 18px; font-weight: 600">Servizi e quantità configurati</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Allegato A del contratto · quantità per il periodo contrattuale · canone periodico € 4.975 a trimestre</p>
+</div>
+<div style="overflow-x: auto">
+<div role="table" aria-label="Servizi e quantità configurati" style="min-width: 520px; font-size: 14px">
+<div role="row" style="display: grid; grid-template-columns: 2.4fr 1.6fr 1fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid #D9E1EC; color: #4D5762; font-size: 12px">
+<span role="columnheader">Servizio</span><span role="columnheader">Famiglia</span><span role="columnheader" style="text-align: right">Quantità</span>
+</div>
+<sc-for list="{{config}}" as="c" hint-placeholder-count="9">
+<div role="row" style="display: grid; grid-template-columns: 2.4fr 1.6fr 1fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EAEFF5">
+<span role="cell" style="font-weight: 500">{{c.name}}</span><span role="cell" style="color: #4D5762">{{c.family}}</span><span role="cell" style="text-align: right; font-weight: 600">{{c.qty}}</span>
+</div>
+</sc-for>
+</div>
+</div>
 </section>
 
 <section class="dtp-card" aria-labelledby="titolo-azioni" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
@@ -118,7 +137,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
 <div>
 <h2 id="titolo-richieste" style="margin: 0; font-size: 18px; font-weight: 600">Richieste di modifica</h2>
-<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Il primo contratto lo firma solo il legale rappresentante. Rinnovi, cambi di bundle e modifiche li firma il delegato amministrativo, dopo la presa visione del legale rappresentante.</p>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Il primo contratto lo firma solo il legale rappresentante. Rinnovi e modifiche dell'offerta li firma il delegato amministrativo, dopo la presa visione del legale rappresentante.</p>
 </div>
 </div>
 <ol aria-label="Percorso di una modifica" style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px">
@@ -281,10 +300,10 @@ class Component extends DCLogic {
     });
     var isLr = P === 'lr';
     var tiles = [
-      { label: 'Bundle attuale', value: 'Medium', sub: '€ 19.900 / anno · tutti i servizi del catalogo', color: '#1A1C1E' },
+      { label: 'Offerta configurata', value: '9 servizi', sub: '€ 19.900 / anno · canone periodico e componente variabile', color: '#1A1C1E' },
       { label: 'Scadenza', value: '28 feb 2027', sub: 'tra 108 giorni', color: '#1A1C1E' },
       { label: 'Decisione sul rinnovo', value: 'entro 30 nov', sub: 'modalità di rinnovo: [DA DEFINIRE]', color: '#B03A0B' },
-      { label: 'Offerte aggiuntive attive', value: '1', sub: 'ricarica 500 Nuovi Certificati FEA', color: '#1A1C1E' }
+      { label: 'Upgrade in attivazione', value: '1', sub: 'upgrade +500 Nuovi Certificati FEA', color: '#1A1C1E' }
     ];
     var IC = {
       renew: 'M21 12a9 9 0 1 1-3-6.7L21 8 M21 3v5h-5',
@@ -295,9 +314,9 @@ class Component extends DCLogic {
     var made = st.made || [];
     var ask = function (what) { if (made.indexOf(what) < 0) set({ made: made.concat([what]) }); };
     var A = [
-      ['renew', 'Rinnova', 'Conferma il rinnovo alle condizioni attuali o con un altro bundle, entro la finestra di preavviso.', '#E5EFFF', '#0047BB'],
-      ['swap', 'Cambia bundle', 'Upgrade o downgrade: subito con calcolo pro rata, oppure dal prossimo rinnovo.', '#E5EFFF', '#0047BB'],
-      ['edit', 'Modifica', 'Servizi aggiuntivi, quantità, dati di fatturazione e referenti amministrativi.', '#E5EFFF', '#0047BB'],
+      ['renew', 'Rinnova', 'Conferma il rinnovo alle condizioni attuali o con servizi e quantità diversi, entro la finestra di preavviso.', '#E5EFFF', '#0047BB'],
+      ['swap', 'Upgrade o riduzione', 'Aumenta o riduci le quantità dei servizi configurati: subito con calcolo pro rata, oppure dal prossimo rinnovo.', '#E5EFFF', '#0047BB'],
+      ['edit', 'Modifica', 'Aggiunta o rimozione di servizi, dati di fatturazione e referenti amministrativi.', '#E5EFFF', '#0047BB'],
       ['exit', 'Recesso', 'Disattivazione dei servizi alla data indicata e conguaglio finale in fattura.', '#FBE3E1', '#A3201A']
     ];
     var actions = A.map(function (a) {
@@ -309,8 +328,8 @@ class Component extends DCLogic {
     });
     var ackd = st.ackd || [];
     var R = [
-      ['RM-014', 'Cambio bundle: upgrade a Pro', 'dal prossimo rinnovo · canone € 64.900 / anno', 'Giulia Marchetti', 'review'],
-      ['RM-013', 'Offerta singola Verifiche Contatti', '25.000 unità · € 1.000', 'Giulia Marchetti', 'sign'],
+      ['RM-014', 'Upgrade Identificazioni Full Prospect: +3.000 unità', 'da 5.000 a 8.000 unità · prezzo ricalcolato € 3.600', 'Giulia Marchetti', 'review'],
+      ['RM-013', 'Upgrade Verifiche Contatti: +10.000 unità', 'da 25.000 a 35.000 unità · € 500', 'Giulia Marchetti', 'sign'],
       ['RM-011', 'Variazione del referente amministrativo', 'nuovo referente: Ufficio acquisti', 'Giulia Marchetti', 'done']
     ];
     var requests = made.map(function (m, i) { return ['RM-' + (15 + i), m, 'creata oggi', WHO[P].name, isLr ? 'sign' : 'review']; }).reverse().concat(R).map(function (r) {
@@ -332,13 +351,14 @@ class Component extends DCLogic {
     });
     var docs = [
       ['Contratto DTP-2026-0418', 'Firma elettronica avanzata del LR, firma digitale Postel, marca temporale · conservato a norma', 'Conservato', '#E3F3EA', '#1A6B4A', 'Scarica'],
-      ['Allegato A · servizi e quantità', 'Bundle Medium, listino 2026', 'Conservato', '#E3F3EA', '#1A6B4A', 'Scarica'],
+      ['Allegato A · servizi e quantità', 'Servizi e quantità configurati, listino 2026', 'Conservato', '#E3F3EA', '#1A6B4A', 'Scarica'],
       ['Atto di modifica RM-011', 'Firmato da Giulia Marchetti il 3 ott 2026 dopo la presa visione del LR', 'Conservato', '#E3F3EA', '#1A6B4A', 'Scarica'],
       ['Condizioni generali, versione 1 dic 2026', isLr ? 'Da accettare prima del prossimo acquisto o modifica' : 'In attesa di accettazione del legale rappresentante', 'Da accettare', '#FDF1D6', '#855800', isLr ? 'Leggi e accetta' : 'Leggi']
     ].map(function (d) { return { name: d[0], meta: d[1], state: d[2], bg: d[3], fg: d[4], link: d[5] }; });
     return {
       who: WHO[P], subtabs: subtabs, money: money, noMoney: !money,
       tiles: tiles, actions: actions,
+      config: [['Nuovi Certificati FEA', 'Firma elettronica', 2500], ['Apposizioni FEA con COD', 'Firma elettronica', 12500], ['Identificazioni Full Prospect', 'Identità e verifica', 5000], ['Full Prospect con funnel completato', 'Identità e verifica', 4000], ['Identificazioni Proprietarie', 'Identità e verifica', 2500], ['Verifiche Contatti', 'Identità e verifica', 25000], ['Doc Composition Contratti', 'Contratti e documenti', 5000], ['Contratti', 'Contratti e documenti', 5000], ['Fatture Elettroniche', 'Fatturazione', 6000]].map(function (c) { return { name: c[0], family: c[1], qty: c[2].toLocaleString('it-IT') }; }),
       actionsNote: isLr ? 'Come legale rappresentante firmi direttamente ogni operazione.' : 'Le tue richieste arrivano al legale rappresentante per la presa visione; dopo l\'autorizzazione firmi tu l\'atto di modifica.',
       flow: [
         { n: '1', what: 'Richiesta', who: 'delegato amministrativo' },
