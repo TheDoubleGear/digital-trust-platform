@@ -36,6 +36,21 @@ Questa sessione di Claude Code implementa sul repository.
 - A fine lavoro riepiloga schermate e file modificati, così la sessione di analisi può verificare l'allineamento
   con i documenti.
 
+### Comunicazione tramite GitHub
+
+Le due sessioni non si parlano direttamente: il canale è questo repository.
+
+- **Dall'analisi a Claude Code: issue con etichetta `analisi`.** Quando l'utente scrive "Lavora sulla issue #N",
+  leggi la issue (`gh issue view N --comments`) e segui scopo, modifiche per schermata, regole da preservare,
+  fuori ambito e criteri di accettazione. Non andare oltre quanto indicato.
+- **Dubbi:** se la issue è ambigua o in conflitto con il codice o con queste istruzioni, scrivi un commento sulla
+  issue e fermati su quel punto; la risposta arriva nello stesso posto.
+- **Da Claude Code all'analisi: pull request.** Ogni modifica al codice, anche solo grafica, va in un ramo dedicato
+  e in una pull request verso `main` che compila il modello `.github/pull_request_template.md`.
+  Se nasce da una issue, scrivi `Closes #N` nella sezione "Issue collegata".
+- **Etichetta `allineato`:** la aggiunge la sessione di analisi dopo aver recepito la pull request nei documenti.
+  Non aggiungerla e non toglierla.
+
 ## Struttura
 
 - `artifacts/dtp-portal` — applicazione React/Vite.
@@ -52,7 +67,7 @@ Questa sessione di Claude Code implementa sul repository.
 
 | Gruppo | Codici | File |
 |---|---|---|
-| Vetrina (pubblica) | V-01 vetrina, V-02 attivazione | `vetrina-V01-catalogo.html`, `vetrina-V02-contratto.html` |
+| Vetrina (pubblica) | V-01 vetrina, V-02 attivazione, V-03 subentro del legale rappresentante | `vetrina-V01-catalogo.html`, `vetrina-V02-contratto.html`, `vetrina-V03-subentro.html` (da integrare, issue #10) |
 | Cliente | H, U, M1–M5, A, N | `cliente-*.html` |
 | Primo setup | PS-01 delegati, PS-02 soglie e notifiche | `cliente-PS01-delegati.html`, `cliente-PS02-soglie.html` |
 | Tecnico | D0 developer portal | `tecnico-D0-developer-portal.html` |
@@ -82,13 +97,31 @@ I nomi dei file non vanno cambiati: le pagine si collegano tra loro con questi n
 
 ## Regole di prodotto da preservare
 
-- V-01 è in sola consultazione: nessun carrello, solo il collegamento "Attivazione servizio" verso V-02.
-- V-02 ha tre passi: dati di azienda, legale rappresentante e password; scelta dei servizi con carrello e "Acquista";
-  bozza di contratto in PDF, firma fuori dalla pagina, caricamento del PDF firmato e invio.
-  Dopo l'invio la richiesta resta "In attesa di verifica"; l'accesso arriva via e-mail dopo le verifiche.
+Sono le regole decise dall'analisi. Dove il sito non è ancora allineato, l'allineamento avviene tramite le
+issue con etichetta `analisi` aperte: in caso di dubbio prevale la issue.
+
+- Offerta componibile: non esistono bundle predefiniti (Base, Medium, Pro, Enterprise) né ricariche. Il cliente
+  sceglie servizi e quantità; il prezzo è calcolato dalla piattaforma come componente variabile, fee di attivazione
+  e canone periodico. Ogni variazione è un upgrade o una modifica dell'offerta e del contratto.
+- V-01 è in sola consultazione, senza carrello: per ogni servizio caratteristiche, finalità, dipendenze, condizioni
+  di utilizzo e approfondimenti o documentazione; collegamento "Attivazione servizio" verso V-02.
+- V-02 segue l'ordine: configurazione di servizi e quantità con carrello, con "Genera codice di configurazione" e
+  campo per inserire un codice esistente; dati di azienda e legale rappresentante con controlli formali
+  all'inserimento; contratto con i soli servizi configurati, firmato fuori dalla pagina e caricato; verifica della
+  firma, controfirma Postel, prima fattura pagata fuori dalla piattaforma, abilitazione del tenant e credenziali
+  via e-mail solo dopo il pagamento.
+- Il primo acquisto è concluso solo dal legale rappresentante. Il commerciale può compilare V-02 in modalità
+  assistita, con sconto entro una soglia controllata dal sistema, e genera il codice per il legale rappresentante:
+  non carica il contratto e non invia la richiesta.
+- Modifiche dell'offerta: il delegato amministrativo avvia, il legale rappresentante approva (evidenza conservata),
+  il delegato firma l'atto, Postel controfirma. Il legale rappresentante può avviare e firmare direttamente.
+- Il rinnovo non è tacito: alla scadenza senza rinnovo il servizio è disabilitato e i dati sono conservati per
+  `[DA DEFINIRE]` giorni, poi cancellati.
+- Cambio del legale rappresentante: percorso pubblico V-03, avviato da U-02 (legale rappresentante o delegato
+  amministrativo) o dall'area pubblica; l'utenza precedente è revocata solo dopo verifica della firma digitale,
+  visura camerale e approvazione di Postel.
 - PS-01 e PS-02 fanno parte dell'onboarding e non vanno rimossi: valgono al primo login del legale rappresentante,
   dopo l'attivazione. Solo "Concludi" in PS-02 completa il setup.
-- Bundle: Base, Medium, Pro ed Enterprise personalizzabile. Il prezzo di Enterprise è indicativo.
 - Stile ispirato a Poste Italiane su tutte le pagine: testata gialla, blu `#0047BB`, sfondi chiari, font Inter,
   mantenendo l'identità Postel.
 
