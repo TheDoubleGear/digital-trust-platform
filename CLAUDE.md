@@ -36,6 +36,21 @@ Questa sessione di Claude Code implementa sul repository.
 - A fine lavoro riepiloga schermate e file modificati, così la sessione di analisi può verificare l'allineamento
   con i documenti.
 
+### Comunicazione tramite GitHub
+
+Le due sessioni non si parlano direttamente: il canale è questo repository.
+
+- **Dall'analisi a Claude Code: issue con etichetta `analisi`.** Quando l'utente scrive "Lavora sulla issue #N",
+  leggi la issue (`gh issue view N --comments`) e segui scopo, modifiche per schermata, regole da preservare,
+  fuori ambito e criteri di accettazione. Non andare oltre quanto indicato.
+- **Dubbi:** se la issue è ambigua o in conflitto con il codice o con queste istruzioni, scrivi un commento sulla
+  issue e fermati su quel punto; la risposta arriva nello stesso posto.
+- **Da Claude Code all'analisi: pull request.** Ogni modifica al codice, anche solo grafica, va in un ramo dedicato
+  e in una pull request verso `main` che compila il modello `.github/pull_request_template.md`.
+  Se nasce da una issue, scrivi `Closes #N` nella sezione "Issue collegata".
+- **Etichetta `allineato`:** la aggiunge la sessione di analisi dopo aver recepito la pull request nei documenti.
+  Non aggiungerla e non toglierla.
+
 ## Struttura
 
 - `artifacts/dtp-portal` — applicazione React/Vite.
