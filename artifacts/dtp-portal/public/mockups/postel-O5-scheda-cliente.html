@@ -68,7 +68,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <h1 style="margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.01em">Assicurazioni Aurora S.p.A.</h1>
 <span style="font-size: 13px; color: #4D5762">Assicurazioni · Nord-Ovest · account manager Marco Rinaldi · cliente dal mar 2025</span>
 <div style="display: flex; flex-wrap: wrap; gap: 8px">
-<span style="padding: 3px 10px; border-radius: 999px; background: #0047BB; color: #FFFFFF; font-size: 12px; font-weight: 600">Bundle Medium</span>
+<span style="padding: 3px 10px; border-radius: 999px; background: #0047BB; color: #FFFFFF; font-size: 12px; font-weight: 600">9 servizi configurati</span>
 <span style="padding: 3px 10px; border-radius: 999px; background: #E3F3EA; color: #1A6B4A; font-size: 12px; font-weight: 600">Contratto attivo fino al 28 feb 2027</span>
 <span style="padding: 3px 10px; border-radius: 999px; background: #FBE3E1; color: #A3201A; font-size: 12px; font-weight: 600">Segmento: Overage</span>
 </div>
@@ -158,7 +158,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <section class="dtp-card" aria-labelledby="titolo-contratti" style="flex: 999 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
 <div>
-<h2 id="titolo-contratti" style="margin: 0; font-size: 18px; font-weight: 600">Contratti e ordini</h2>
+<h2 id="titolo-contratti" style="margin: 0; font-size: 18px; font-weight: 600">Contratti e modifiche dell’offerta</h2>
 <p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Storico da commercial orchestration, dal più recente</p>
 </div>
 <sc-if value="{{isCom}}" hint-placeholder-val="{{ true }}"><a class="dtp-btn" href="#co" style="min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid #B8C2CF; font-size: 13px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Apri in commercial orchestration</a></sc-if>
@@ -319,7 +319,7 @@ class Component extends DCLogic {
       { k: 'Rinnovo', v: '124 gg', sub: 'scadenza 28 feb 2027', color: '#1A1C1E' },
       { k: 'Servizio più urgente', v: 'ritmo 1,60', sub: 'Nuovi Certificati FEA, esaurito', color: '#A3201A' }
     ];
-    if (money) head.unshift({ k: 'Canone annuo', v: '€ 19.900', sub: 'overage YTD € 420', color: '#1A1C1E' });
+    if (money) head.unshift({ k: 'Valore annuo', v: '€ 19.900', sub: 'overage YTD € 420', color: '#1A1C1E' });
     var vtab = st.vtab || 'm1';
     var vRaw = [['m1', 'M1 Panoramica'], ['m2', 'M2 Dettaglio'], ['m3', 'M3 Qualità']];
     if (money) vRaw.push(['m4', 'M4 Fatture']);
@@ -329,9 +329,9 @@ class Component extends DCLogic {
       return { label: t[1], sel: on ? 'true' : 'false', bg: on ? '#FFFFFF' : 'transparent', weight: on ? 600 : 500, pick: function () { self.setState({ vtab: t[0] }); } };
     });
     var VT = {
-      m2: ['Dettaglio servizio', 'Consumo cumulato, proiezione a fine periodo, consumo giornaliero ed esiti di un servizio del cliente.' + (money ? '' : ' Senza importi né simulatore di ricarica.'), 'cliente-M2-dettaglio.html'],
+      m2: ['Dettaglio servizio', 'Consumo cumulato, proiezione a fine periodo, consumo giornaliero ed esiti di un servizio del cliente.' + (money ? '' : ' Senza importi né simulatore di upgrade.'), 'cliente-M2-dettaglio.html'],
       m3: ['Qualità processi', 'Funnel di onboarding, motivi di KO, firma dei contratti, esiti SDI e disponibilità, come li vede il cliente.', 'cliente-M3-qualita.html'],
-      m4: ['Fatture', 'Fatture di canone, overage e ricariche emesse al cliente, con il dettaglio dell’overage per servizio.', 'cliente-M4-fatture.html']
+      m4: ['Fatture', 'Fatture di fee di attivazione, canone periodico, componente variabile e overage emesse al cliente, con il dettaglio dell’overage per servizio.', 'cliente-M4-fatture.html']
     };
     var view = vtab === 'm1' ? { m1: true, other: false, title: '', text: '', href: '' } : { m1: false, other: true, title: VT[vtab][0], text: VT[vtab][1], href: VT[vtab][2] };
     var m1kpi = [
@@ -354,10 +354,10 @@ class Component extends DCLogic {
     ].map(function (r) { var s = ST[r[4]]; return { name: r[0], used: r[1], incl: r[2], pct: r[3].toFixed(1).replace('.', ',') + '%', w: Math.min(r[3], 100) + '%', state: s[0], bg: s[1], fg: s[2], bar: s[3], ex: r[5], pace: r[6] }; });
     var OS = { act: ['In attivazione', '#E5EFFF', '#0047BB'], on: ['Attivo', '#E3F3EA', '#1A6B4A'], done: ['Concluso', '#EAEFF5', '#3A424C'] };
     var orders = [
-      ['24 ott 2026', 'Ricarica 500 Nuovi Certificati FEA', 'ORD-2026-1187 · ordinato da G. Marchetti (delegato amministrativo)', 'act', '€ 1.275'],
-      ['1 mar 2026', 'Contratto Bundle Medium · 2026/27', 'CTR-2026-0418 · rinnovo firmato da P. Ferretti', 'on', '€ 19.900'],
-      ['15 nov 2025', 'Ricarica 1.000 Identificazioni Full Prospect', 'ORD-2025-0866 · ordinato da P. Ferretti', 'done', '€ 1.020'],
-      ['1 mar 2025', 'Contratto Bundle Medium · 2025/26', 'CTR-2025-0127 · primo contratto, firmato da P. Ferretti', 'done', '€ 19.900']
+      ['24 ott 2026', 'Upgrade +500 Nuovi Certificati FEA', 'ORD-2026-1187 · modifica dell’offerta avviata da G. Marchetti (delegato amministrativo)', 'act', '€ 1.500'],
+      ['1 mar 2026', 'Contratto · 9 servizi configurati · 2026/27', 'CTR-2026-0418 · rinnovo firmato da P. Ferretti', 'on', '€ 19.900'],
+      ['15 nov 2025', 'Upgrade +1.000 Identificazioni Full Prospect', 'ORD-2025-0866 · modifica dell’offerta firmata da P. Ferretti', 'done', '€ 1.200'],
+      ['1 mar 2025', 'Contratto · 9 servizi configurati · 2025/26', 'CTR-2025-0127 · primo contratto, firmato da P. Ferretti', 'done', '€ 19.900']
     ].map(function (r) { var s = OS[r[3]]; return { date: r[0], what: r[1], meta: r[2], state: s[0], bg: s[1], fg: s[2], amount: money ? r[4] : '' }; });
     var TS = { P3: ['#FDF1D6', '#855800'], P4: ['#EAEFF5', '#3A424C'] };
     var tickets = [

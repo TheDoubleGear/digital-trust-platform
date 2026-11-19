@@ -67,7 +67,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div style="display: flex; flex-direction: column; gap: 8px">
 <h1 style="margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.01em">Contratto e consumi</h1>
 <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
-<span style="padding: 4px 10px; border-radius: 999px; background: #0047BB; color: #FFFFFF; font-size: 12px; font-weight: 600">Bundle Medium</span>
+<span style="padding: 4px 10px; border-radius: 999px; background: #0047BB; color: #FFFFFF; font-size: 12px; font-weight: 600">9 servizi configurati</span>
 <span style="font-size: 13px; color: #4D5762">{{contractLine}}</span>
 </div>
 </div>
@@ -120,7 +120,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B03A0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
 <p style="margin: 0; flex: 1 1 480px; font-size: 14px; line-height: 1.45; color: #5C1F06"><strong style="font-weight: 600">7 servizi su 9 si esauriranno prima del rinnovo del 28 feb 2027</strong> al ritmo attuale. {{bannerText}}</p>
 <sc-if value="{{f.buy}}" hint-placeholder-val="{{ true }}">
-<a class="dtp-btn" href="cliente-H-catalogo.html" style="min-height: 44px; padding: 0 20px; border-radius: 999px; background: #B03A0B; color: #FFFFFF; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Ricarica o upgrade</a>
+<a class="dtp-btn" href="cliente-H-catalogo.html" style="min-height: 44px; padding: 0 20px; border-radius: 999px; background: #B03A0B; color: #FFFFFF; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Upgrade</a>
 </sc-if>
 <sc-if value="{{f.noBuy}}" hint-placeholder-val="{{ false }}">
 <button class="dtp-btn" type="button" onClick="{{signal}}" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 0; background: #B03A0B; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{signalLabel}}</button>
@@ -169,7 +169,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 </sc-for>
 </div>
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 6px; border: 1px dashed #9AA6B8; background: #FFFFFF">
-<span style="font-size: 14px"><strong style="font-weight: 600">Servizi non attivi:</strong> nessuno. Tutti i servizi del catalogo sono inclusi nel tuo bundle; quando un servizio non è attivo compare qui con il collegamento al catalogo.</span>
+<span style="font-size: 14px"><strong style="font-weight: 600">Servizi non attivi:</strong> nessuno. Tutti i servizi del catalogo sono configurati nella tua offerta; quando un servizio non è attivo compare qui con il collegamento al catalogo.</span>
 <a href="cliente-H-catalogo.html" style="font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 0">Vai al catalogo →</a>
 </div>
 </section>
@@ -467,17 +467,17 @@ class Component extends DCLogic {
     var IS = { paid: ['Pagata', '#E3F3EA', '#1A6B4A'], soon: ['In emissione', '#FDF1D6', '#855800'] };
     var invoices = [
       ['—', '31 ott 2026', 'Overage ottobre: Nuovi Certificati FEA, 140 unità', '€ 420', '30 nov 2026', 'soon', false],
-      ['—', 'all’attivazione', 'Ricarica 500 Nuovi Certificati FEA (ORD-2026-1187)', '€ 1.275', '30 gg data fattura', 'soon', false],
-      ['FT-2026-09044', '1 set 2026', 'Canone Bundle Medium · 3° trimestre (set–nov)', '€ 4.975', '30 set 2026', 'paid', true],
-      ['FT-2026-06071', '1 giu 2026', 'Canone Bundle Medium · 2° trimestre (giu–ago)', '€ 4.975', '30 giu 2026', 'paid', true],
-      ['FT-2026-03182', '1 mar 2026', 'Canone Bundle Medium · 1° trimestre (mar–mag)', '€ 4.975', '31 mar 2026', 'paid', true]
+      ['—', 'all’attivazione', 'Upgrade +500 Nuovi Certificati FEA (ORD-2026-1187)', '€ 1.500', '30 gg data fattura', 'soon', false],
+      ['FT-2026-09044', '1 set 2026', 'Canone periodico · 3° trimestre (set–nov)', '€ 4.975', '30 set 2026', 'paid', true],
+      ['FT-2026-06071', '1 giu 2026', 'Canone periodico · 2° trimestre (giu–ago)', '€ 4.975', '30 giu 2026', 'paid', true],
+      ['FT-2026-03182', '1 mar 2026', 'Canone periodico · 1° trimestre (mar–mag)', '€ 4.975', '31 mar 2026', 'paid', true]
     ].map(function (r) { var s = IS[r[5]]; return { num: r[0], date: r[1], desc: r[2], amount: r[3], due: r[4], state: s[0], bg: s[1], fg: s[2], hasDocs: r[6] }; });
     return { navFull: P !== 'tec', navTec: P === 'tec',
       who: WHO[P], f: f, subtabs: subtabs,
-      contractLine: money ? 'Contratto DTP-2026-0418 · canone annuo € 19.900' : 'Contratto DTP-2026-0418',
+      contractLine: money ? 'Contratto DTP-2026-0418 · valore annuo € 19.900' : 'Contratto DTP-2026-0418',
       exportLabel: money ? 'Dati Excel' : 'Dati Excel (quantità)',
       kpis: kpis,
-      bannerText: money ? 'Valuta una ricarica dei servizi più usati o il passaggio a un bundle superiore.' : 'Puoi segnalarlo al delegato amministrativo, che gestisce ricariche e upgrade.',
+      bannerText: money ? 'Valuta un upgrade delle quantità dei servizi più usati.' : 'Puoi segnalarlo al delegato amministrativo, che gestisce upgrade e modifiche dell’offerta.',
       signal: function () { set({ signaled: true }); },
       signalLabel: st.signaled ? 'Segnalazione inviata' : 'Segnala all’amministrativo',
       services: services, families: fam, months: months, alerts: alerts,

@@ -34,6 +34,11 @@ function openPage(file, { role = null, setup = null, legacy = false } = {}) {
   if (setup) w.localStorage.setItem('dtp-demo-lr-setup', JSON.stringify(setup));
   if (legacy) { w.sessionStorage.setItem('dtp-persona-cliente', 'lr'); w.sessionStorage.setItem('dtp-persona-postel', 'com'); }
   w.eval(authSrc);
+  // Moduli condivisi caricati in testata dopo dtp-auth.js (es. il catalogo usato da H).
+  for (const s of w.document.querySelectorAll('head > script[src]')) {
+    const src = s.getAttribute('src');
+    if (src !== 'dtp-auth.js') w.eval(readFileSync(new URL(src, mockups), 'utf8'));
+  }
   const nav = [];
   w.DTPAuth._navigate = (url, replace) => { nav.push({ url, replace }); };
   for (const s of w.document.querySelectorAll('body > script:not([src])')) w.eval(s.textContent);
@@ -205,7 +210,8 @@ test('pagine reali: regole di business per ruolo restano quelle originali', () =
   assert.equal(openPage(H, { role: 'amm', setup: done }).text.includes('Da decidere'), false);
   const op = openPage(H, { role: 'op' });
   assert.ok(op.text.includes('Le tue richieste'));
-  assert.equal(op.text.includes('Riepilogo ordine'), false);
+  assert.equal(op.text.includes('Riepilogo della modifica'), false);
+  assert.ok(openPage(H, { role: 'amm', setup: done }).text.includes('Riepilogo della modifica'));
   assert.ok(openPage('cliente-M4-fatture.html', { role: 'op' }).text.includes('non sono visibili per il delegato operativo'));
   const tec = openPage(M1, { role: 'tec' });
   assert.ok(tec.app.querySelector('a[href="' + D0 + '"]'), 'il delegato tecnico torna al developer portal');

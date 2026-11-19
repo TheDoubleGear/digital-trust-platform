@@ -66,7 +66,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <a href="{{t.href}}" aria-current="{{t.current}}" style="padding: 12px 16px; font-size: 14px; font-weight: {{t.weight}}; text-decoration: none; color: {{t.color}}; border-bottom: 3px solid {{t.line}}; margin-bottom: -1px">{{t.label}}</a>
 </sc-for>
 </nav>
-<p style="margin: 0; font-size: 13px; color: #4D5762">Bundle Medium · periodo 01 mar 2026 → 28 feb 2027 · rinnovo tra 124 giorni · aggiornato 27 ott 2026, 06:00</p>
+<p style="margin: 0; font-size: 13px; color: #4D5762">9 servizi configurati · periodo 01 mar 2026 → 28 feb 2027 · rinnovo tra 124 giorni · aggiornato 27 ott 2026, 06:00</p>
 
 <div role="group" aria-label="Seleziona il servizio" style="display: flex; flex-wrap: wrap; gap: 8px">
 <sc-for list="{{tabs}}" as="t" hint-placeholder-count="9">
@@ -182,22 +182,18 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div style="height: 10px; border-radius: 5px; background: #E4EAF2"><div style="width: 65.9%; height: 10px; border-radius: 5px; background: #0B2A5B"></div></div>
 </div>
 </div>
-<p style="margin: 0; font-size: 12px; color: #4D5762; line-height: 1.5">Ritmo = % consumata / % di periodo trascorso. Sopra 1,2 il bundle finisce prima del rinnovo; sotto 0,6 è sovradimensionato.</p>
+<p style="margin: 0; font-size: 12px; color: #4D5762; line-height: 1.5">Ritmo = % consumata / % di periodo trascorso. Sopra 1,2 la quantità configurata finisce prima del rinnovo; sotto 0,6 è sovradimensionata.</p>
 </section>
 
 <sc-if value="{{money}}" hint-placeholder-val="{{ true }}">
 <section class="dtp-card" aria-labelledby="titolo-simula" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
 <h2 id="titolo-simula" style="margin: 0; font-size: 16px; font-weight: 600">Simula la copertura</h2>
-<fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
-<legend style="font-size: 13px; color: #4D5762; margin-bottom: 8px">Opzione</legend>
-<label style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; border: 1px solid #0047BB; background: #E5EFFF; border-radius: 6px; font-size: 14px"><input type="radio" name="opzione" checked=""> Ricarica di 2.500 identificazioni</label>
-<label style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; border: 1px solid #D9E1EC; border-radius: 6px; font-size: 14px"><input type="radio" name="opzione"> Upgrade a bundle Pro</label>
-</fieldset>
+<p style="margin: 0; font-size: 13px; color: #4D5762; line-height: 1.5">Confronto tra l'aumento della quantità configurata e l'overage previsto al ritmo attuale.</p>
 <dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 12px; border-radius: 6px; background: #F3F7FC">
-<div><dt style="font-size: 12px; color: #4D5762">Nuova copertura</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600; color: #1A6B4A">fino al rinnovo</dd></div>
-<div><dt style="font-size: 12px; color: #4D5762">Overage evitato</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">€ 3.006</dd></div>
-<div><dt style="font-size: 12px; color: #4D5762">Costo opzione</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">€ 2.550</dd></div>
-<div><dt style="font-size: 12px; color: #4D5762">Residuo a fine periodo</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">≈ 0</dd></div>
+<div><dt style="font-size: 12px; color: #4D5762">Upgrade proposto</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">+3.000 · da 5.000 a 8.000</dd></div>
+<div><dt style="font-size: 12px; color: #4D5762">Prezzo dell'upgrade</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">€ 3.600</dd></div>
+<div><dt style="font-size: 12px; color: #4D5762">Overage previsto senza upgrade</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600">€ 3.006 · 2.505 unità</dd></div>
+<div><dt style="font-size: 12px; color: #4D5762">Copertura con l'upgrade</dt><dd style="margin: 2px 0 0; font-size: 14px; font-weight: 600; color: #1A6B4A">fino al rinnovo · residuo ≈ 495</dd></div>
 </dl>
 <a class="dtp-btn dtp-btn-p" href="cliente-H-catalogo.html" style="min-height: 44px; border-radius: 999px; background: #0047BB; color: #FFFFFF; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center">Vai al catalogo</a>
 </section>
@@ -205,7 +201,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <sc-if value="{{noMoney}}" hint-placeholder-val="{{ false }}">
 <section class="dtp-card" aria-labelledby="titolo-segnala" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
 <h2 id="titolo-segnala" style="margin: 0; font-size: 16px; font-weight: 600">Serve più copertura?</h2>
-<p style="margin: 0; font-size: 14px; line-height: 1.5">Al ritmo attuale serviranno circa <strong style="font-weight: 600">2.500 identificazioni</strong> in più prima del rinnovo. Ricariche e upgrade li gestisce il delegato amministrativo.</p>
+<p style="margin: 0; font-size: 14px; line-height: 1.5">Al ritmo attuale serviranno circa <strong style="font-weight: 600">2.500 identificazioni</strong> in più prima del rinnovo. Gli upgrade li gestisce il delegato amministrativo.</p>
 <button class="dtp-btn dtp-btn-p" type="button" onClick="{{signal}}" style="min-height: 44px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{signalLabel}}</button>
 </section>
 </sc-if>

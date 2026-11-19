@@ -166,7 +166,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div role="table" aria-label="Clienti da contattare" style="min-width: 1180px; font-size: 13px">
 <div role="row" style="display: grid; grid-template-columns: {{gridCols}}; color: #4D5762; font-size: 12px; border-bottom: 1px solid #D9E1EC">
 <span role="columnheader" style="padding: 10px 10px">Cliente</span>
-<span role="columnheader" style="padding: 10px 10px">Bundle</span>
+<span role="columnheader" style="padding: 10px 10px">Valore contratto</span>
 <span role="columnheader" style="padding: 10px 10px">Account mgr</span>
 <span role="columnheader" style="padding: 10px 10px">Scadenza</span>
 <span role="columnheader" style="padding: 10px 10px">Servizio più consumato</span>
@@ -179,7 +179,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <sc-for list="{{clients}}" as="c" hint-placeholder-count="10">
 <div role="row" style="display: grid; grid-template-columns: {{gridCols}}; align-items: center; border-bottom: 1px solid #EAEFF5">
 <span role="rowheader" style="padding: 8px 10px"><a href="postel-O5-scheda-cliente.html" style="font-weight: 600; text-decoration: none; display: inline-block; padding: 6px 0">{{c.name}}</a></span>
-<span role="cell" style="padding: 8px 10px">{{c.bundle}}</span>
+<span role="cell" style="padding: 8px 10px">{{c.value}}</span>
 <span role="cell" style="padding: 8px 10px">{{c.am}}</span>
 <span role="cell" style="padding: 8px 10px; color: {{c.dueColor}}; font-weight: {{c.dueWeight}}">{{c.due}}</span>
 <span role="cell" style="padding: 8px 10px">{{c.svc}} <strong style="font-weight: 600">{{c.pct}}</strong></span>
@@ -381,7 +381,7 @@ class Component extends DCLogic {
     var EXT = { com: [['co', 'Commercial orchestration']], ops: [['pix', 'PIX · assistenza']], cdg: [['rf', 'Rating e fatturazione'], ['co', 'Commercial orchestration']] };
     var ext = EXT[P].map(function (e) { return { id: e[0], label: e[1] }; });
     var filters = [
-      { label: 'Periodo', value: 'Ad oggi' }, { label: 'Bundle', value: 'Tutti' },
+      { label: 'Periodo', value: 'Ad oggi' },
       { label: 'Account manager', value: 'Tutti' }, { label: 'Segmento', value: 'Tutti' },
       { label: 'Settore', value: 'Tutti' }, { label: 'Area', value: 'Tutte' },
       { label: 'Stato contratto', value: 'Attivo' }
@@ -414,8 +414,8 @@ class Component extends DCLogic {
     };
     var moves = [
       { name: 'Nuovi clienti', n: '17', v: '+€ 298k', val: 298 },
-      { name: 'Upgrade di bundle', n: '11', v: '+€ 156k', val: 156 },
-      { name: 'Downgrade di bundle', n: '4', v: '−€ 38k', val: -38 },
+      { name: 'Aumenti dell’offerta', n: '11', v: '+€ 156k', val: 156 },
+      { name: 'Riduzioni dell’offerta', n: '4', v: '−€ 38k', val: -38 },
       { name: 'Clienti cessati', n: '8', v: '−€ 112k', val: -112 }
     ].map(function (x) {
       var w = Math.abs(x.val) / 298 * 100;
@@ -426,21 +426,21 @@ class Component extends DCLogic {
       'In linea': ['#EAEFF5', '#3A424C'], 'Sotto-utilizzo': ['#E5EFFF', '#0047BB']
     };
     var cRaw = [
-      ['Assicurazioni Aurora S.p.A.', 'Medium', 'M. Rinaldi', '28/02/2027', 124, 'Nuovi Certificati FEA', '105,6%', '1,60', 'Esaurito (17/10)', 82, 'Overage', 'Proporre ricarica FEA e identificazioni'],
-      ['Logistica Adriatica S.r.l.', 'Base', 'S. Greco', '31/03/2027', 155, 'Fatture Elettroniche', '112%', '1,95', 'Esaurito (02/10)', 74, 'Overage', 'Proporre upgrade a Medium'],
-      ['Banca Levante S.p.A.', 'Pro', 'L. Conti', '31/12/2026', 65, 'Ident. Full Prospect', '94%', '1,31', '02/12/2026', 78, 'Upsell', 'Anticipare il rinnovo con upgrade'],
-      ['Immobiliare Tevere S.r.l.', 'Base', 'M. Rinaldi', '20/12/2026', 54, 'Apposizioni FEA con COD', '88%', '1,09', '05/12/2026', 69, 'Upsell', 'Proporre ricarica'],
-      ['Gruppo Scaligero Assicurazioni', 'Enterprise', 'S. Greco', '31/01/2027', 96, 'Verifiche Contatti', '83%', '1,12', '20/01/2027', 80, 'Upsell', 'Rinnovo con quantità riviste'],
-      ['Energia Verde Soc. Coop.', 'Base', 'M. Rinaldi', '10/11/2026', 14, 'Fatture Elettroniche', '21%', '0,24', '—', 22, 'Sotto-utilizzo', 'Disdetta ricevuta: call di recupero'],
-      ['Credito Alpino S.p.A.', 'Medium', 'L. Conti', '30/11/2026', 34, 'Contratti', '52%', '0,55', '—', 36, 'Sotto-utilizzo', 'Business review prima del rinnovo'],
-      ['Utility Nordest Energia S.p.A.', 'Pro', 'M. Rinaldi', '15/01/2027', 80, 'Verifiche Contatti', '38%', '0,47', '—', 41, 'Sotto-utilizzo', 'Valutare downgrade guidato'],
-      ['Telco Mediterranea S.p.A.', 'Enterprise', 'S. Greco', '30/06/2027', 246, 'Apposizioni FEA con COD', '71%', '1,02', '—', 88, 'In linea', 'Nessuna'],
-      ['Farmacie Riunite Sud S.r.l.', 'Medium', 'L. Conti', '31/05/2027', 216, 'Doc Composition Contratti', '64%', '0,98', '—', 85, 'In linea', 'Nessuna']
+      ['Assicurazioni Aurora S.p.A.', '€ 19.900', 'M. Rinaldi', '28/02/2027', 124, 'Nuovi Certificati FEA', '105,6%', '1,60', 'Esaurito (17/10)', 82, 'Overage', 'Proporre upgrade FEA e identificazioni'],
+      ['Logistica Adriatica S.r.l.', '€ 5.400', 'S. Greco', '31/03/2027', 155, 'Fatture Elettroniche', '112%', '1,95', 'Esaurito (02/10)', 74, 'Overage', 'Proporre upgrade Fatture Elettroniche'],
+      ['Banca Levante S.p.A.', '€ 72.300', 'L. Conti', '31/12/2026', 65, 'Ident. Full Prospect', '94%', '1,31', '02/12/2026', 78, 'Upsell', 'Anticipare il rinnovo con upgrade'],
+      ['Immobiliare Tevere S.r.l.', '€ 6.200', 'M. Rinaldi', '20/12/2026', 54, 'Apposizioni FEA con COD', '88%', '1,09', '05/12/2026', 69, 'Upsell', 'Proporre upgrade'],
+      ['Gruppo Scaligero Assicurazioni', '€ 186.000', 'S. Greco', '31/01/2027', 96, 'Verifiche Contatti', '83%', '1,12', '20/01/2027', 80, 'Upsell', 'Rinnovo con quantità riviste'],
+      ['Energia Verde Soc. Coop.', '€ 4.600', 'M. Rinaldi', '10/11/2026', 14, 'Fatture Elettroniche', '21%', '0,24', '—', 22, 'Sotto-utilizzo', 'Disdetta ricevuta: call di recupero'],
+      ['Credito Alpino S.p.A.', '€ 21.500', 'L. Conti', '30/11/2026', 34, 'Contratti', '52%', '0,55', '—', 36, 'Sotto-utilizzo', 'Business review prima del rinnovo'],
+      ['Utility Nordest Energia S.p.A.', '€ 58.700', 'M. Rinaldi', '15/01/2027', 80, 'Verifiche Contatti', '38%', '0,47', '—', 41, 'Sotto-utilizzo', 'Valutare riduzione guidata delle quantità'],
+      ['Telco Mediterranea S.p.A.', '€ 214.000', 'S. Greco', '30/06/2027', 246, 'Apposizioni FEA con COD', '71%', '1,02', '—', 88, 'In linea', 'Nessuna'],
+      ['Farmacie Riunite Sud S.r.l.', '€ 18.300', 'L. Conti', '31/05/2027', 216, 'Doc Composition Contratti', '64%', '0,98', '—', 85, 'In linea', 'Nessuna']
     ];
     var clients = cRaw.map(function (r) {
       var hc = r[9] >= 70 ? '#2E8B62' : (r[9] >= 40 ? '#E0A100' : '#C7322A');
       return {
-        name: r[0], bundle: r[1], am: r[2], due: r[3],
+        name: r[0], value: r[1], am: r[2], due: r[3],
         dueColor: r[4] <= 60 ? '#B03A0B' : '#1A1C1E', dueWeight: r[4] <= 60 ? 600 : 400,
         svc: r[5], pct: r[6], pace: r[7], ex: r[8],
         health: r[9], healthW: r[9] + '%', healthColor: hc,
@@ -467,8 +467,8 @@ class Component extends DCLogic {
       active: ['Attivato', '#E3F3EA', '#1A6B4A']
     };
     var pratiche = [
-      ['p1', 'Studio Legale Martini', 'Nuovo contratto · Bundle Base', 'firmato dal LR oggi alle 10:12', 'Vetrina', 'sign'],
-      ['p2', 'Ottica Riviera S.r.l.', 'Nuovo contratto · Enterprise personalizzato', 'ordine predisposto da S. Greco', 'Commerciale', 'client'],
+      ['p1', 'Studio Legale Martini', 'Nuovo contratto · 3 servizi configurati', 'firmato dal LR oggi alle 10:12', 'Vetrina', 'sign'],
+      ['p2', 'Ottica Riviera S.r.l.', 'Nuovo contratto · offerta componibile, 6 servizi', 'ordine predisposto da S. Greco', 'Commerciale', 'client'],
       ['p3', 'Assicurazioni Aurora S.p.A.', 'Upgrade a Pro dal rinnovo', 'richiesto dal delegato amministrativo', 'Portale cliente', 'review'],
       ['p4', 'Energia Verde Soc. Coop.', 'Recesso al 10/11/2026', 'disattivazione dei servizi alla data', 'Portale cliente', 'conguaglio'],
       ['p5', 'Logistica Adriatica S.r.l.', 'Upgrade a Medium', 'controfirmato il 26 ott 2026', 'Portale cliente', 'active']

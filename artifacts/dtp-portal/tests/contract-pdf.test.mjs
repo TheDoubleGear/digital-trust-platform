@@ -44,15 +44,40 @@ async function extract(blob, name) {
   return execFileSync('pdftotext', ['-layout', file.pathname, '-'], { encoding: 'utf8' });
 }
 
-test('direct PDF download includes the longest cart, Enterprise, totals and no password', async () => {
+test('price calculation returns variable component, activation fee, periodic fee and total', () => {
+  const { w, dom } = setup();
+  try {
+    const D = w.DTP;
+    assert.equal(D.bundles, undefined);
+    assert.equal(D.ENT_DISC, undefined);
+    const p = D.price({ cert: 1000, ver: 20000 });
+    assert.equal(p.variabile, 1000 * 3 + 20000 * 0.05);
+    assert.equal(p.fee, D.feeAttivazione);
+    assert.equal(p.canone, D.canonePeriodico);
+    assert.equal(p.totale, p.variabile + p.fee + p.canone);
+    assert.equal(p.lines.map(l => l.id).join(), 'cert,ver');
+    assert.equal(D.price({}).totale, 0);
+    assert.equal(D.price({ cert: 500 }, { fee: false }).fee, 0);
+    for (const s of D.services) {
+      for (const key of ['family', 'name', 'desc', 'purpose', 'terms', 'doc']) assert.ok(s[key], s.id + ' ' + key);
+      assert.ok(Array.isArray(s.deps));
+      assert.ok(s.unit > 0 && s.step > 0);
+    }
+    assert.equal(D.missingDeps({ app: 5000 }).map(m => m.id).join(), 'app');
+    assert.equal(D.missingDeps({ app: 5000, cert: 500 }).length, 0);
+  } finally { dom.window.close(); }
+});
+
+test('direct PDF download lists only configured services, the three components, the total and no password', async () => {
   const { w, $, dom, downloads, form } = setup();
   try {
     form();
-    $('[data-act="bundle"][data-v="Enterprise"]').click();
-    // Both offers of every service: 18 packs plus Enterprise.
-    for (const service of w.DTP.services) {
-      service.packs.forEach((_, i) => $(`[data-act="pack"][data-v="${service.id}|${i}"]`).click());
-    }
+    const D = w.DTP, chosen = D.services.slice(0, 5);
+    chosen.forEach((service) => {
+      const i = D.services.indexOf(service);
+      $(`[data-act="inc"][data-i="${i}"]`).click();
+      $(`[data-act="inc"][data-i="${i}"]`).click();
+    });
     $('#buy').click();
     assert.match($('#dl').textContent, /PDF/);
     $('#dl').click();
@@ -60,20 +85,25 @@ test('direct PDF download includes the longest cart, Enterprise, totals and no p
     assert.equal($('#file').disabled, false);
     const text = await extract(downloads[0].blob, 'full-cart');
     for (const value of Object.values(data)) assert.ok(text.includes(value), value);
-    for (const service of w.DTP.services) {
-      assert.ok(text.includes(service.name));
-      for (const pack of service.packs) assert.ok(text.includes(w.DTP.eur(pack.price)));
+    const config = Object.fromEntries(chosen.map(s => [s.id, s.step * 2]));
+    for (const service of chosen) {
+      assert.ok(text.includes(service.name), service.name);
+      assert.ok(text.includes(D.num(service.step * 2) + ' unità'), service.name);
     }
-    const qty = w.DTP.entDefault();
-    const total = w.DTP.entTotal(qty) + w.DTP.services.reduce((sum, s) => sum + s.packs.reduce((a, p) => a + p.price, 0), 0);
-    assert.ok(text.includes('Totale annuo, IVA esclusa: ' + w.DTP.eur(total)));
-    assert.ok(text.includes('Composizione Enterprise'));
-    for (const q of qty.filter(Boolean)) assert.ok(text.includes(w.DTP.num(q) + ' unità'));
+    for (const service of D.services.slice(5)) assert.ok(!text.includes(service.name), service.name);
+    const p = D.price(config);
+    assert.ok(text.includes('Componente variabile'));
+    assert.ok(text.includes(D.eur(p.variabile)));
+    assert.ok(text.includes('Fee di attivazione: ' + D.eur(p.fee)));
+    assert.ok(text.includes('Canone periodico: ' + D.eur(p.canone)));
+    assert.ok(text.includes('Totale, IVA esclusa: ' + D.eur(p.totale)));
+    assert.ok(text.includes('DA DEFINIRE'));
+    assert.ok(!/bundle|enterprise|ricaric/i.test(text));
     assert.ok(text.includes('TESTO DA FORNIRE E APPROVARE A CURA DI POSTEL'));
     assert.ok(!text.includes('SecretNotInPDF123'));
     assert.ok(!text.toLowerCase().includes('password'));
     const pages = text.split('\f').filter(p => p.trim());
-    assert.ok(pages.length >= 3);
+    assert.ok(pages.length >= 2);
     pages.forEach((p, i) => {
       assert.ok(p.includes('BOZZA DIMOSTRATIVA'));
       assert.ok(p.includes(`Pagina ${i + 1} di ${pages.length}`));
@@ -83,11 +113,11 @@ test('direct PDF download includes the longest cart, Enterprise, totals and no p
   } finally { dom.window.close(); }
 });
 
-test('service, Enterprise quantity and company changes invalidate download, attachment and acknowledgements', () => {
+test('service, quantity and company changes invalidate download, attachment and acknowledgements', () => {
   for (const change of ['service', 'quantity', 'data']) {
     const { w, $, dom, form } = setup();
     try {
-      form(); $('[data-act="bundle"][data-v="Enterprise"]').click(); $('#buy').click(); $('#dl').click();
+      form(); $('[data-act="inc"][data-i="0"]').click(); $('#buy').click(); $('#dl').click();
       const file = new w.File(['%PDF-demo'], 'signed.pdf', { type: 'application/pdf' });
       Object.defineProperty($('#file'), 'files', { value: [file] });
       $('#file').dispatchEvent(new w.Event('change'));
@@ -99,7 +129,7 @@ test('service, Enterprise quantity and company changes invalidate download, atta
         $('#f1').dispatchEvent(new w.Event('submit', { bubbles: true, cancelable: true }));
       } else {
         $('[data-go="2"]').click();
-        $(change === 'quantity' ? '[data-act="inc"][data-i="0"]' : '[data-act="pack"]').click();
+        $(change === 'quantity' ? '[data-act="inc"][data-i="0"]' : '[data-act="inc"][data-i="1"]').click();
       }
       $('#buy').click();
       assert.equal($('#file').disabled, true, change);
@@ -114,7 +144,7 @@ test('service, Enterprise quantity and company changes invalidate download, atta
 test('generation failure stays gated and reports a retryable error', () => {
   const { w, $, dom, form, downloads } = setup();
   try {
-    form(); $('[data-act="bundle"][data-v="Base"]').click(); $('#buy').click();
+    form(); $('[data-act="inc"][data-i="2"]').click(); $('#buy').click();
     w.jspdf = null;
     $('#dl').click();
     assert.equal(downloads.length, 0);
@@ -133,8 +163,7 @@ test('extremely long fields paginate without dropping the final content', async 
     const blob = w.DTPContractPDF({
       data: { ...data, sede: ('Indirizzo molto lungo '.repeat(1200)) + 'FINE INDIRIZZO' },
       contract: { id: 'DTP-BOZZA-TEST', date: new Date('2026-11-16') },
-      items: [{ name: 'Servizio di prova', detail: 'Quantità 100', price: 1234.56 }],
-      bundle: 'Base', entQty: [],
+      config: { cert: 411.52 },
     });
     const text = await extract(blob, 'long-fields');
     assert.ok(text.includes('FINE INDIRIZZO'));

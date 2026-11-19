@@ -1,38 +1,66 @@
-/* Catalogo DTP condiviso da V01 (vetrina) e V02 (attivazione). Dati invariati dal listino originale. */
+/* Catalogo DTP condiviso. Offerta componibile: il cliente sceglie servizi e quantità, la piattaforma calcola il prezzo.
+   Prezzi unitari di listino invariati; fee di attivazione e canone periodico sono valori segnaposto da definire. */
 (function () {
-  // [id, famiglia, nome, descrizione, pacchetti [[quantita, prezzo]], prezzo unitario listino, passo Enterprise]
+  var DOC = '[DOCUMENTAZIONE DA FORNIRE]';
+  var TERMS = 'Conteggio per unità utilizzata nel periodo contrattuale. Oltre la quantità configurata si applica l\'overage al prezzo unitario di listino.';
+  // [id, famiglia, nome, descrizione, finalità, dipendenze, prezzo unitario di listino, passo di quantità]
   var S = [
-    ['cert', 'Firma elettronica', 'Nuovi Certificati FEA', 'Emissione del certificato di firma elettronica avanzata per ciascun firmatario.', [[500, 1275], [1000, 2550]], 3.00, 2500],
-    ['app', 'Firma elettronica', 'Apposizioni FEA con COD', 'Firma elettronica avanzata di un documento, confermata con codice dal firmatario.', [[5000, 640], [12500, 1600]], 0.15, 12500],
-    ['fp', 'Identità e verifica', 'Identificazioni Full Prospect', 'Identificazione da remoto di un nuovo cliente con verifica del documento di identità.', [[1000, 1020], [2500, 2550]], 1.20, 5000],
-    ['fun', 'Identità e verifica', 'Full Prospect con funnel completato', 'Identificazione Full Prospect conteggiata solo quando l\'utente completa il percorso.', [[1000, 680], [2500, 1700]], 0.80, 4000],
-    ['pro', 'Identità e verifica', 'Identificazioni Proprietarie', 'Identificazione con il metodo proprietario della piattaforma.', [[500, 385], [1000, 765]], 0.90, 2500],
-    ['ver', 'Identità e verifica', 'Verifiche Contatti', 'Verifica di indirizzo e-mail e numero di telefono con codice di conferma.', [[10000, 425], [25000, 1000]], 0.05, 25000],
-    ['doc', 'Contratti e documenti', 'Doc Composition Contratti', 'Composizione automatica dei contratti a partire da modelli e dati.', [[1000, 170], [2500, 425]], 0.20, 5000],
-    ['con', 'Contratti e documenti', 'Contratti', 'Gestione del contratto digitale: invio, raccolta delle firme e archiviazione.', [[1000, 425], [2500, 1060]], 0.50, 5000],
-    ['fat', 'Fatturazione', 'Fatture Elettroniche', 'Emissione e invio delle fatture elettroniche al Sistema di Interscambio.', [[2000, 170], [6000, 480]], 0.10, 6000]
+    ['cert', 'Firma elettronica', 'Nuovi Certificati FEA', 'Emissione del certificato di firma elettronica avanzata per ciascun firmatario.', 'Abilitare i firmatari alla firma elettronica avanzata dei documenti.', [], 3.00, 500],
+    ['app', 'Firma elettronica', 'Apposizioni FEA con COD', 'Firma elettronica avanzata di un documento, confermata con codice dal firmatario.', 'Far firmare documenti con firma elettronica avanzata confermata da codice.', ['cert'], 0.15, 2500],
+    ['fp', 'Identità e verifica', 'Identificazioni Full Prospect', 'Identificazione da remoto di un nuovo cliente con verifica del documento di identità.', 'Identificare da remoto nuovi clienti in fase di acquisizione.', [], 1.20, 1000],
+    ['fun', 'Identità e verifica', 'Full Prospect con funnel completato', 'Identificazione Full Prospect conteggiata solo quando l\'utente completa il percorso.', 'Pagare l\'identificazione solo per i percorsi portati a termine.', [], 0.80, 1000],
+    ['pro', 'Identità e verifica', 'Identificazioni Proprietarie', 'Identificazione con il metodo proprietario della piattaforma.', 'Identificare i clienti con il metodo proprietario della piattaforma.', [], 0.90, 500],
+    ['ver', 'Identità e verifica', 'Verifiche Contatti', 'Verifica di indirizzo e-mail e numero di telefono con codice di conferma.', 'Accertare che e-mail e cellulare indicati appartengano al cliente.', [], 0.05, 5000],
+    ['doc', 'Contratti e documenti', 'Doc Composition Contratti', 'Composizione automatica dei contratti a partire da modelli e dati.', 'Generare contratti personalizzati a partire da modelli e dati del cliente.', ['con'], 0.20, 1000],
+    ['con', 'Contratti e documenti', 'Contratti', 'Gestione del contratto digitale: invio, raccolta delle firme e archiviazione.', 'Gestire l\'intero ciclo del contratto digitale, dall\'invio all\'archiviazione.', [], 0.50, 1000],
+    ['fat', 'Fatturazione', 'Fatture Elettroniche', 'Emissione e invio delle fatture elettroniche al Sistema di Interscambio.', 'Emettere e trasmettere le fatture elettroniche al Sistema di Interscambio.', [], 0.10, 2000]
   ];
   var services = S.map(function (s) {
-    return { id: s[0], family: s[1], name: s[2], desc: s[3], packs: s[4].map(function (p) { return { qty: p[0], price: p[1] }; }), unit: s[5], step: s[6] };
+    return { id: s[0], family: s[1], name: s[2], desc: s[3], purpose: s[4], deps: s[5], terms: TERMS, unit: s[6], step: s[7], doc: DOC };
   });
-  var bundles = [
-    { id: 'Base', price: 4900, desc: 'Per iniziare con volumi contenuti su tutti i servizi.', inc: ['1.000', '500', '2.500'] },
-    { id: 'Medium', price: 19900, desc: 'Per aziende con processi digitali già avviati.', inc: ['5.000', '2.500', '12.500'], badge: 'Il più scelto' },
-    { id: 'Pro', price: 64900, desc: 'Per volumi elevati su più canali.', inc: ['20.000', '10.000', '50.000'] }
-  ];
-  var bundleLines = ['Identificazioni Full Prospect', 'Nuovi Certificati FEA', 'Apposizioni FEA con COD'];
-  var ENT_DISC = 0.8;
+  var index = {};
+  services.forEach(function (s) { index[s.id] = s; });
+
+  // Valori segnaposto evidenti: importi e periodicità sono da definire a cura di Postel.
+  var feeAttivazione = 1000;
+  var canonePeriodico = 1000;
+  var periodicita = '[DA DEFINIRE]';
+  var SEGNAPOSTO = 'valore segnaposto [DA DEFINIRE]';
+
+  function byId(id) { return index[id] || null; }
+  function lines(config) {
+    return services.filter(function (s) { return config && config[s.id] > 0; }).map(function (s) {
+      var q = config[s.id];
+      return { id: s.id, name: s.name, family: s.family, qty: q, unit: s.unit, amount: round(q * s.unit) };
+    });
+  }
+  /* Prezzo di una configurazione {idServizio: quantità}: componente variabile, fee di attivazione, canone periodico e totale.
+     opts.fee = false esclude la fee (es. modifica di un'offerta già attiva). */
+  function price(config, opts) {
+    var l = lines(config), any = l.length > 0, withFee = !opts || opts.fee !== false;
+    var variabile = round(l.reduce(function (a, x) { return a + x.amount; }, 0));
+    var fee = any && withFee ? feeAttivazione : 0;
+    var canone = any ? canonePeriodico : 0;
+    return { lines: l, variabile: variabile, fee: fee, canone: canone, totale: round(variabile + fee + canone) };
+  }
+  // Dipendenze non soddisfatte: [{ id, name, missing: [nomi] }]
+  function missingDeps(config) {
+    return lines(config).map(function (x) {
+      var miss = byId(x.id).deps.filter(function (d) { return !(config[d] > 0); }).map(function (d) { return byId(d).name; });
+      return { id: x.id, name: x.name, missing: miss };
+    }).filter(function (x) { return x.missing.length; });
+  }
+  function round(n) { return Math.round(n * 100) / 100; }
   function grp(n, opt) { return n.toLocaleString('it-IT', Object.assign({ useGrouping: 'always' }, opt || {})); }
   function eur(n) { return '€ ' + grp(n, { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); }
   function num(n) { return grp(n); }
   function unit3(n) { return grp(n, { minimumFractionDigits: 3, maximumFractionDigits: 3 }); }
-  function entDefault() { return services.map(function (s) { return s.step * 4; }); }
-  function entAmount(i, q) { return Math.round(q * services[i].unit * ENT_DISC); }
-  function entTotal(qty) { return qty.reduce(function (a, q, i) { return a + entAmount(i, q); }, 0); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   window.DTP = {
-    services: services, bundles: bundles, bundleLines: bundleLines, ENT_DISC: ENT_DISC,
+    services: services, byId: byId,
     families: ['Identità e verifica', 'Firma elettronica', 'Contratti e documenti', 'Fatturazione'],
-    eur: eur, num: num, unit3: unit3, entDefault: entDefault, entAmount: entAmount, entTotal: entTotal, esc: esc
+    feeAttivazione: feeAttivazione, canonePeriodico: canonePeriodico, periodicita: periodicita, SEGNAPOSTO: SEGNAPOSTO,
+    lines: lines, price: price, missingDeps: missingDeps,
+    eur: eur, num: num, unit3: unit3, esc: esc
   };
 })();

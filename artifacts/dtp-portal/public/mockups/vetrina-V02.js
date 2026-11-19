@@ -19,28 +19,19 @@
   }
   var S = {
     step: 1, data: null, pwOk: false, dirty: false, purchased: false,
-    bundle: null, packs: [], entQty: D.entDefault(),
+    qty: {},
     contract: null, downloaded: false, downloadErr: '', file: null, fileErr: '', acks: [false, false], invalidNote: false,
     submitted: false, ref: null
   };
 
   /* ---------- carrello ---------- */
   function items() {
-    var out = [];
-    if (S.bundle === 'Enterprise') {
-      var n = S.entQty.filter(function (q) { return q > 0; }).length;
-      out.push({ key: 'b', name: 'Bundle Enterprise', detail: n + ' servizi · quantità personalizzate · prezzo indicativo', price: D.entTotal(S.entQty), ent: true });
-    } else if (S.bundle) {
-      var b = D.bundles.filter(function (x) { return x.id === S.bundle; })[0];
-      out.push({ key: 'b', name: 'Bundle ' + b.id, detail: 'Canone annuale · tutti i servizi del catalogo', price: b.price });
-    }
-    S.packs.forEach(function (k) {
-      var p = k.split('|'), s = D.services.filter(function (x) { return x.id === p[0]; })[0], pk = s.packs[+p[1]];
-      out.push({ key: k, name: s.name, detail: 'Offerta singola · ' + D.num(pk.qty) + ' unità', price: pk.price });
+    return D.lines(S.qty).map(function (l) {
+      return { key: l.id, name: l.name, detail: D.num(l.qty) + ' unità × ' + D.unit3(l.unit) + ' €', price: l.amount };
     });
-    return out;
   }
-  function total() { return items().reduce(function (a, i) { return a + i.price; }, 0); }
+  function quote() { return D.price(S.qty); }
+  function total() { return quote().totale; }
   function invalidate() {
     if (S.contract || S.downloaded || S.file) S.invalidNote = true;
     S.contract = null; S.downloaded = false; S.downloadErr = ''; S.file = null; S.fileErr = ''; S.acks = [false, false];
@@ -135,32 +126,19 @@
 
   /* ---------- passo 2: catalogo ---------- */
   function renderCat() {
-    var h = '<h2 style="font-size:17px;margin-bottom:10px">Bundle annuali</h2><div class="cat-b">';
-    D.bundles.forEach(function (b) {
-      var on = S.bundle === b.id;
-      h += '<article class="card bcard' + (on ? ' sel' : '') + '"><div style="display:flex;justify-content:space-between;gap:6px;align-items:center"><h3 style="font-size:17px">' + b.id + '</h3>' + (b.badge ? '<span class="badge">' + b.badge + '</span>' : '') + '</div><div class="price" style="font-size:20px">' + D.eur(b.price) + ' <small>/ anno</small></div><ul class="kv">' +
-        D.bundleLines.map(function (l, i) { return '<li><span>' + l + '</span><strong>' + b.inc[i] + '</strong></li>'; }).join('') +
-        '</ul><button type="button" class="btn ' + (on ? 'btn-on' : 'btn-p') + '" data-act="bundle" data-v="' + b.id + '" aria-pressed="' + on + '">' + (on ? 'Rimuovi dal carrello' : (S.bundle ? 'Sostituisci il bundle' : 'Aggiungi al carrello')) + '</button></article>';
+    var miss = D.missingDeps(S.qty), h = '';
+    D.families.forEach(function (f) {
+      var list = D.services.filter(function (s) { return s.family === f; });
+      h += '<h2 style="font-size:17px;margin:' + (h ? '22px' : '0') + ' 0 10px">' + e(f) + '</h2><div class="tscroll"><table class="tbl stack"><thead><tr><th>Servizio</th><th>Quantità</th><th class="r">Componente variabile</th></tr></thead><tbody>';
+      list.forEach(function (s) {
+        var i = D.services.indexOf(s), q = S.qty[s.id] || 0;
+        var dep = s.deps.length ? ' · richiede ' + s.deps.map(function (d) { return D.byId(d).name; }).join(', ') : '';
+        h += '<tr class="' + (q ? '' : 'off') + '"><td><strong>' + e(s.name) + '</strong><small>' + D.unit3(s.unit) + ' € per unità · multipli di ' + D.num(s.step) + e(dep) + '</small></td><td><span class="qty"><button type="button" data-act="dec" data-i="' + i + '" aria-label="Riduci ' + e(s.name) + '"' + (q ? '' : ' disabled') + '>−</button><output aria-live="polite">' + (q ? D.num(q) : 'Non incluso') + '</output><button type="button" data-act="inc" data-i="' + i + '" aria-label="Aumenta ' + e(s.name) + '">+</button></span></td><td class="r"><strong>' + (q ? D.eur(Math.round(q * s.unit * 100) / 100) : '—') + '</strong></td></tr>';
+      });
+      h += '</tbody></table></div>';
     });
-    h += '</div>';
-    var entOn = S.bundle === 'Enterprise', entT = D.entTotal(S.entQty), entN = S.entQty.filter(function (q) { return q > 0; }).length;
-    h += '<div class="card ent-ed" style="margin-top:14px;border-style:' + (entOn ? 'solid' : 'dashed') + ';border-color:' + (entOn ? '#0047BB' : '#9AA6B8') + '"><div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:flex-start"><div><div style="display:flex;gap:8px;align-items:center"><h3 style="font-size:17px">Enterprise</h3><span class="badge">Personalizzabile</span></div><p class="muted" style="margin:4px 0 0;font-size:13px">Scegli servizi e quantità annue. Porta un servizio a zero per escluderlo.' + (entOn ? ' Le modifiche aggiornano subito il carrello.' : '') + '</p></div>' +
-      '<div style="text-align:right"><small class="muted">Canone annuo indicativo · ' + entN + ' servizi</small><div style="font-size:20px;font-weight:600">' + D.eur(entT) + '</div></div></div>' +
-      '<div class="tscroll"><table class="tbl stack"><thead><tr><th>Servizio</th><th>Quantità annua</th><th class="r">Importo indicativo</th></tr></thead><tbody>' +
-      D.services.map(function (s, i) {
-        var q = S.entQty[i];
-        return '<tr class="' + (q ? '' : 'off') + '"><td><strong>' + e(s.name) + '</strong><small>' + D.unit3(s.unit * D.ENT_DISC) + ' € per unità · passo ' + D.num(s.step) + '</small></td><td><span class="qty"><button type="button" data-act="dec" data-i="' + i + '" aria-label="Riduci ' + e(s.name) + '"' + (q ? '' : ' disabled') + '>−</button><output aria-live="polite">' + (q ? D.num(q) : 'Escluso') + '</output><button type="button" data-act="inc" data-i="' + i + '" aria-label="Aumenta ' + e(s.name) + '">+</button></span></td><td class="r"><strong>' + (q ? D.eur(D.entAmount(i, q)) : '—') + '</strong></td></tr>';
-      }).join('') + '</tbody></table></div>' +
-      '<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end">' + (entOn ? '<button type="button" class="btn btn-on" data-act="bundle" data-v="Enterprise">Rimuovi Enterprise dal carrello</button>' : '<button type="button" class="btn btn-l" data-act="bundle" data-v="Enterprise"' + (entN ? '' : ' disabled') + '>' + (S.bundle ? 'Sostituisci con Enterprise' : 'Aggiungi Enterprise al carrello') + '</button>') + '</div></div>';
-    h += '<h2 style="font-size:17px;margin:22px 0 10px">Servizi e offerte singole</h2><div class="sgrid">';
-    D.services.forEach(function (s) {
-      h += '<article class="card scard"><span class="eyebrow">' + e(s.family) + '</span><h3>' + e(s.name) + '</h3><p>' + e(s.desc) + '</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:auto">' +
-        s.packs.map(function (k, j) {
-          var key = s.id + '|' + j, on = S.packs.indexOf(key) >= 0;
-          return '<div class="pack"><div><b>' + D.num(k.qty) + ' unità</b><br><span>' + D.eur(k.price) + ' · ' + D.unit3(k.price / k.qty) + ' €/unità</span></div><button type="button" class="btn ' + (on ? 'btn-on' : 'btn-o') + '" style="min-height:40px;padding:0 12px" data-act="pack" data-v="' + key + '" aria-pressed="' + on + '" aria-label="' + (on ? 'Rimuovi ' : 'Aggiungi ') + e(s.name) + ' ' + D.num(k.qty) + ' unità">' + (on ? 'Nel carrello' : 'Aggiungi') + '</button></div>';
-        }).join('') + '</div></article>';
-    });
-    $('cat').innerHTML = h + '</div>';
+    if (miss.length) h += '<div class="info" role="status" style="margin-top:14px">' + miss.map(function (m) { return e(m.name) + ' richiede anche ' + e(m.missing.join(', ')) + '.'; }).join(' ') + '</div>';
+    $('cat').innerHTML = h;
     var n = items().length;
     $('buy').disabled = !n;
     $('buy').textContent = n ? 'Acquista · ' + D.eur(total()) : 'Acquista';
@@ -168,19 +146,13 @@
   }
   $('cat').addEventListener('click', function (ev) {
     var b = ev.target.closest('[data-act]'); if (!b || b.disabled || S.submitted) return;
-    var a = b.dataset.act, v = b.dataset.v, i = +b.dataset.i;
-    if (a === 'bundle') S.bundle = S.bundle === v ? null : v;
-    else if (a === 'pack') { var k = S.packs.indexOf(v); if (k >= 0) S.packs.splice(k, 1); else S.packs.push(v); }
-    else if (a === 'inc' || a === 'dec') {
-      var st = D.services[i].step; S.entQty[i] = Math.max(0, S.entQty[i] + (a === 'inc' ? st : -st));
-      if (S.bundle !== 'Enterprise') { S.dirty = true; render(); refocus(a, i, v); return; }
-      if (!S.entQty.some(function (q) { return q > 0; })) S.bundle = null;
-    }
-    cartChanged(); refocus(a, i, v);
+    var a = b.dataset.act, i = +b.dataset.i, s = D.services[i];
+    var q = Math.max(0, (S.qty[s.id] || 0) + (a === 'inc' ? s.step : -s.step));
+    if (q) S.qty[s.id] = q; else delete S.qty[s.id];
+    cartChanged(); refocus(a, i);
   });
-  function refocus(a, i, v) {
-    var sel = a === 'inc' || a === 'dec' ? '[data-act="' + a + '"][data-i="' + i + '"]' : '[data-act="' + a + '"][data-v="' + v + '"]';
-    var el = $('cat').querySelector(sel);
+  function refocus(a, i) {
+    var el = $('cat').querySelector('[data-act="' + a + '"][data-i="' + i + '"]');
     if (el && !el.disabled) el.focus(); else { var alt = $('cat').querySelector('[data-act="inc"][data-i="' + i + '"]'); if (alt) alt.focus(); }
   }
   $('buy').addEventListener('click', function () {
@@ -194,21 +166,25 @@
   function renderSide() {
     var it = items(), lock = S.submitted || S.step === 3;
     var h = '<h2 id="t-side">Il tuo ordine</h2>';
-    if (!it.length) h += '<div class="cempty">Il carrello è vuoto.<br>' + (S.data ? 'Aggiungi un bundle o un\'offerta singola.' : 'Completa i dati per scegliere i servizi.') + '</div>';
+    if (!it.length) h += '<div class="cempty">Il carrello è vuoto.<br>' + (S.data ? 'Scegli i servizi e le quantità.' : 'Completa i dati per scegliere i servizi.') + '</div>';
     else h += '<ul class="citems">' + it.map(function (i) {
       return '<li><div class="c"><strong>' + e(i.name) + '</strong><small>' + e(i.detail) + '</small><span style="font-weight:600">' + D.eur(i.price) + '</span></div>' +
         (lock || S.step !== 2 ? '' : '<button type="button" class="x" data-rm="' + i.key + '" aria-label="Rimuovi ' + e(i.name) + '"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>') + '</li>';
     }).join('') + '</ul>';
-    h += '<div class="tot"><span class="muted" style="font-size:14px">Totale annuo, IVA esclusa</span><strong>' + D.eur(total()) + '</strong></div>';
+    if (it.length) {
+      var p = quote();
+      h += '<ul class="kv"><li><span>Componente variabile</span><strong>' + D.eur(p.variabile) + '</strong></li><li><span>Fee di attivazione</span><strong>' + D.eur(p.fee) + '</strong></li><li><span>Canone periodico</span><strong>' + D.eur(p.canone) + '</strong></li></ul>';
+      h += '<p class="muted" style="margin:0;font-size:12px">Fee di attivazione e canone: ' + e(D.SEGNAPOSTO) + '. Periodicità del canone: ' + e(D.periodicita) + '.</p>';
+    }
+    h += '<div class="tot"><span class="muted" style="font-size:14px">Totale, IVA esclusa</span><strong>' + D.eur(total()) + '</strong></div>';
     if (S.step === 3 && !S.submitted) h += '<button type="button" class="btn btn-o" data-go="2">Modifica i servizi</button><p class="muted" style="margin:0;font-size:12px">Modificare servizi o dati annulla la bozza scaricata e il file allegato.</p>';
-    if (S.bundle === 'Enterprise') h += '<p class="muted" style="margin:0;font-size:12px">Il prezzo di Enterprise è indicativo e viene confermato nel contratto.</p>';
     h += '<p class="muted" style="margin:0;font-size:12px">Durata 12 mesi dalla controfirma di Postel. Nessun addebito in questa fase.</p>';
     $('side').innerHTML = h;
   }
   $('side').addEventListener('click', function (ev) {
     var b = ev.target.closest('[data-rm]'); if (!b || S.submitted) return;
     var k = b.dataset.rm;
-    if (k === 'b') S.bundle = null; else S.packs.splice(S.packs.indexOf(k), 1);
+    delete S.qty[k];
     cartChanged();
     var next = $('side').querySelector('[data-rm]'); (next || $('t2')).focus();
   });
@@ -220,7 +196,7 @@
     if (!S.contract) { $('contract').innerHTML = ''; return; }
     var c = S.contract, h = '';
     if (S.invalidNote) h += '<div class="info" role="status">I dati o i servizi sono cambiati: abbiamo generato una nuova bozza. Scaricala di nuovo e allega la versione firmata aggiornata.</div>';
-    h += '<div class="task' + (S.downloaded ? ' ok' : '') + '"><span class="dot" aria-hidden="true">' + (S.downloaded ? '✓' : '1') + '</span><div class="b"><h2>Scarica la bozza di contratto</h2><p>Riferimento <strong>' + c.id + '</strong> · ' + items().length + ' articoli · ' + D.eur(total()) + ' annui. Formato: <strong>PDF</strong>, scaricabile direttamente. Bozza dimostrativa senza valore legale; termini da approvare, nessuna firma o attivazione reale.</p><div><button type="button" class="btn ' + (S.downloaded ? 'btn-o' : 'btn-p') + '" id="dl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16"/></svg>' + (S.downloaded ? 'Scarica di nuovo (PDF)' : 'Scarica la bozza (PDF)') + '</button></div>' + (S.downloadErr ? '<p role="alert">' + e(S.downloadErr) + '</p>' : '') + '</div></div>';
+    h += '<div class="task' + (S.downloaded ? ' ok' : '') + '"><span class="dot" aria-hidden="true">' + (S.downloaded ? '✓' : '1') + '</span><div class="b"><h2>Scarica la bozza di contratto</h2><p>Riferimento <strong>' + c.id + '</strong> · ' + items().length + (items().length === 1 ? ' servizio' : ' servizi') + ' · ' + D.eur(total()) + ' IVA esclusa. Formato: <strong>PDF</strong>, scaricabile direttamente. Bozza dimostrativa senza valore legale; termini da approvare, nessuna firma o attivazione reale.</p><div><button type="button" class="btn ' + (S.downloaded ? 'btn-o' : 'btn-p') + '" id="dl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16"/></svg>' + (S.downloaded ? 'Scarica di nuovo (PDF)' : 'Scarica la bozza (PDF)') + '</button></div>' + (S.downloadErr ? '<p role="alert">' + e(S.downloadErr) + '</p>' : '') + '</div></div>';
     h += '<div class="task' + (S.file ? ' ok' : '') + '"><span class="dot" aria-hidden="true">' + (S.file ? '✓' : '2') + '</span><div class="b"><h2>Firma e allega il contratto firmato</h2><p>Firma il documento fuori da questa pagina con il tuo strumento di firma, poi allega il PDF firmato. Massimo 10 MB.</p>' +
       '<input type="file" id="file" accept=".pdf,application/pdf" class="sr" aria-describedby="file-h"' + (S.downloaded ? '' : ' disabled') + '>' +
       (!S.downloaded ? '<p id="file-h" class="muted" style="font-size:13px">Scarica prima la bozza per poter allegare il file firmato.</p>' :
@@ -256,7 +232,7 @@
     if (dl) dl.onclick = function () {
       var url, a;
       try {
-        var blob = window.DTPContractPDF({ data: S.data, contract: S.contract, items: items(), bundle: S.bundle, entQty: S.entQty });
+        var blob = window.DTPContractPDF({ data: S.data, contract: S.contract, config: S.qty });
         url = URL.createObjectURL(blob);
         a = document.createElement('a'); a.href = url; a.download = 'bozza-contratto-' + S.contract.id + '.pdf';
         document.body.appendChild(a); a.click();

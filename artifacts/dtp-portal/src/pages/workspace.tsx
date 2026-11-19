@@ -73,7 +73,7 @@ export default function Workspace() {
   }, []);
 
   const catalog = [
-    { code: 'V-01', name: 'Vetrina pubblica dei servizi', detail: 'Consulta bundle e servizi, poi avvia la richiesta di attivazione', group: 'storefront', file: 'vetrina-V01-catalogo.html', icon: Store, tag: 'Vetrina' },
+    { code: 'V-01', name: 'Vetrina pubblica dei servizi', detail: 'Consulta i servizi, poi avvia la richiesta di attivazione', group: 'storefront', file: 'vetrina-V01-catalogo.html', icon: Store, tag: 'Vetrina' },
     { code: 'V-02', name: 'Richiesta di attivazione', detail: 'Dati, catalogo e carrello, contratto firmato e attesa verifica', group: 'storefront', file: 'vetrina-V02-contratto.html', icon: FileSignature, tag: 'Attivazione' },
     { code: 'H', name: 'Catalogo e acquisti', detail: 'Home cliente · offerte, ordini e consumi', group: 'client', file: 'cliente-H-catalogo.html', icon: Layers3, tag: 'Ingresso' },
     { code: 'U', name: 'Utenze e deleghe', detail: 'Accessi, poteri e registro attività', group: 'client', file: 'cliente-U-utenze.html', icon: UsersRound, tag: 'Accessi' },
@@ -81,13 +81,13 @@ export default function Workspace() {
     { code: 'M2', name: 'Dettaglio servizio', detail: 'Ritmo, proiezioni e copertura', group: 'client', file: 'cliente-M2-dettaglio.html', icon: FileChartColumnIncreasing, tag: 'Contratto' },
     { code: 'M3', name: 'Qualità dei processi', detail: 'Funnel, firma, SDI e disponibilità', group: 'client', file: 'cliente-M3-qualita.html', icon: Check, tag: 'Contratto' },
     { code: 'M4', name: 'Fatture', detail: 'Fatture emesse e dettaglio overage', group: 'client', file: 'cliente-M4-fatture.html', icon: FileText, tag: 'Contratto' },
-    { code: 'M5', name: 'Contratto', detail: 'Rinnovo, cambio bundle, recesso e documenti', group: 'client', file: 'cliente-M5-contratto.html', icon: FileSignature, tag: 'Contratto' },
+    { code: 'M5', name: 'Contratto', detail: 'Rinnovo, modifiche dell’offerta, recesso e documenti', group: 'client', file: 'cliente-M5-contratto.html', icon: FileSignature, tag: 'Contratto' },
     { code: 'A', name: 'Assistenza', detail: 'Guide, stato dei servizi e richieste', group: 'client', file: 'cliente-A-assistenza.html', icon: LifeBuoy, tag: 'Supporto' },
     { code: 'N', name: 'Notifiche', detail: 'Centro notifiche, canali ed esiti di consegna', group: 'client', file: 'cliente-N-notifiche.html', icon: Bell, tag: 'Avvisi' },
     { code: 'PS-01', name: 'Delegati', detail: 'Primo setup · persone e responsabilità', group: 'client', file: 'cliente-PS01-delegati.html', icon: UsersRound, tag: 'Setup' },
     { code: 'PS-02', name: 'Soglie e notifiche', detail: 'Primo setup · avvisi e preferenze', group: 'client', file: 'cliente-PS02-soglie.html', icon: SlidersHorizontal, tag: 'Setup' },
     { code: 'D0', name: 'Home tecnica e catalogo API', detail: 'Developer portal · sandbox, collaudi e credenziali', group: 'technical', file: 'tecnico-D0-developer-portal.html', icon: Code, tag: 'Developer' },
-    { code: 'O1', name: 'Executive overview', detail: 'KPI, ricavi e saturazione bundle', group: 'postel', file: 'postel-O1-executive.html', icon: Gauge, tag: 'Direzione' },
+    { code: 'O1', name: 'Executive overview', detail: 'KPI, ricavi e saturazione per servizio e settore', group: 'postel', file: 'postel-O1-executive.html', icon: Gauge, tag: 'Direzione' },
     { code: 'O2', name: 'Portafoglio e contratti', detail: 'Segmenti, rinnovi e lista di lavoro', group: 'postel', file: 'postel-O2-portafoglio.html', icon: BriefcaseBusiness, tag: 'Clienti' },
     { code: 'O3', name: 'Operations e SLA', detail: 'Volumi, qualità servizio e ticket', group: 'postel', file: 'postel-O3-operations.html', icon: SlidersHorizontal, tag: 'Operations' },
     { code: 'O4', name: 'Ricavi, costi e marginalità', detail: 'Margini per servizio e ciclo passivo', group: 'postel', file: 'postel-O4-marginalita.html', icon: FileChartColumnIncreasing, tag: 'Finanza' },
