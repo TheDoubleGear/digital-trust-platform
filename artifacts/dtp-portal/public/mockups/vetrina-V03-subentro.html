@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Subentro del legale rappresentante – Digital Trust Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dtp-acquisto.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<style>
+.mode{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.mode label{display:flex;gap:12px;align-items:flex-start;border:1px solid #D5DBE3;border-radius:12px;padding:16px;cursor:pointer;background:#fff}
+.mode label:hover{border-color:#0047BB}
+.mode input{margin-top:3px;accent-color:#0047BB;width:18px;height:18px}
+.mode input:checked+span b{color:#0047BB}
+.mode label:has(input:checked){border-color:#0047BB;box-shadow:0 0 0 1px #0047BB inset;background:#F3F7FE}
+.mode span{display:flex;flex-direction:column;gap:4px;font-size:14px}
+.mode small{color:#4D5762;font-size:13px;line-height:1.45}
+.recap{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:0}
+.recap div{border:1px solid #E3E7ED;border-radius:10px;padding:10px 12px}
+.recap dt{font-size:12px;color:#4D5762}
+.recap dd{margin:2px 0 0;font-weight:600;font-size:14px}
+@media (min-width:821px){.stepper{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header class="top">
+<div class="wrap" style="max-width:1180px;justify-content:space-between">
+<a class="brand" href="vetrina-V01-catalogo.html" aria-label="Torna alla vetrina Postel">
+<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path></svg>
+<span><b>postel</b><small>Digital Trust Platform · Subentro del legale rappresentante</small></span>
+</a>
+<a href="vetrina-V01-catalogo.html" style="font-size:14px;font-weight:600;text-decoration:none;padding:12px 0">Torna alla vetrina</a>
+</div>
+</header>
+
+<main class="wrap" style="max-width:1180px;padding-top:24px;padding-bottom:56px;display:flex;flex-direction:column;gap:18px">
+
+<div class="demo" role="note">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+<span><strong>Prototipo dimostrativo.</strong> Proposta di design della pagina V-03. Nessun file viene caricato, nessuna verifica viene eseguita e nessuna utenza viene modificata.</span>
+</div>
+
+<ol class="stepper" id="stepper" aria-label="Passi del subentro"></ol>
+
+<div class="layout layout-single">
+<div style="min-width:0;display:flex;flex-direction:column;gap:18px">
+
+<!-- PASSO 1: AVVIO -->
+<section class="card panel" id="s1" aria-labelledby="t1">
+<div><h1 id="t1" tabindex="-1">Subentro del legale rappresentante</h1>
+<p class="lead">Usa questo percorso se sei il nuovo legale rappresentante di un'azienda già cliente della Digital Trust Platform. Al termine delle verifiche riceverai una nuova utenza e quella del legale rappresentante precedente sarà revocata.</p></div>
+<fieldset><legend>Come hai avviato il subentro</legend>
+<div class="mode" role="radiogroup">
+<label><input type="radio" name="mode" value="invito" checked><span><b>Ho ricevuto un invito</b><small>Il legale rappresentante uscente o il delegato amministrativo ha avviato il cambio dal portale e ti ha inviato un codice di invito.</small></span></label>
+<label><input type="radio" name="mode" value="pubblico"><span><b>Avvio io la richiesta</b><small>Nessuno ha avviato il cambio dal portale. Identifica l'azienda con partita IVA e codice cliente; il legale rappresentante uscente riceverà una notifica.</small></span></label>
+</div>
+</fieldset>
+<form id="f1" novalidate style="display:flex;flex-direction:column;gap:22px">
+<fieldset id="fs-invito"><legend>Invito</legend><div class="fgrid">
+<div class="f"><label for="invito">Codice di invito <i aria-hidden="true">*</i></label><input id="invito" maxlength="12" autocapitalize="characters" aria-describedby="invito-h"><span class="hint" id="invito-h">Lo trovi nell'e-mail di invito</span><span class="err" id="invito-e"></span></div>
+</div></fieldset>
+<fieldset id="fs-pubblico" hidden><legend>Azienda</legend><div class="fgrid">
+<div class="f"><label for="piva">Partita IVA <i aria-hidden="true">*</i></label><input id="piva" inputmode="numeric" maxlength="13" aria-describedby="piva-h"><span class="hint" id="piva-h">11 cifre, con o senza prefisso IT</span><span class="err" id="piva-e"></span></div>
+<div class="f"><label for="cliente">Codice cliente <i aria-hidden="true">*</i></label><input id="cliente" maxlength="12" autocapitalize="characters" aria-describedby="cliente-h"><span class="hint" id="cliente-h">Riportato nel contratto e nelle fatture</span><span class="err" id="cliente-e"></span></div>
+</div></fieldset>
+<div class="actions"><a class="btn btn-o" href="vetrina-V01-catalogo.html">Annulla</a><button class="btn btn-p btn-lg" type="submit">Continua</button></div>
+</form>
+</section>
+
+<!-- PASSO 2: DATI -->
+<section class="card panel" id="s2" aria-labelledby="t2" hidden>
+<div><h1 id="t2" tabindex="-1">Dati del nuovo legale rappresentante</h1>
+<p class="lead">I dati sono controllati mentre li inserisci e confrontati con la visura camerale dell'azienda dopo l'invio.</p></div>
+<dl class="recap" aria-label="Azienda identificata">
+<div><dt>Azienda</dt><dd>[RAGIONE SOCIALE DELL'AZIENDA]</dd></div>
+<div><dt>Partita IVA</dt><dd>[PARTITA IVA]</dd></div>
+<div><dt>Legale rappresentante attuale</dt><dd>[NOME E COGNOME]</dd></div>
+</dl>
+<form id="f2" novalidate style="display:flex;flex-direction:column;gap:22px">
+<fieldset><legend>Nuovo legale rappresentante</legend><div class="fgrid">
+<div class="f"><label for="nome">Nome <i aria-hidden="true">*</i></label><input id="nome" autocomplete="given-name"><span class="err" id="nome-e"></span></div>
+<div class="f"><label for="cognome">Cognome <i aria-hidden="true">*</i></label><input id="cognome" autocomplete="family-name"><span class="err" id="cognome-e"></span></div>
+<div class="f"><label for="cf">Codice fiscale <i aria-hidden="true">*</i></label><input id="cf" maxlength="16" autocapitalize="characters"><span class="err" id="cf-e"></span></div>
+<div class="f"><label for="tel">Cellulare <i aria-hidden="true">*</i></label><input id="tel" type="tel" autocomplete="tel"><span class="err" id="tel-e"></span></div>
+<div class="f wide"><label for="email">E-mail <i aria-hidden="true">*</i></label><input id="email" type="email" autocomplete="email" aria-describedby="email-h"><span class="hint" id="email-h">Qui riceverai le credenziali della nuova utenza</span><span class="err" id="email-e"></span></div>
+<div class="f wide"><label for="data">Data di nomina <i aria-hidden="true">*</i></label><input id="data" type="date" aria-describedby="data-h"><span class="hint" id="data-h">Come risulta dalla visura camerale</span><span class="err" id="data-e"></span></div>
+</div></fieldset>
+<div class="actions"><button type="button" class="btn btn-o" data-go="1">Indietro</button><button class="btn btn-p btn-lg" type="submit">Continua con la dichiarazione</button></div>
+</form>
+</section>
+
+<!-- PASSO 3: DICHIARAZIONE -->
+<section class="card panel" id="s3" aria-labelledby="t3" hidden>
+<div><h1 id="t3" tabindex="-1">Dichiarazione di subentro</h1>
+<p class="lead">Scarica la dichiarazione generata con i tuoi dati, firmala con la tua firma digitale e caricala. La firma deve appartenere al legale rappresentante indicato.</p></div>
+<div class="task" id="task-dl"><span class="dot" aria-hidden="true">1</span><div class="b"><h2>Scarica la dichiarazione</h2><p>Documento PDF con i dati dell'azienda e del nuovo legale rappresentante. Testo: [TESTO DA FORNIRE E APPROVARE A CURA DI POSTEL].</p><div><button type="button" class="btn btn-o" id="dl">Scarica la dichiarazione (PDF)</button></div></div></div>
+<div class="task" id="task-up"><span class="dot" aria-hidden="true">2</span><div class="b"><h2>Firma digitalmente e carica il file</h2><p>Firma il documento con il tuo dispositivo di firma digitale, poi carica il file firmato. Tipologie di firma ammesse: [DA DEFINIRE].</p>
+<label class="drop" id="drop"><input type="file" id="file" class="sr" accept=".pdf,.p7m"><strong style="color:#0047BB">Scegli il file firmato</strong><br><span class="muted" style="font-size:13px" id="file-h">PDF o P7M, massimo 10 MB</span></label></div></div>
+<fieldset class="task"><span class="dot" aria-hidden="true">3</span><div class="b"><legend style="font-size:16px;margin:0">Conferme</legend>
+<label class="chk"><input type="checkbox" id="ack1"> Dichiaro di essere il legale rappresentante dell'azienda indicata, come risulta dalla visura camerale.</label>
+<label class="chk"><input type="checkbox" id="ack2"> Prendo atto che, a verifiche concluse, l'utenza del legale rappresentante precedente sarà revocata o disabilitata e che i delegati restano attivi finché non deciderò diversamente.</label>
+</div></fieldset>
+<p class="muted" id="sub-h" style="margin:0;font-size:13px" aria-live="polite"></p>
+<div class="actions"><button type="button" class="btn btn-o" data-go="2">Indietro</button><button type="button" class="btn btn-p btn-lg" id="submit">Invia la richiesta di subentro</button></div>
+</section>
+
+<!-- ESITO -->
+<section class="card panel" id="s4" aria-labelledby="t4" hidden>
+<div><span class="pend">In verifica</span><h1 id="t4" tabindex="-1" style="margin-top:10px">Richiesta di subentro inviata</h1>
+<p class="lead">L'utenza attuale resta invariata fino all'esito positivo delle verifiche. Riceverai un'e-mail a ogni passaggio.</p></div>
+<ol class="tl">
+<li class="ok"><span class="dot" aria-hidden="true">✓</span><div>Richiesta inviata<small>Dichiarazione di subentro firmata e caricata</small></div></li>
+<li><span class="dot" aria-hidden="true">2</span><div>Verifica della firma digitale<small>Validità della firma e corrispondenza del firmatario con i dati inseriti</small></div></li>
+<li><span class="dot" aria-hidden="true">3</span><div>Confronto con la visura camerale<small>Il nuovo legale rappresentante deve risultare dal Registro delle Imprese</small></div></li>
+<li><span class="dot" aria-hidden="true">4</span><div>Approvazione di Postel<small>Controllo finale da parte di Postel</small></div></li>
+<li><span class="dot" aria-hidden="true">5</span><div>Attivazione della nuova utenza<small>Revoca o disabilitazione dell'utenza precedente; le evidenze del subentro restano conservate per audit e tracciabilità</small></div></li>
+</ol>
+<div class="info" role="note">Se le verifiche hanno esito negativo la richiesta è respinta con la motivazione e l'utenza attuale resta invariata.</div>
+<div class="actions" style="justify-content:flex-start"><a class="btn btn-o" href="vetrina-V01-catalogo.html">Torna alla vetrina</a></div>
+</section>
+
+</div>
+</div>
+</main>
+
+<script>
+(function () {
+  var L = [['Avvio', 'invito o azienda'], ['Dati', 'nuovo legale rappresentante'], ['Dichiarazione', 'firma digitale'], ['Esito', 'verifiche']];
+  var cur = 1, reached = 1, st = { dl: false, file: null };
+  function $(id) { return document.getElementById(id); }
+  function stepper() {
+    $('stepper').innerHTML = L.map(function (l, i) {
+      var n = i + 1, done = n < reached || (reached === 4 && n < 4), on = n === cur;
+      return '<li><button type="button" data-step="' + n + '"' + (on ? ' aria-current="step"' : '') + (n <= reached && reached < 4 ? '' : (on ? '' : ' disabled')) + '><span class="dot" aria-hidden="true">' + (done && !on ? '✓' : n) + '</span><span class="l"><b>' + l[0] + '</b><small>' + l[1] + '</small></span></button></li>';
+    }).join('');
+  }
+  function go(n) {
+    cur = n; reached = Math.max(reached, n);
+    [1, 2, 3, 4].forEach(function (k) { $('s' + k).hidden = k !== n; });
+    stepper(); var h = $('t' + n); if (h) h.focus({ preventScroll: true }); window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function err(id, msg) { $(id + '-e').textContent = msg || ''; $(id).setAttribute('aria-invalid', msg ? 'true' : 'false'); return !msg; }
+  function v(id) { return $(id).value.trim(); }
+  document.querySelectorAll('input[name=mode]').forEach(function (r) {
+    r.addEventListener('change', function () { var pub = r.value === 'pubblico' && r.checked; $('fs-invito').hidden = pub; $('fs-pubblico').hidden = !pub; });
+  });
+  $('f1').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var pub = document.querySelector('input[name=mode]:checked').value === 'pubblico', ok = true;
+    if (pub) {
+      ok = err('piva', /^(IT)?\d{11}$/i.test(v('piva').replace(/\s/g, '')) ? '' : 'La partita IVA deve contenere 11 cifre.') & ok;
+      ok = err('cliente', v('cliente').length >= 4 ? '' : 'Inserisci il codice cliente.') & ok;
+    } else ok = err('invito', v('invito').length >= 6 ? '' : 'Inserisci il codice di invito.');
+    if (ok) go(2);
+  });
+  $('f2').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var ok = err('nome', v('nome') ? '' : 'Inserisci il nome.');
+    ok = err('cognome', v('cognome') ? '' : 'Inserisci il cognome.') && ok;
+    ok = err('cf', /^[A-Z0-9]{16}$/i.test(v('cf')) ? '' : 'Il codice fiscale deve avere 16 caratteri alfanumerici.') && ok;
+    ok = err('tel', /^\+?[\d\s]{9,15}$/.test(v('tel')) ? '' : 'Inserisci un numero di cellulare valido.') && ok;
+    ok = err('email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('email')) ? '' : 'Inserisci un indirizzo e-mail valido.') && ok;
+    ok = err('data', v('data') ? '' : 'Inserisci la data di nomina.') && ok;
+    if (ok) go(3);
+  });
+  $('dl').addEventListener('click', function () { st.dl = true; $('task-dl').classList.add('ok'); $('task-dl').querySelector('.dot').textContent = '✓'; });
+  $('file').addEventListener('change', function (ev) {
+    var f = ev.target.files[0]; if (!f) return; st.file = f;
+    $('task-up').classList.add('ok'); $('task-up').querySelector('.dot').textContent = '✓'; $('file-h').textContent = f.name + ' · tenuto solo in memoria, non caricato';
+  });
+  $('submit').addEventListener('click', function () {
+    var miss = [];
+    if (!st.dl) miss.push('scarica la dichiarazione'); if (!st.file) miss.push('carica il file firmato'); if (!($('ack1').checked && $('ack2').checked)) miss.push('conferma le due dichiarazioni');
+    $('sub-h').textContent = miss.length ? 'Per inviare: ' + miss.join(', ') + '.' : '';
+    if (!miss.length) go(4);
+  });
+  document.querySelectorAll('[data-go]').forEach(function (b) { b.addEventListener('click', function () { go(+b.dataset.go); }); });
+  $('stepper').addEventListener('click', function (ev) { var b = ev.target.closest('[data-step]'); if (b && !b.disabled) go(+b.dataset.step); });
+  stepper();
+})();
+</script>
+</body>
+</html>
