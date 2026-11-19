@@ -32,7 +32,8 @@ A navigable Postel prototype hub linking 19 screens: eleven customer/setup scree
 
 - `artifacts/dtp-portal/src/App.tsx` — routes: `/` demo login (`src/pages/login.tsx`), `/workspace` searchable screen catalog (`src/pages/workspace.tsx`, session required).
 - `artifacts/dtp-portal/public/mockups/dtp-auth.js` + `dtp-auth.css` — shared demo login/session/guard module and its styles.
-- `artifacts/dtp-portal/tests/` — `pnpm --filter @workspace/dtp-portal run test` (demo-auth + contract PDF).
+- `artifacts/dtp-portal/public/mockups/dtp-modifiche.js` — shared offer-modification requests of the sample customer (start, legal representative approval with evidence, signature, Postel countersignature), kept in `localStorage` `dtp-demo-modifiche` and used by H, M5, U, N, O2 and O5.
+- `artifacts/dtp-portal/tests/` — `pnpm --filter @workspace/dtp-portal run test` (demo-auth + contract PDF + offer modifications).
 - `artifacts/dtp-portal/public/mockups/` — original HTML prototype screens.
 - `artifacts/dtp-portal/src/index.css` — portal styles.
 - `artifacts/api-server/src/routes/health.ts` — `GET /api/healthz`, returns `{"status":"ok"}`.

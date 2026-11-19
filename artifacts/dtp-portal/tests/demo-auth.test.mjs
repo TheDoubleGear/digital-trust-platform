@@ -209,7 +209,7 @@ test('pagine reali: regole di business per ruolo restano quelle originali', () =
   assert.ok(openPage(H, { role: 'lr', setup: done }).text.includes('Da decidere'));
   assert.equal(openPage(H, { role: 'amm', setup: done }).text.includes('Da decidere'), false);
   const op = openPage(H, { role: 'op' });
-  assert.ok(op.text.includes('Le tue richieste'));
+  assert.ok(op.text.includes('Le tue segnalazioni'));
   assert.equal(op.text.includes('Riepilogo della modifica'), false);
   assert.ok(openPage(H, { role: 'amm', setup: done }).text.includes('Riepilogo della modifica'));
   assert.ok(openPage('cliente-M4-fatture.html', { role: 'op' }).text.includes('non sono visibili per il delegato operativo'));
