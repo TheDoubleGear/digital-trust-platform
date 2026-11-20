@@ -214,3 +214,12 @@ dialog.detail dd{margin:2px 0 0}
 .sctbl thead th{color:var(--mut);border-bottom:1px solid var(--line)}
 .sctbl tfoot td{border-top:1px solid var(--line);font-weight:700}
 .assist a:focus-visible{outline-color:#FFFFFF}
+
+/* V02: colonne allineate tra le tabelle delle famiglie e quantità su una riga. */
+.qty output{white-space:nowrap;min-width:96px}
+@media (min-width:721px){
+  .tbl.stack{table-layout:fixed}
+  .tbl.stack th:nth-child(1){width:auto}
+  .tbl.stack th:nth-child(2){width:210px}
+  .tbl.stack th:nth-child(3){width:150px}
+}

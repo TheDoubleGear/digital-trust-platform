@@ -186,9 +186,12 @@ test('pagine reali: ogni ruolo vede la propria vista oppure viene reindirizzato 
         assert.equal(actions.firstElementChild, home);
         assert.equal(actions.lastElementChild, logout);
       } else {
+        /* Workspace sta nel gruppo dell'utente, a destra: Workspace, identità, Esci. */
         const header = p.app.querySelector('.dtp-header > div');
-        assert.equal(header.firstElementChild, home);
-        assert.equal(header.lastElementChild.lastElementChild, logout);
+        const account = header.lastElementChild;
+        assert.ok(account.classList.contains('dtp-client-account'), f);
+        assert.equal(account.firstElementChild, home);
+        assert.equal(account.lastElementChild, logout);
       }
       assert.ok(p.app.querySelector('[data-dtp-logout]'), f + ' ha Esci');
       assert.equal(p.app.querySelector('a.dtp-home').getAttribute('href'), '../workspace', f);

@@ -10,7 +10,7 @@
   /* Card essenziale: immagine, famiglia, nome, descrizione breve e prezzo «a partire da»; il resto è nella scheda V-04. */
   function svcCard(s) {
     var m = D.prezzoMinimo(s.id);
-    return '<article class="card scard scard-img reveal"><div class="scard-pic"><img src="' + e(s.img) + '" alt="" width="320" height="160" loading="lazy"></div>' +
+    return '<article class="card scard scard-img reveal"><div class="scard-pic"><img src="' + e(s.img) + '" alt="" width="240" height="140" loading="lazy"></div>' +
       '<div class="scard-body"><span class="eyebrow">' + e(s.family) + '</span><h3>' + e(s.name) + '</h3><p class="scard-desc">' + e(s.desc) + '</p>' +
       '<div class="scard-foot"><p class="scard-price"><span>A partire da</span> <strong>' + D.eur(m.amount) + '</strong> · ' + D.num(m.qty) + ' unità</p>' +
       '<p class="scard-note">IVA esclusa, più fee di attivazione e canone</p>' +
@@ -22,7 +22,7 @@
     var n = sl.length;
     document.getElementById('count').textContent = n + (n === 1 ? ' servizio' : ' servizi');
     var h = '';
-    if (n) h = '<section aria-labelledby="t-s" style="display:flex;flex-direction:column;gap:12px"><div class="sec-h"><div><h2 id="t-s">Servizi</h2><p>Ogni servizio si configura con la quantità che ti serve; apri «Scopri il servizio» per la scheda con dettagli, prezzi e documentazione. Il prezzo è dato dalla componente variabile (quantità × prezzo unitario), dalla fee di attivazione e dal canone periodico.</p></div></div><div class="sgrid">' + sl.map(svcCard).join('') + '</div></section>';
+    if (n) h = '<section aria-labelledby="t-s" style="display:flex;flex-direction:column;gap:12px"><h2 id="t-s" class="sr">Servizi</h2><div class="sgrid">' + sl.map(svcCard).join('') + '</div></section>';
     else h = '<div class="empty"><strong>Nessun servizio corrisponde ai filtri</strong><span class="muted" style="font-size:14px">Prova un altro termine o mostra di nuovo tutto il catalogo.</span><button type="button" class="btn btn-o" id="reset">Mostra tutto il catalogo</button></div>';
     document.getElementById('results').innerHTML = h;
     var r = document.getElementById('reset');

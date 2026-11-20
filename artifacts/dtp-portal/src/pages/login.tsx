@@ -78,14 +78,8 @@ export default function Login() {
 
       <main id="main-content" className="login-main">
         <section className="login-pitch" aria-labelledby="login-title">
-          <div className="eyebrow"><span className="eyebrow-line" /> Accesso demo / 2026</div>
-          <h1 id="login-title">Entra con il tuo ruolo.<br /><em>Vedi solo quello che ti spetta.</em></h1>
-          <p>Sette utenze dimostrative, una per ruolo. Ognuna apre la propria area: il portale del cliente, il developer portal oppure la console Postel.</p>
-          <ul className="login-points">
-            <li><b>Cliente</b><span>Legale rappresentante e delegati amministrativo, operativo, tecnico</span></li>
-            <li><b>Postel</b><span>Commerciale, Operations, Controllo di gestione</span></li>
-            <li><b>Senza accesso</b><span>La vetrina dei servizi e la richiesta di attivazione restano pubbliche</span></li>
-          </ul>
+          <img className="login-art" src={auth.urls.page('img/dtp-accesso.svg')} alt="" width={560} height={420} data-testid="img-login-art" />
+          <h1 id="login-title">Digital Trust Platform<em>Identità, firma e documenti digitali in un’unica piattaforma.</em></h1>
         </section>
 
         <section className="login-panel" aria-label="Accesso">
