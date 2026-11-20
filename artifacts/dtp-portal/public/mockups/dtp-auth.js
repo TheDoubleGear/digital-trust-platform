@@ -10,8 +10,9 @@
 
   var ROLE_KEY = 'dtp-demo-role';
   var SETUP_KEY = 'dtp-demo-lr-setup';
-  /* Dati dimostrativi condivisi tra le pagine: richieste di modifica (dtp-modifiche.js) e codici di configurazione (V-02). */
-  var DEMO_DATA_KEYS = ['dtp-demo-modifiche', 'dtp-demo-config-codes'];
+  /* Dati dimostrativi condivisi tra le pagine: richieste di modifica (dtp-modifiche.js), codici di configurazione (V-02)
+     e cambio del legale rappresentante (dtp-subentro.js). */
+  var DEMO_DATA_KEYS = ['dtp-demo-modifiche', 'dtp-demo-config-codes', 'dtp-demo-subentro'];
   var FLASH_KEY = 'dtp-demo-flash';
   var LEGACY_KEYS = ['dtp-persona-cliente', 'dtp-persona-postel'];
   var LOGIN = 'login';
@@ -51,6 +52,7 @@
   var PAGES = {
     'vetrina-V01-catalogo.html': { code: 'V-01', open: true },
     'vetrina-V02-contratto.html': { code: 'V-02', open: true },
+    'vetrina-V03-subentro.html': { code: 'V-03', open: true },
     'cliente-H-catalogo.html': { code: 'H', roles: CLIENT },
     'cliente-U-utenze.html': { code: 'U', roles: CLIENT },
     'cliente-M1-panoramica.html': { code: 'M1', roles: CLIENT_TEC },
@@ -156,7 +158,7 @@
   /* Solo PS-02 "Concludi" chiude il setup; resta chiuso anche dopo logout e nuovi accessi. */
   function completeSetup() { saveSetup({ delegates: true, done: true }); return getSetup(); }
   function resetSetup() { drop('localStorage', SETUP_KEY); return getSetup(); }
-  /* "Ripristina dati demo": riporta modifiche e codici allo stato iniziale. Il primo accesso del LR ha il suo pulsante. */
+  /* "Ripristina dati demo": riporta modifiche, codici e subentro allo stato iniziale. Il primo accesso del LR ha il suo pulsante. */
   function resetDemoData() { DEMO_DATA_KEYS.forEach(function (k) { drop('localStorage', k); }); }
 
   function homeFor(role, setup) {
@@ -341,7 +343,7 @@
     return n;
   }
 
-  /* Barra delle pagine pubbliche (V-01, V-02): Accedi per i visitatori, ruolo e uscita per chi è in sessione. */
+  /* Barra delle pagine pubbliche (V-01, V-02, V-03): Accedi per i visitatori, ruolo e uscita per chi è in sessione. */
   function hydratePublicBar() {
     var bars = doc.querySelectorAll('[data-dtp-publicbar]');
     var role = getRole();

@@ -17,6 +17,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <script src="dtp-auth.js"></script>
 <script src="dtp-catalogo.js"></script>
 <script src="dtp-modifiche.js"></script>
+<script src="dtp-subentro.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -231,7 +232,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <span role="cell" style="color: #3A424C">{{r.origin}}</span>
 <span role="cell"><span style="display: inline-block; padding: 3px 10px; border-radius: 999px; background: {{r.bg}}; color: {{r.fg}}; font-size: 12px; font-weight: 600">{{r.state}}</span></span>
 <span role="cell">
-<sc-if value="{{r.hasAct}}" hint-placeholder-val="{{ false }}"><button class="dtp-btn dtp-btn-p" type="button" onClick="{{r.act}}" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{r.btn}}</button></sc-if>
+<sc-if value="{{r.hasAct}}" hint-placeholder-val="{{ false }}"><button class="dtp-btn dtp-btn-p" type="button" onClick="{{r.act}}" style="min-height: 40px; max-width: 100%; white-space: normal; line-height: 1.2; text-align: center; padding: 4px 14px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{r.btn}}</button></sc-if>
 <sc-if value="{{r.noAct}}" hint-placeholder-val="{{ true }}"><span style="color: #4D5762">{{r.note}}</span></sc-if>
 </span>
 </div>
@@ -543,7 +544,29 @@ class Component extends DCLogic {
         note: r.state === 'countersign' ? 'controfirma del commerciale' : (r.state === 'approval' ? 'in attesa del cliente' : '—'),
         act: function () { MOD.countersign(r.id); set({}); } };
     });
-    pratiche = pratiche.slice(0, 2).concat(modPratiche, pratiche.slice(2));
+    /* O2-07: subentro del legale rappresentante. Esiti di firma digitale e visura camerale; il commerciale approva
+       solo a verifiche positive, poi la nuova utenza è attiva e la precedente revocata. Fino ad allora il cliente
+       mantiene il legale rappresentante attuale. Aurora segue il percorso avviato da U-02 o da V-03 (dtp-subentro.js). */
+    var SUB = window.DTPSubentro, subApproved = st.subApproved || [];
+    var subRow = function (client, origin, newLr, oldLr, stateKey, approvedAt, onApprove) {
+      var s = SUB.STATES[stateKey], can = stateKey === 'verify' && P === 'com';
+      var detail = stateKey === 'invited'
+        ? 'invito inviato a ' + newLr + ' · Firma digitale: in attesa · Visura camerale: in attesa'
+        : 'nuovo LR: ' + newLr + ' · Firma digitale: valida · Visura camerale: corrispondente' +
+          (stateKey === 'done' ? ' · approvato il ' + SUB.full(approvedAt) + ' · utenza di ' + oldLr + ' revocata, delegati attivi · evidenze conservate' : ' · utenza di ' + oldLr + ' attiva fino all’approvazione');
+      return { client: client, what: 'Subentro del legale rappresentante', detail: detail, origin: origin, state: s.label, bg: s.bg, fg: s.fg,
+        hasAct: can, noAct: !can, btn: 'Approva subentro',
+        note: stateKey === 'invited' ? 'in attesa della richiesta del nuovo LR' : (stateKey === 'verify' ? 'approvazione del commerciale' : '—'), act: onApprove };
+    };
+    var subPratiche = [];
+    var sReq = SUB.getRequest(), sInv = SUB.getInvite(), sState = SUB.state();
+    if (sState === 'invited') subPratiche.push(subRow('Assicurazioni Aurora S.p.A.', 'Portale cliente', sInv.nome + ' ' + sInv.cognome, SUB.PEOPLE.lr.name, 'invited'));
+    else if (sReq) subPratiche.push(subRow('Assicurazioni Aurora S.p.A.', sReq.mode === 'pubblico' ? 'Area pubblica' : 'Portale cliente',
+      (sReq.nome + ' ' + sReq.cognome).trim(), SUB.PEOPLE.lr.name, sReq.state, sReq.approved && sReq.approved.at, function () { SUB.approve(); set({}); }));
+    var farmacie = subApproved.indexOf('p6') >= 0;
+    subPratiche.push(subRow('Farmacie Riunite Sud S.r.l.', 'Area pubblica', 'Laura Esposito', 'Michele Russo', farmacie ? 'done' : 'verify', st.subApprovedAt,
+      function () { set({ subApproved: subApproved.concat(['p6']), subApprovedAt: Date.now() }); }));
+    pratiche = pratiche.slice(0, 2).concat(modPratiche, subPratiche, pratiche.slice(2));
     var prospects = ['Ottica Riviera S.r.l.', 'Studio Notarile Ferraro', 'Cantine del Garda S.r.l.'];
     var insoluti = [
       ['Energia Verde Soc. Coop.', '€ 1.225', 'Canone 4° trimestre scaduto da 22 giorni · 2° sollecito inviato via PEC'],

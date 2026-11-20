@@ -16,6 +16,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
 <script src="dtp-modifiche.js"></script>
+<script src="dtp-subentro.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -103,7 +104,35 @@ a{color:#0047BB}a:hover{color:#003A99}
 <span style="font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #0047BB; font-weight: 700">Legale rappresentante</span>
 <span style="font-size: 16px; font-weight: 600">Paolo Ferretti</span>
 <span style="font-size: 13px; color: #4D5762">p.ferretti@aurora.example · firmatario del contratto</span>
-<span style="font-size: 13px; color: #1A1C1E">Ha tutte le funzioni del cliente. Il cambio passa da Postel.</span>
+<span style="font-size: 13px; color: #1A1C1E">Ha tutte le funzioni del cliente. Il cambio passa da Postel: l'utenza resta attiva finché la verifica della firma digitale e della visura camerale e l'approvazione di Postel non sono concluse.</span>
+<sc-if value="{{sub.status}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 6px; background: #FFFFFF; border: 1px solid #BFD6FA; font-size: 13px">
+<span><span style="display: inline-block; padding: 2px 8px; border-radius: 999px; background: {{sub.bg}}; color: {{sub.fg}}; font-size: 12px; font-weight: 600">{{sub.status}}</span></span>
+<span style="color: #1A1C1E">{{sub.text}}</span>
+<sc-if value="{{sub.code}}" hint-placeholder-val="{{ false }}">
+<span style="color: #3A424C">Codice di invito da usare in V-03: <strong data-testid="text-invite-code" style="font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: #1A1C1E">{{sub.code}}</strong> · <a href="{{sub.link}}" data-testid="link-invite-v03" style="font-weight: 600; text-decoration: none">Apri il percorso di subentro</a></span>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{sub.canStart}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; padding-top: 6px">
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{sub.toggle}}" aria-expanded="{{sub.open}}" data-testid="button-start-subentro" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #1A1C1E; cursor: pointer">Avvia cambio del legale rappresentante</button>
+</div>
+</sc-if>
+<sc-if value="{{sub.open}}" hint-placeholder-val="{{ false }}">
+<form aria-labelledby="titolo-subentro" style="border: 1px solid #BFD6FA; background: #FFFFFF; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<span id="titolo-subentro" style="font-size: 14px; font-weight: 600">Invita il nuovo legale rappresentante</span>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500">Nome<input id="sub-nome" type="text" autocomplete="off" style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px; background: #FFFFFF"></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500">Cognome<input id="sub-cognome" type="text" autocomplete="off" style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px; background: #FFFFFF"></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500">E-mail<input id="sub-email" type="email" autocomplete="off" style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px; background: #FFFFFF"></label>
+<span style="font-size: 12px; color: #3A424C">Il nuovo legale rappresentante riceve l'invito con il codice, completa il subentro nell'area pubblica e firma digitalmente la dichiarazione. I delegati restano attivi finché il nuovo legale rappresentante non decide diversamente.</span>
+<sc-if value="{{sub.error}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; color: #A3201A">{{sub.error}}</span></sc-if>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button class="dtp-btn dtp-btn-p" type="button" onClick="{{sub.send}}" data-testid="button-send-invite" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">Invia l'invito</button>
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{sub.toggle}}" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #1A1C1E; cursor: pointer">Annulla</button>
+</div>
+</form>
+</sc-if>
 </div>
 <sc-for list="{{delegati}}" as="d" hint-placeholder-count="3">
 <div style="border: 1px solid #D9E1EC; border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
@@ -339,8 +368,27 @@ class Component extends DCLogic {
     var notice = P === 'amm'
       ? 'Puoi nominare i delegati operativo e tecnico e modificarne i poteri. La sostituzione e la revoca dei delegati spettano al legale rappresentante.'
       : 'Puoi nominare il delegato tecnico e modificarne i poteri. La sostituzione e la revoca dei delegati spettano al legale rappresentante. Da qui puoi accedere alla configurazione di servizi e journey.';
-    var MOD = window.DTPModifiche;
+    var MOD = window.DTPModifiche, SUB = window.DTPSubentro;
     var done = st.done || [];
+    /* U-02: cambio del legale rappresentante, avviato dal legale rappresentante o dal delegato amministrativo (dtp-subentro.js).
+       Invito dimostrativo con il codice da usare in V-03; l'utenza attuale resta attiva fino all'approvazione di Postel. */
+    var subState = SUB.state(), inv = SUB.getInvite(), req = SUB.getRequest();
+    var subBusy = subState === 'invited' || subState === 'verify';
+    var subText = '';
+    if (subState === 'invited') subText = 'Invito inviato a ' + inv.nome + ' ' + inv.cognome + ' (' + inv.email + ') da ' + SUB.PEOPLE[inv.by].name + ' il ' + SUB.full(inv.at) + '. In attesa della richiesta di subentro.';
+    if (subState === 'verify') subText = 'Richiesta di subentro di ' + req.nome + ' ' + req.cognome + ' inviata il ' + SUB.full(req.at) + ': firma digitale e visura camerale verificate, in attesa dell’approvazione di Postel.';
+    if (subState === 'done') subText = 'Subentro di ' + req.nome + ' ' + req.cognome + ' approvato da Postel il ' + SUB.full(req.approved.at) + '. Nel prototipo i dati di esempio del portale restano invariati.';
+    var sub = {
+      canStart: SUB.canStart(P) && !subBusy, open: SUB.canStart(P) && !subBusy && !!st.subOpen, error: st.subError || '',
+      status: subState ? SUB.STATES[subState].label : '', bg: subState ? SUB.STATES[subState].bg : '', fg: subState ? SUB.STATES[subState].fg : '', text: subText,
+      code: subState === 'invited' ? inv.code : '', link: subState === 'invited' ? 'vetrina-V03-subentro.html?invito=' + inv.code : '',
+      toggle: function () { set({ subOpen: !st.subOpen, subError: '', nomina: false, editing: null }); },
+      send: function () {
+        var val = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+        var r = SUB.invite(P, { nome: val('sub-nome'), cognome: val('sub-cognome'), email: val('sub-email') });
+        set(r ? { subOpen: false, subError: '' } : { subError: 'Inserisci nome, cognome e un indirizzo e-mail valido.' });
+      }
+    };
     var kpis = [
       { label: 'Utenze del portale', value: '4', sub: 'legale rappresentante e 3 delegati', color: '#1A1C1E' },
       { label: 'Deleghe attive', value: '3 di 3', sub: 'amministrativa, operativa, tecnica', color: '#1A6B4A' },
@@ -399,11 +447,11 @@ class Component extends DCLogic {
       ['Aprire richieste di assistenza', Y, Y, Y, Y]
     ].map(function (r) { return { name: r[0], v1: r[1][0], c1: r[1][1], v2: r[2][0], c2: r[2][1], v3: r[3][0], c3: r[3][1], v4: r[4][0], c4: r[4][1] }; });
     /* Registro: avvio, approvazione o rifiuto, firma e controfirma delle modifiche dell'offerta (dtp-modifiche.js),
-       insieme alle altre attività dell'azienda, dal più recente. */
+       avvio, richiesta e approvazione del cambio del legale rappresentante (dtp-subentro.js), insieme alle altre attività dell'azienda, dal più recente. */
     var at = function (y, mo, d, h, m) { return new Date(y, mo - 1, d, h, m).getTime(); };
     var log = MOD.events().map(function (e) {
       return { ts: e.ts, who: e.by === 'postel' ? 'Postel' : MOD.PEOPLE[e.by].name, what: e.text, when: MOD.when(e.ts) };
-    }).concat([
+    }).concat(SUB.events().map(function (e) { e.when = MOD.when(e.ts); return e; }), [
       { ts: at(2026, 10, 24, 11, 30), who: 'Giulia Marchetti', what: 'ha avviato l’upgrade di 500 Nuovi Certificati FEA' },
       { ts: at(2026, 10, 15, 9, 47), who: 'Giulia Marchetti', what: 'ha modificato la soglia di attenzione di Apposizioni FEA con COD' },
       { ts: at(2026, 10, 9, 16, 5), who: 'Davide Sala', what: 'ha aggiornato il journey di onboarding del canale app' },
@@ -413,8 +461,8 @@ class Component extends DCLogic {
       { ts: at(2026, 3, 2, 12, 0), who: 'Paolo Ferretti', what: 'ha nominato Giulia Marchetti e Davide Sala delegati' }
     ].concat(done.map(function (e) { return { ts: e.ts, who: e.who, what: e.what }; })).map(function (l) { l.when = MOD.when(l.ts); return l; })).sort(function (x, y) { return y.ts - x.ts; });
     return {
-      who: WHO[P], f: f, notice: notice, kpis: kpis, delegati: delegati, powers: powers, log: log, nominaTypes: nominaTypes,
-      nominaOpen: !!st.nomina && f.delegati, openNomina: function () { set({ nomina: true, editing: null }); }, closeNomina: function () { set({ nomina: false }); },
+      who: WHO[P], f: f, sub: sub, notice: notice, kpis: kpis, delegati: delegati, powers: powers, log: log, nominaTypes: nominaTypes,
+      nominaOpen: !!st.nomina && f.delegati, openNomina: function () { set({ nomina: true, editing: null, subOpen: false }); }, closeNomina: function () { set({ nomina: false }); },
       confirmNomina: confirmNomina, closeEdit: function () { set({ editing: null }); }
     };
   }

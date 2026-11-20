@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/demo-auth.test.mjs tests/contract-pdf.test.mjs tests/modifiche.test.mjs tests/rinnovo.test.mjs",
+    "test": "node --test tests/demo-auth.test.mjs tests/contract-pdf.test.mjs tests/modifiche.test.mjs tests/rinnovo.test.mjs tests/subentro.test.mjs",
     "test:auth": "node --test tests/demo-auth.test.mjs",
     "test:contract": "node --test tests/contract-pdf.test.mjs",
     "test:modifiche": "node --test tests/modifiche.test.mjs tests/rinnovo.test.mjs",
