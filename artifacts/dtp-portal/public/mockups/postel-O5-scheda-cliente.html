@@ -358,7 +358,7 @@ class Component extends DCLogic {
     var MOD = window.DTPModifiche;
     var mods = MOD.list().map(function (r) {
       var s = MOD.STATES[r.state];
-      return { ts: r.created, date: MOD.when(r.created).replace(/, \d\d:\d\d$/, ''), what: r.what, meta: r.id + ' · avviata da ' + MOD.PEOPLE[r.by].name + ' (' + MOD.PEOPLE[r.by].role + ') · ' + MOD.approvalText(r),
+      return { ts: r.created, date: MOD.when(r.created).replace(/, \d\d:\d\d$/, ''), what: r.what, meta: r.id + ' · avviata da ' + MOD.PEOPLE[r.by].name + ' (' + MOD.PEOPLE[r.by].role + ') · ' + MOD.approvalText(r) + (r.verified ? ' · firma verificata in automatico' : ''),
         state: s.postel, bg: s.bg, fg: s.fg, amount: money && r.amount != null ? DTP.eur(r.amount) : '' };
     });
     var inCorso = MOD.pending()[0] || null;
@@ -388,7 +388,7 @@ class Component extends DCLogic {
       admin: [
         inCorso ? { label: 'Richiesta in corso', value: inCorso.what, sub: inCorso.id + " · " + MOD.STATES[inCorso.state].postel + " · " + MOD.approvalText(inCorso), color: '#855800' }
           : { label: 'Richiesta in corso', value: 'Nessuna', sub: 'nessuna modifica dell’offerta in corso', color: '#1A1C1E' },
-        { label: 'Origine del contratto', value: 'Commerciale', sub: 'stesso percorso della vetrina: firma del LR, controfirma Postel', color: '#1A1C1E' },
+        { label: 'Origine del contratto', value: 'Commerciale', sub: 'stesso percorso della vetrina: firma del LR, verifica automatica, prima fattura pagata, attivazione', color: '#1A1C1E' },
         { label: 'Pagamenti', value: money ? 'Nessun insoluto' : 'In regola', sub: money ? 'FT-2026-11012 da € 420 approvata, scade il 30 nov' : '1 fattura in scadenza, nessun sollecito', color: '#1A6B4A' },
         { label: 'Stato del rinnovo e della conservazione dei dati', value: 'In scadenza', sub: 'rinnovo non tacito · decisione del cliente attesa entro il 30 nov · senza rinnovo, dal 28 feb 2027 servizio disabilitato e dati conservati per [DA DEFINIRE] giorni', color: '#1A1C1E' }
       ],

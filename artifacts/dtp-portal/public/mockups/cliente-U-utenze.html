@@ -446,11 +446,11 @@ class Component extends DCLogic {
       ['Integrare API, SDK e componenti white label', Y, N, N, Y],
       ['Aprire richieste di assistenza', Y, Y, Y, Y]
     ].map(function (r) { return { name: r[0], v1: r[1][0], c1: r[1][1], v2: r[2][0], c2: r[2][1], v3: r[3][0], c3: r[3][1], v4: r[4][0], c4: r[4][1] }; });
-    /* Registro: avvio, approvazione o rifiuto, firma e controfirma delle modifiche dell'offerta (dtp-modifiche.js),
+    /* Registro: avvio, approvazione o rifiuto, firma e verifica automatica delle modifiche dell'offerta (dtp-modifiche.js),
        avvio, richiesta e approvazione del cambio del legale rappresentante (dtp-subentro.js), insieme alle altre attività dell'azienda, dal più recente. */
     var at = function (y, mo, d, h, m) { return new Date(y, mo - 1, d, h, m).getTime(); };
     var log = MOD.events().map(function (e) {
-      return { ts: e.ts, who: e.by === 'postel' ? 'Postel' : MOD.PEOPLE[e.by].name, what: e.text, when: MOD.when(e.ts) };
+      return { ts: e.ts, who: MOD.PEOPLE[e.by].name, what: e.text, when: MOD.when(e.ts) };
     }).concat(SUB.events().map(function (e) { e.when = MOD.when(e.ts); return e; }), [
       { ts: at(2026, 10, 24, 11, 30), who: 'Giulia Marchetti', what: 'ha avviato l’upgrade di 500 Nuovi Certificati FEA' },
       { ts: at(2026, 10, 15, 9, 47), who: 'Giulia Marchetti', what: 'ha modificato la soglia di attenzione di Apposizioni FEA con COD' },

@@ -430,7 +430,7 @@ class Component extends DCLogic {
     var newCfg = Object.assign({}, E.config);
     lines.forEach(function (l) { newCfg[l.id] = l.to; });
     var before = E.contratto(), after = C.price(newCfg, { fee: false });
-    var decorrenza = 'dalla controfirma di Postel fino al 28 feb 2027';
+    var decorrenza = 'dalla firma, dopo la verifica automatica, fino al 28 feb 2027';
     var summary = money ? [
       { k: 'Componente variabile', v: eur(before.variabile) + ' → ' + eur(after.variabile) },
       { k: 'Canone periodico', v: eur(after.canone) + ' · invariato · [DA DEFINIRE]' },
@@ -443,8 +443,8 @@ class Component extends DCLogic {
       done: !!st.done, doneText: st.done || '',
       btn: isLr ? 'Conferma e firma' : 'Invia per approvazione',
       note: isLr
-        ? 'Come legale rappresentante confermi e firmi direttamente. La modifica si attiva alla controfirma di Postel.'
-        : 'La modifica va a ' + MOD.PEOPLE.lr.name + ' per l’approvazione e resta «In approvazione» finché non decide. Dopo l’approvazione firmi tu l’atto e Postel controfirma.',
+        ? 'Come legale rappresentante confermi e firmi direttamente. La piattaforma verifica la firma in automatico e la modifica si attiva subito.'
+        : 'La modifica va a ' + MOD.PEOPLE.lr.name + ' per l’approvazione e resta «In approvazione» finché non decide. Dopo l’approvazione firmi tu l’atto: la piattaforma verifica la firma in automatico e la modifica si attiva.',
       confirm: function () {
         if (!lines.length) return;
         var what = lines.length === 1
@@ -454,12 +454,13 @@ class Component extends DCLogic {
         var r = MOD.create({ role: P, what: what, detail: detail, amount: total });
         if (!r) return;
         set({ cart: {}, done: isLr
-          ? 'Modifica ' + r.id + ' confermata e firmata. Si attiva alla controfirma di Postel.'
+          ? 'Modifica ' + r.id + ' confermata e firmata. Firma verificata in automatico: la modifica è attiva.'
           : 'Modifica ' + r.id + ' inviata a ' + MOD.PEOPLE.lr.name + ' per l’approvazione.' });
       }
     };
-    /* Modifiche in corso o rifiutate, dalla fonte condivisa (dtp-modifiche.js). */
-    var mods = MOD.list().filter(function (r) { return r.state !== 'done'; });
+    /* Modifiche in corso o rifiutate, e quelle attivate negli ultimi 7 giorni, dalla fonte condivisa (dtp-modifiche.js). */
+    var recent = Date.now() - 7 * 24 * 3600 * 1000;
+    var mods = MOD.list().filter(function (r) { return r.state !== 'done' || (r.verified && r.verified.at > recent); });
     var orders = mods.map(function (r) {
       var s = MOD.STATES[r.state];
       return { what: r.what, meta: r.id + ' · ' + MOD.when(r.created) + ' · avviata da ' + MOD.PEOPLE[r.by].name + (r.state === 'rejected' && r.approval.reason ? ' · motivazione: ' + r.approval.reason : ''),

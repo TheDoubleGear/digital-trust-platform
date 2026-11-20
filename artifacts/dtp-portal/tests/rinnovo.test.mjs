@@ -68,7 +68,7 @@ test('«Rinnova» in M5-05: il DA invia per approvazione, il LR firma direttamen
   assert.match(amm.text(), /Richiesta di rinnovo creata/);
   const lr = openPage(M5, 'lr');
   lr.click('Rinnova');
-  assert.equal(lr.w.DTPModifiche.list().find(x => x.what === 'Rinnovo del contratto').state, 'countersign');
+  assert.equal(lr.w.DTPModifiche.list().find(x => x.what === 'Rinnovo del contratto').state, 'done');
 });
 
 test('testate, notifiche e console usano scadenza e conservazione', () => {

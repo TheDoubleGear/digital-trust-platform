@@ -43,22 +43,26 @@ test('la modifica avviata dal delegato amministrativo resta in approvazione finc
   const r = M.create({ role: 'amm', what: 'Upgrade di prova', amount: 100 });
   assert.equal(r.state, 'approval');
   assert.equal(M.sign(r.id), null, 'senza approvazione non si firma');
-  assert.equal(M.countersign(r.id), null, 'senza firma non si controfirma');
   assert.equal(M.get(r.id).state, 'approval');
   const a = M.approve(r.id);
   assert.equal(a.state, 'sign');
   assert.equal(a.approval.outcome, 'approved');
   assert.equal(typeof a.approval.at, 'number');
-  assert.equal(M.sign(r.id).state, 'countersign');
-  assert.equal(M.countersign(r.id).state, 'done');
-  const kinds = [...M.events().filter(e => e.id === r.id).map(e => e.kind)].sort();
-  assert.deepEqual(kinds, ['approvazione', 'avvio', 'controfirma', 'firma']);
+  const f = M.sign(r.id);
+  assert.equal(f.state, 'done', 'dopo la firma la modifica è attiva, senza controfirma');
+  assert.equal(f.verified.at, f.signed.at, 'verifica automatica registrata alla firma');
+  assert.equal(M.STATES.done.label, 'Firmata e attiva');
+  assert.equal('countersign' in M, false, 'nessuna controfirma');
+  assert.equal(M.STATES.countersign, undefined);
+  const kinds = [...M.events().filter(e => e.id === r.id).map(e => e.kind)];
+  assert.deepEqual(kinds, ['verifica', 'firma', 'approvazione', 'avvio']);
 });
 
 test('il legale rappresentante avvia e firma senza passaggio di approvazione', () => {
   const { M } = core();
   const r = M.create({ role: 'lr', what: 'Upgrade del LR' });
-  assert.equal(r.state, 'countersign');
+  assert.equal(r.state, 'done');
+  assert.ok(r.verified, 'verifica automatica registrata');
   assert.equal(r.approval, null);
   assert.equal(r.signed.by, 'lr');
   assert.match(M.approvalText(r), /approvazione non necessaria/);
@@ -110,6 +114,37 @@ test('percorso nelle pagine: DA invia da H, LR vede H-10 e approva in M5-03, evi
   assert.match(openPage('cliente-U-utenze.html', 'lr', stored).text(), /Paolo Ferretti ha approvato la modifica RM-015/);
   assert.match(openPage('cliente-N-notifiche.html', 'amm', stored).text(), /Esito dell’approvazione: RM-015 approvata/);
   assert.match(openPage('postel-O2-portafoglio.html', 'com', stored).text(), /RM-015 .*approvata da Paolo Ferretti/);
+
+  /* Firma del delegato amministrativo: verifica automatica e modifica attiva, senza passaggio in console. */
+  const ammM5 = openPage('cliente-M5-contratto.html', 'amm', stored);
+  const signRow = [...ammM5.w.document.querySelectorAll('#app [id^="richiesta-"]')].find(r => r.textContent.includes('RM-015'));
+  [...signRow.querySelectorAll('button')].find(b => b.textContent.trim() === 'Firma l\'atto di modifica').click();
+  stored = ammM5.stored();
+  const m5 = openPage('cliente-M5-contratto.html', 'lr', stored).text();
+  assert.match(m5, /RM-015 .*Firmata e attiva/);
+  assert.match(m5, /Firma verificata in automatico il .* · modifica attiva/);
+  assert.match(m5, /Atto di modifica RM-015 ?Firmato da Giulia Marchetti .* firma verificata in automatico/);
+  assert.match(openPage('cliente-U-utenze.html', 'lr', stored).text(), /Piattaforma ha verificato in automatico la firma della modifica RM-015: esito positivo, modifica attiva/);
+  assert.match(openPage('cliente-N-notifiche.html', 'lr', stored).text(), /Modifica dell’offerta attiva: RM-015/);
+  assert.match(openPage('cliente-H-catalogo.html', 'amm', stored).text(), /RM-015 .*Firmata e attiva/);
+  const o2 = openPage('postel-O2-portafoglio.html', 'com', stored);
+  assert.match(o2.text(), /RM-015 .*firma verificata in automatico .*esito positivo.*Attivata/);
+  assert.equal(o2.buttons('Controfirma').length, 0, 'nessuna azione «Controfirma» in O2');
+  assert.match(openPage('postel-O5-scheda-cliente.html', 'com', stored).text(), /RM-015 .*firma verificata in automatico/);
+  for (const f of ['cliente-H-catalogo.html', 'cliente-M5-contratto.html', 'cliente-U-utenze.html', 'cliente-N-notifiche.html']) {
+    assert.doesNotMatch(openPage(f, 'lr', stored).text(), /controfirmat|in controfirma|Da controfirmare/i, f);
+  }
+});
+
+test('O2: primo contratto con stati automatici, nessuna controfirma; «Approva subentro» resta', () => {
+  const o2 = openPage('postel-O2-portafoglio.html', 'com');
+  const t = o2.text();
+  assert.equal(o2.buttons('Controfirma').length, 0);
+  assert.match(t, /Studio Legale Martini .*In verifica/);
+  assert.match(t, /Fattura inviata, in attesa di pagamento/);
+  assert.match(t, /Attivato/);
+  assert.doesNotMatch(t, /Da controfirmare|controfirmat|controfirma del commerciale/i);
+  assert.ok(o2.buttons('Approva subentro').length >= 1);
 });
 
 test('rifiuto in M5-03 senza motivazione bloccato, con motivazione registrato', () => {
@@ -128,7 +163,8 @@ test('con LR la modifica da H si conferma e firma direttamente', () => {
   lr.click('Aggiungi upgrade +2.000');
   lr.click('Conferma e firma');
   assert.match(lr.text(), /Modifica RM-015 confermata e firmata/);
-  assert.match(lr.text(), /RM-015 .*Firmata, in controfirma Postel/);
+  assert.match(lr.text(), /RM-015 .*Firmata e attiva/);
+  assert.doesNotMatch(lr.text(), /controfirm/i);
 });
 
 test('il delegato operativo non vede importi in H e invia segnalazioni', () => {
@@ -155,7 +191,7 @@ test('la variazione del referente amministrativo è riservata al legale rapprese
   assert.equal(M.canStart('amm', 'referente'), false);
   assert.equal(M.create({ role: 'amm', kind: 'referente', what: 'Variazione del referente amministrativo' }), null);
   const r = M.create({ role: 'lr', kind: 'referente', what: 'Variazione del referente amministrativo' });
-  assert.equal(r.state, 'countersign');
+  assert.equal(r.state, 'done');
   assert.equal(r.approval, null);
 });
 
@@ -200,4 +236,14 @@ test('U: la nomina e la modifica dei poteri registrano chi le ha fatte, che firm
   op.click('Genera l\'atto e firma');
   assert.match(op.text(), /Davide Sala ha modificato i poteri della delega tecnica di Andrea Colombo/);
   assert.match(op.text(), /atto di modifica dei poteri firmato da Davide Sala .* chi firma l’atto: \[DA DEFINIRE\]/);
+});
+
+test('le richieste salvate con la vecchia controfirma diventano attive con verifica automatica', () => {
+  const old = [{ id: 'RM-020', what: 'Upgrade', detail: '', amount: 10, by: 'amm', created: 1, state: 'countersign',
+    approval: { outcome: 'approved', by: 'lr', at: 2, reason: '' }, signed: { by: 'amm', at: 3 }, countersigned: null }];
+  const { M } = core(memoryStorage({ [KEY]: JSON.stringify(old) }));
+  const r = M.get('RM-020');
+  assert.equal(r.state, 'done');
+  assert.equal(r.verified.at, 3);
+  assert.equal('countersigned' in r, false);
 });

@@ -360,7 +360,7 @@
       h += '<p class="muted" style="margin:0;font-size:12px">Fee di attivazione e canone: ' + e(D.SEGNAPOSTO) + '. Periodicità del canone: ' + e(D.periodicita) + '.</p>';
     }
     h += '<div class="tot"><span class="muted" style="font-size:14px">' + (S.sconto > 0 && it.length ? 'Totale scontato' : 'Totale') + ', IVA esclusa</span><strong>' + D.eur(total()) + '</strong></div>';
-    h += '<p class="muted" style="margin:0;font-size:12px">Durata 12 mesi dalla controfirma di Postel. Nessun addebito in questa fase: la prima fattura si paga fuori dalla piattaforma.</p>';
+    h += '<p class="muted" style="margin:0;font-size:12px">Durata 12 mesi dall\'attivazione. Nessun addebito in questa fase: la prima fattura si paga fuori dalla piattaforma.</p>';
     $('side-body').innerHTML = h;
   }
   $('side').addEventListener('click', function (ev) {
@@ -379,7 +379,7 @@
     return [
       'Dichiaro di essere il legale rappresentante di ' + S.data.ragione + ' indicato nel contratto. Il primo acquisto può essere concluso solo dal legale rappresentante.',
       'Confermo che il file caricato è il contratto generato per questa richiesta, firmato da me.',
-      'Prendo atto che l\'attivazione non è immediata: dopo la verifica della firma e dei dati e la controfirma di Postel riceverò via e-mail la prima fattura, da pagare fuori dalla piattaforma. Il servizio sarà abilitato e le credenziali inviate solo dopo il pagamento.'
+      'Prendo atto che l\'attivazione non è immediata: dopo la verifica della firma e dei dati riceverò una prima e-mail con l\'esito e la prima fattura, da pagare fuori dalla piattaforma; dopo il pagamento riceverò una seconda e-mail con la conferma del pagamento, il contratto e l\'attivazione dell\'area clienti con i servizi. Le credenziali arrivano solo dopo il pagamento.'
     ];
   }
   function renderContract() {
@@ -466,11 +466,11 @@
     var li = function (n, ok, title, sub) { return '<li' + (ok ? ' class="ok"' : '') + '><span class="dot" aria-hidden="true">' + (ok ? '✓' : n) + '</span><div>' + title + '<small>' + sub + '</small></div></li>'; };
     return '<ol class="tl">' +
       li(1, true, 'Richiesta inviata', 'Contratto ' + S.contract.id + ' e file firmato ' + e(S.file.name) + ' (' + size(S.file.size) + ')') +
-      li(2, false, 'Verifica della firma e dei dati', 'Controllo della firma del contratto e della sua corrispondenza con i dati di azienda e legale rappresentante inseriti.') +
-      li(3, false, 'Controfirma di Postel', 'Dopo l’esito positivo della verifica, Postel controfirma il contratto.') +
-      li(4, false, 'Prima fattura via e-mail', 'Arriverà a ' + e(S.data.email) + ' con il collegamento per il pagamento, che avviene fuori dalla piattaforma. Nessun addebito automatico.') +
-      li(5, false, 'Pagamento, abilitazione e credenziali', 'Ricevuto il pagamento, il servizio viene abilitato e ricevi via e-mail il nome utente (la tua e-mail) e le istruzioni per il primo accesso. Userai la password scelta: non sarà inclusa nell’e-mail.') +
-      li(6, false, 'Primo accesso del legale rappresentante', 'Al primo accesso completerai PS-01 (Delegati) e poi PS-02 (Soglie e notifiche). Solo dopo il setup accederai alla homepage cliente.') +
+      li(1, false, 'Verifica della firma e dei dati', 'Controllo automatico della firma del contratto e della sua corrispondenza con i dati di azienda e legale rappresentante inseriti.') +
+      li(2, false, 'E-mail con esito e prima fattura', 'Arriverà a ' + e(S.data.email) + ' con l’esito della verifica, la prima fattura e il collegamento per il pagamento.') +
+      li(3, false, 'Pagamento della fattura, fuori dalla piattaforma', 'Il pagamento avviene fuori dalla piattaforma. Nessun addebito automatico.') +
+      li(4, false, 'E-mail di conferma con contratto e attivazione dell’area clienti', 'Ricevuto il pagamento, ti confermiamo il pagamento, ti inviamo il contratto e attiviamo l’area clienti con i servizi. L’e-mail contiene il nome utente (la tua e-mail) e le istruzioni per il primo accesso; userai la password scelta, che non sarà inclusa nell’e-mail. La durata di 12 mesi decorre dall’attivazione.') +
+      li(5, false, 'Primo accesso', 'Al primo accesso completerai PS-01 (Delegati) e poi PS-02 (Soglie e notifiche). Solo dopo il setup accederai alla homepage cliente.') +
       '</ol>';
   }
   function renderDone() {
@@ -485,7 +485,7 @@
   function openDialog() {
     var root = $('dlg-root');
     root.innerHTML = '<div class="scrim" id="scrim"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-t" aria-describedby="dlg-d"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><div><span class="pend">In attesa di verifica</span><h2 id="dlg-t" style="margin-top:10px">Grazie, abbiamo ricevuto la richiesta</h2></div><button type="button" class="x" id="dlg-x" aria-label="Chiudi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>' +
-      '<p id="dlg-d" style="margin:0;font-size:14px;color:#3A424C">La richiesta ' + S.ref + ' passa ora alla verifica della firma e dei dati. Seguiranno la controfirma di Postel e la prima fattura via e-mail, da pagare fuori dalla piattaforma: i servizi non sono attivi e l\'area clienti non è accessibile fino al pagamento.</p>' + timeline() +
+      '<p id="dlg-d" style="margin:0;font-size:14px;color:#3A424C">La richiesta ' + S.ref + ' passa ora alla verifica della firma e dei dati. Seguiranno via e-mail la prima fattura, da pagare fuori dalla piattaforma, e, dopo il pagamento, la conferma con il contratto e l\'attivazione dell\'area clienti: fino ad allora i servizi non sono attivi e l\'area clienti non è accessibile.</p>' + timeline() +
       '<div class="demo" role="note"><span><strong>Demo:</strong> nessun caricamento, invio di e-mail, verifica o fattura è stato eseguito.</span></div><button type="button" class="btn btn-p" id="dlg-ok">Ho capito</button></div></div>';
     var dlg = root.querySelector('.dlg');
     function close() { root.innerHTML = ''; document.removeEventListener('keydown', key); $('t4').focus(); }
