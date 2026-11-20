@@ -108,6 +108,9 @@ test('direct PDF download lists only configured services, the three components, 
     assert.ok(text.includes('Canone periodico: ' + D.eur(p.canone)));
     assert.ok(text.includes('Totale, IVA esclusa: ' + D.eur(p.totale)));
     assert.ok(text.includes('DA DEFINIRE'));
+    const flat = text.replace(/\s+/g, ' ');
+    assert.ok(flat.includes("Rinnovo non tacito: alla scadenza, in assenza di rinnovo, l'accesso ai servizi è disabilitato e i dati sono conservati per [DA DEFINIRE] giorni, al termine dei quali sono cancellati."));
+    assert.ok(!/modalità di rinnovo/i.test(flat));
     assert.ok(!/bundle|enterprise|ricaric/i.test(text));
     assert.ok(text.includes('TESTO DA FORNIRE E APPROVARE A CURA DI POSTEL'));
     assert.ok(!text.includes('SecretNotInPDF123'));
