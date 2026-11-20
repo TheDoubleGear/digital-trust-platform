@@ -60,6 +60,7 @@ export default function Login() {
 
   const fill = (u: string, p: string) => { setUser(u); setPassword(p); setError(null); userRef.current?.focus(); };
   const logout = () => { auth.logout({ navigate: false }); auth.takeFlash(); refresh(); setNotice('Sei uscito dalla sessione demo.'); setUser(''); setPassword(''); };
+  const resetDemoData = () => { auth.resetDemoData(); setNotice('Dati demo ripristinati: richieste di modifica e codici di configurazione sono tornati allo stato iniziale.'); };
   const resetSetup = () => { auth.resetSetup(); refresh(); setNotice('Primo accesso del legale rappresentante ripristinato: al prossimo login con LR riparte il setup.'); };
 
   return (
@@ -146,6 +147,10 @@ export default function Login() {
               <div className="login-reset">
                 <span>Primo setup del legale rappresentante: <b data-testid="text-setup-state">{setup.done ? 'concluso' : setup.delegates ? 'in corso (PS-02)' : 'da fare'}</b></span>
                 <button type="button" onClick={resetSetup} disabled={!setup.done && !setup.delegates} data-testid="button-reset-setup">Ripristina il primo accesso</button>
+              </div>
+              <div className="login-reset">
+                <span>Richieste di modifica e codici di configurazione</span>
+                <button type="button" onClick={resetDemoData} data-testid="button-reset-demo-data">Ripristina dati demo</button>
               </div>
             </div>
           </details>

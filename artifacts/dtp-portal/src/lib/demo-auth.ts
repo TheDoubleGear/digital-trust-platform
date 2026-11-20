@@ -19,6 +19,8 @@ interface DemoAuthApi {
   getRole(): DemoRole | null;
   getSetup(): SetupState;
   resetSetup(): SetupState;
+  /** Azzera richieste di modifica e codici di configurazione; non tocca il primo accesso del LR. */
+  resetDemoData(): void;
   homeFor(role: DemoRole, setup?: SetupState): string;
   decide(file: string, role: DemoRole | null, setup?: SetupState): Decision;
   destinationAfterLogin(role: DemoRole, setup?: SetupState, next?: string | null): string;

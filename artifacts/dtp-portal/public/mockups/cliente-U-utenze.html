@@ -119,12 +119,32 @@ a{color:#0047BB}a:hover{color:#003A99}
 <span style="flex: 1 1 180px">{{d.act}}</span>
 <a href="#atto" style="font-weight: 600; text-decoration: none; padding: 4px 0">Scarica l'atto</a>
 </div>
-<sc-if value="{{f.delegati}}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{d.hasActions}}" hint-placeholder-val="{{ true }}">
 <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-top: 6px">
-<button class="dtp-btn dtp-btn-o" type="button" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #1A1C1E; cursor: pointer">Modifica poteri</button>
+<sc-if value="{{d.canEdit}}" hint-placeholder-val="{{ true }}">
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{d.openEdit}}" aria-expanded="{{d.editing}}" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #1A1C1E; cursor: pointer">Modifica poteri</button>
+</sc-if>
+<sc-if value="{{f.revoca}}" hint-placeholder-val="{{ true }}">
 <button class="dtp-btn dtp-btn-o" type="button" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #1A1C1E; cursor: pointer">Sostituisci</button>
 <button class="dtp-btn dtp-btn-o" type="button" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid #F2BDB8; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #A3201A; cursor: pointer">Revoca</button>
+</sc-if>
 </div>
+</sc-if>
+<sc-if value="{{d.readOnly}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 12px; color: #4D5762; padding-top: 6px">Sola lettura: {{d.readOnly}}</span>
+</sc-if>
+<sc-if value="{{d.editing}}" hint-placeholder-val="{{ false }}">
+<form aria-label="Modifica poteri di {{d.name}}" style="border: 1px solid #BFD6FA; background: #F7FAFF; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 14px; font-weight: 600">Modifica i poteri della delega</span>
+<sc-for list="{{d.powers}}" as="pw" hint-placeholder-count="3">
+<label style="display: flex; align-items: center; gap: 8px; min-height: 36px; font-size: 13px"><input type="checkbox" checked> {{pw}}</label>
+</sc-for>
+<span style="font-size: 12px; color: #3A424C">Firmatario dell'atto di modifica: {{who.name}} ({{who.roleLower}}). Chi firma l'atto: [DA DEFINIRE]</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button class="dtp-btn dtp-btn-p" type="button" onClick="{{d.confirmEdit}}" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">Genera l'atto e firma</button>
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{closeEdit}}" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #1A1C1E; cursor: pointer">Annulla</button>
+</div>
+</form>
 </sc-if>
 </div>
 </sc-for>
@@ -134,24 +154,24 @@ a{color:#0047BB}a:hover{color:#003A99}
 <form aria-labelledby="titolo-nomina" style="border: 1px solid #BFD6FA; background: #F7FAFF; border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
 <h3 id="titolo-nomina" style="margin: 0; font-size: 16px; font-weight: 600">Nomina un delegato</h3>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px">
-<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500">Nome<input type="text" style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px"></label>
-<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500">Cognome<input type="text" style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px"></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500">Nome<input id="nomina-nome" type="text" style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px"></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500">Cognome<input id="nomina-cognome" type="text" style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px"></label>
 <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500">Email aziendale<input type="email" style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px"></label>
 <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500">Codice fiscale<input type="text" style="min-height: 44px; padding: 0 12px; border-radius: 6px; border: 1px solid #B8C2CF; font: inherit; font-size: 14px"></label>
 </div>
 <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px">
 <legend style="font-size: 13px; font-weight: 500; margin-bottom: 8px">Tipo di delega</legend>
-<label style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid #B8C2CF; border-radius: 6px; font-size: 14px; background: #FFFFFF"><input type="radio" name="delega" checked> Amministrativa: acquisti, soglie, fatture</label>
-<label style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid #B8C2CF; border-radius: 6px; font-size: 14px; background: #FFFFFF"><input type="radio" name="delega"> Operativa: servizi e journey</label>
-<label style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid #B8C2CF; border-radius: 6px; font-size: 14px; background: #FFFFFF"><input type="radio" name="delega"> Tecnica: developer portal</label>
+<sc-for list="{{nominaTypes}}" as="t" hint-placeholder-count="3">
+<label style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid #B8C2CF; border-radius: 6px; font-size: 14px; background: #FFFFFF"><input type="radio" name="delega" value="{{t.key}}" defaultChecked="{{t.first}}"> {{t.label}}</label>
+</sc-for>
 </fieldset>
 <ol aria-label="Dopo la conferma" style="margin: 0; padding-left: 20px; font-size: 13px; color: #3A424C; line-height: 1.6">
-<li>Generiamo l'atto di delega con i poteri del tipo scelto; lo firmi con firma elettronica avanzata.</li>
+<li>Generiamo l'atto di delega con i poteri del tipo scelto; lo firmi con firma elettronica avanzata. Firmatario dell'atto: {{who.name}} ({{who.roleLower}}). Chi firma l'atto quando nomina un delegato: [DA DEFINIRE]</li>
 <li>Il delegato riceve l'invito, verifica la propria identità e firma l'accettazione.</li>
 <li>L'atto firmato è conservato a norma e resta scaricabile da questa pagina; la delega si attiva all'accettazione.</li>
 </ol>
 <div style="display: flex; gap: 10px">
-<button class="dtp-btn dtp-btn-p" type="button" onClick="{{closeNomina}}" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">Genera l'atto e firma</button>
+<button class="dtp-btn dtp-btn-p" type="button" onClick="{{confirmNomina}}" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">Genera l'atto e firma</button>
 <button class="dtp-btn dtp-btn-o" type="button" onClick="{{closeNomina}}" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1A1C1E; cursor: pointer">Annulla</button>
 </div>
 </form>
@@ -173,7 +193,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <span role="columnheader" style="padding: 10px">Operativo</span>
 <span role="columnheader" style="padding: 10px">Tecnico</span>
 </div>
-<sc-for list="{{powers}}" as="r" hint-placeholder-count="10">
+<sc-for list="{{powers}}" as="r" hint-placeholder-count="12">
 <div role="row" style="display: grid; grid-template-columns: 2.6fr repeat(4, minmax(0, 1fr)); border-bottom: 1px solid #EAEFF5; text-align: center; align-items: center">
 <span role="rowheader" style="padding: 10px; text-align: left; font-weight: 500">{{r.name}}</span>
 <span role="cell" style="padding: 10px; font-weight: 700; color: {{r.c1}}">{{r.v1}}</span>
@@ -301,28 +321,73 @@ class Component extends DCLogic {
     var P = this.props.persona;
     var set = function (o) { self.setState(o); };
     var WHO = {
-      lr: { name: 'Paolo Ferretti', role: 'Legale rappresentante', ini: 'PF' },
-      amm: { name: 'Giulia Marchetti', role: 'Delegato amministrativo', ini: 'GM' },
-      op: { name: 'Davide Sala', role: 'Delegato operativo', ini: 'DS' }
+      lr: { name: 'Paolo Ferretti', role: 'Legale rappresentante', roleLower: 'legale rappresentante', ini: 'PF' },
+      amm: { name: 'Giulia Marchetti', role: 'Delegato amministrativo', roleLower: 'delegato amministrativo', ini: 'GM' },
+      op: { name: 'Davide Sala', role: 'Delegato operativo', roleLower: 'delegato operativo', ini: 'DS' }
     };
-    var f = { delegati: P === 'lr', config: P !== 'amm', hasNotice: P !== 'lr' };
+    /* Deleghe gerarchiche: il LR nomina e modifica i poteri di tutti i delegati, il delegato amministrativo
+       dei soli delegati operativo e tecnico, il delegato operativo del solo delegato tecnico.
+       Sostituzione e revoca restano al legale rappresentante. */
+    var TYPES = {
+      amm: { label: 'Amministrativa: acquisti, soglie, fatture', short: 'amministrativa', delegate: 'Delegato amministrativo' },
+      op: { label: 'Operativa: servizi e journey', short: 'operativa', delegate: 'Delegato operativo' },
+      tec: { label: 'Tecnica: developer portal', short: 'tecnica', delegate: 'Delegato tecnico' }
+    };
+    var CAN = { lr: ['amm', 'op', 'tec'], amm: ['op', 'tec'], op: ['tec'] };
+    var allowed = CAN[P] || [];
+    var f = { delegati: allowed.length > 0, revoca: P === 'lr', config: P !== 'amm', hasNotice: P !== 'lr' };
     var notice = P === 'amm'
-      ? 'Stai consultando questa pagina: le deleghe le nomina e le revoca il legale rappresentante.'
-      : 'Le deleghe le nomina e le revoca il legale rappresentante. Da qui puoi accedere alla configurazione di servizi e journey.';
+      ? 'Puoi nominare i delegati operativo e tecnico e modificarne i poteri. La sostituzione e la revoca dei delegati spettano al legale rappresentante.'
+      : 'Puoi nominare il delegato tecnico e modificarne i poteri. La sostituzione e la revoca dei delegati spettano al legale rappresentante. Da qui puoi accedere alla configurazione di servizi e journey.';
+    var MOD = window.DTPModifiche;
+    var done = st.done || [];
     var kpis = [
       { label: 'Utenze del portale', value: '4', sub: 'legale rappresentante e 3 delegati', color: '#1A1C1E' },
       { label: 'Deleghe attive', value: '3 di 3', sub: 'amministrativa, operativa, tecnica', color: '#1A6B4A' },
-      { label: 'Inviti in attesa', value: '0', sub: 'nessun delegato da attivare', color: '#1A1C1E' },
-      { label: 'Ultima variazione', value: '10 mar 2026', sub: 'nomina del delegato tecnico', color: '#1A1C1E' }
+      { label: 'Inviti in attesa', value: String(done.filter(function (e) { return e.kind === 'nomina'; }).length), sub: done.some(function (e) { return e.kind === 'nomina'; }) ? 'in attesa dell’accettazione del delegato' : 'nessun delegato da attivare', color: '#1A1C1E' },
+      { label: 'Ultima variazione', value: done.length ? MOD.when(done[done.length - 1].ts) : '10 mar 2026', sub: done.length ? done[done.length - 1].what : 'nomina del delegato tecnico', color: '#1A1C1E' }
     ];
+    var POWERS = {
+      amm: ['Comporre e avviare upgrade e modifiche dell’offerta', 'Firmare rinnovi e modifiche approvate', 'Gestire soglie e destinatari delle notifiche', 'Consultare e pagare le fatture', 'Nominare e modificare i poteri dei delegati operativo e tecnico'],
+      op: ['Configurare servizi e journey', 'Consultare consumi in quantità', 'Nominare e modificare i poteri del delegato tecnico'],
+      tec: ['Integrare API, SDK e componenti white label', 'Consultare consumi in quantità']
+    };
+    var lastEdit = function (key) {
+      var e = done.filter(function (x) { return x.kind === 'poteri' && x.key === key; }).pop();
+      return e ? ' · atto di modifica dei poteri firmato da ' + e.who + ' ' + MOD.when(e.ts) + ' · chi firma l’atto: [DA DEFINIRE]' : '';
+    };
     var delegati = [
-      { type: 'Delegato amministrativo', name: 'Giulia Marchetti', email: 'g.marchetti@aurora.example', since: '2 mar 2026', last: 'oggi', scope: 'Acquisti, soglie, consumi, fatture e pagamenti; avvio delle modifiche dell’offerta e firma dell’atto dopo la tua approvazione.', act: 'Atto di delega firmato il 2 mar 2026, accettato il 2 mar · conservato' },
-      { type: 'Delegato operativo', name: 'Davide Sala', email: 'd.sala@aurora.example', since: '2 mar 2026', last: 'ieri', scope: 'Configurazione di servizi e journey; consumi in quantità.', act: 'Atto di delega firmato il 2 mar 2026, accettato il 3 mar · conservato' },
-      { type: 'Delegato tecnico', name: 'Andrea Colombo', email: 'a.colombo@aurora.example', since: '10 mar 2026', last: 'oggi', scope: 'Developer portal (API, SDK, sandbox, collaudo); consumi in quantità.', act: 'Atto di delega firmato il 10 mar 2026, accettato il 11 mar · conservato' }
-    ];
+      { key: 'amm', name: 'Giulia Marchetti', email: 'g.marchetti@aurora.example', since: '2 mar 2026', last: 'oggi', scope: 'Acquisti, soglie, consumi, fatture e pagamenti; avvio delle modifiche dell’offerta e firma dell’atto dopo la tua approvazione; nomina e modifica dei poteri dei delegati operativo e tecnico.', act: 'Atto di delega firmato da Paolo Ferretti il 2 mar 2026, accettato il 2 mar · conservato' },
+      { key: 'op', name: 'Davide Sala', email: 'd.sala@aurora.example', since: '2 mar 2026', last: 'ieri', scope: 'Configurazione di servizi e journey; consumi in quantità; nomina e modifica dei poteri del delegato tecnico.', act: 'Atto di delega firmato da Paolo Ferretti il 2 mar 2026, accettato il 3 mar · conservato' },
+      { key: 'tec', name: 'Andrea Colombo', email: 'a.colombo@aurora.example', since: '10 mar 2026', last: 'oggi', scope: 'Developer portal (API, SDK, sandbox, collaudo); consumi in quantità.', act: 'Atto di delega firmato da Paolo Ferretti il 10 mar 2026, accettato il 11 mar · conservato' }
+    ].map(function (d) {
+      var canEdit = allowed.indexOf(d.key) >= 0, editing = canEdit && st.editing === d.key;
+      d.type = TYPES[d.key].delegate;
+      d.act += lastEdit(d.key);
+      d.canEdit = canEdit; d.editing = editing; d.hasActions = canEdit || P === 'lr';
+      d.readOnly = canEdit ? '' : 'la nomina e la modifica dei poteri di questa delega non rientrano nei tuoi poteri';
+      d.powers = POWERS[d.key];
+      d.openEdit = function () { set({ editing: editing ? null : d.key, nomina: false }); };
+      d.confirmEdit = function () {
+        set({ editing: null, done: done.concat([{ ts: Date.now(), kind: 'poteri', key: d.key, who: WHO[P].name,
+          what: 'ha modificato i poteri della delega ' + TYPES[d.key].short + ' di ' + d.name + ' e firmato l’atto di modifica' }]) });
+      };
+      return d;
+    });
+    var nominaTypes = allowed.map(function (k, i) { return { key: k, label: TYPES[k].label, first: i === 0 }; });
+    var confirmNomina = function () {
+      var val = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+      var sel = document.querySelector('input[name="delega"]:checked');
+      var key = sel && allowed.indexOf(sel.value) >= 0 ? sel.value : allowed[0];
+      var name = (val('nomina-nome') + ' ' + val('nomina-cognome')).trim() || 'un nuovo delegato';
+      set({ nomina: false, done: done.concat([{ ts: Date.now(), kind: 'nomina', key: key, who: WHO[P].name,
+        what: 'ha nominato ' + name + ' delegato ' + TYPES[key].short.replace(/a$/, 'o') + ' e firmato l’atto di delega' }]) });
+    };
     var Y = ['✓', '#1A6B4A'], N = ['—', '#9AA6B8'];
     var powers = [
-      ['Firmare il primo contratto e gli atti di delega', Y, N, N, N],
+      ['Firmare il primo contratto', Y, N, N, N],
+      ['Nominare e modificare i poteri dei delegati', ['tutti', '#1A6B4A'], ['operativo e tecnico', '#1A6B4A'], ['tecnico', '#1A6B4A'], N],
+      ['Sostituire e revocare i delegati', Y, N, N, N],
       ['Approvare o rifiutare le modifiche dell’offerta (evidenza conservata)', Y, N, N, N],
       ['Firmare rinnovi e modifiche approvate', Y, Y, N, N],
       ['Comporre e avviare upgrade e modifiche dell’offerta', Y, Y, N, N],
@@ -335,7 +400,6 @@ class Component extends DCLogic {
     ].map(function (r) { return { name: r[0], v1: r[1][0], c1: r[1][1], v2: r[2][0], c2: r[2][1], v3: r[3][0], c3: r[3][1], v4: r[4][0], c4: r[4][1] }; });
     /* Registro: avvio, approvazione o rifiuto, firma e controfirma delle modifiche dell'offerta (dtp-modifiche.js),
        insieme alle altre attività dell'azienda, dal più recente. */
-    var MOD = window.DTPModifiche;
     var at = function (y, mo, d, h, m) { return new Date(y, mo - 1, d, h, m).getTime(); };
     var log = MOD.events().map(function (e) {
       return { ts: e.ts, who: e.by === 'postel' ? 'Postel' : MOD.PEOPLE[e.by].name, what: e.text, when: MOD.when(e.ts) };
@@ -347,10 +411,11 @@ class Component extends DCLogic {
       { ts: at(2026, 3, 11, 9, 2), who: 'Andrea Colombo', what: 'ha firmato l’accettazione della delega tecnica' },
       { ts: at(2026, 3, 10, 10, 15), who: 'Paolo Ferretti', what: 'ha firmato l’atto di delega tecnica per Andrea Colombo' },
       { ts: at(2026, 3, 2, 12, 0), who: 'Paolo Ferretti', what: 'ha nominato Giulia Marchetti e Davide Sala delegati' }
-    ].map(function (l) { l.when = MOD.when(l.ts); return l; })).sort(function (x, y) { return y.ts - x.ts; });
+    ].concat(done.map(function (e) { return { ts: e.ts, who: e.who, what: e.what }; })).map(function (l) { l.when = MOD.when(l.ts); return l; })).sort(function (x, y) { return y.ts - x.ts; });
     return {
-      who: WHO[P], f: f, notice: notice, kpis: kpis, delegati: delegati, powers: powers, log: log,
-      nominaOpen: !!st.nomina && P === 'lr', openNomina: function () { set({ nomina: true }); }, closeNomina: function () { set({ nomina: false }); }
+      who: WHO[P], f: f, notice: notice, kpis: kpis, delegati: delegati, powers: powers, log: log, nominaTypes: nominaTypes,
+      nominaOpen: !!st.nomina && f.delegati, openNomina: function () { set({ nomina: true, editing: null }); }, closeNomina: function () { set({ nomina: false }); },
+      confirmNomina: confirmNomina, closeEdit: function () { set({ editing: null }); }
     };
   }
 }

@@ -35,10 +35,11 @@
       { id: 'RM-013', what: 'Upgrade Verifiche Contatti: +10.000 unità', detail: 'da 25.000 a 35.000 unità', amount: 500,
         by: 'amm', created: at(1, 10, 20), state: 'sign',
         approval: { outcome: 'approved', by: 'lr', at: at(1, 17, 5), reason: '' }, signed: null, countersigned: null },
-      { id: 'RM-011', what: 'Variazione del referente amministrativo', detail: 'nuovo referente: Ufficio acquisti', amount: null,
-        by: 'amm', created: fixed(2026, 10, 2, 9, 30), state: 'done',
-        approval: { outcome: 'approved', by: 'lr', at: fixed(2026, 10, 2, 15, 10), reason: '' },
-        signed: { by: 'amm', at: fixed(2026, 10, 3, 11, 0) }, countersigned: { by: 'postel', at: fixed(2026, 10, 4, 10, 0) } }
+      /* La variazione del referente amministrativo per la fatturazione è riservata al legale rappresentante:
+         la avvia e la firma lui, senza passaggio di approvazione. */
+      { id: 'RM-011', kind: 'referente', what: 'Variazione del referente amministrativo', detail: 'nuovo referente: Ufficio acquisti', amount: null,
+        by: 'lr', created: fixed(2026, 10, 2, 9, 30), state: 'done', approval: null,
+        signed: { by: 'lr', at: fixed(2026, 10, 2, 9, 30) }, countersigned: { by: 'postel', at: fixed(2026, 10, 4, 10, 0) } }
     ];
   }
 
@@ -70,12 +71,19 @@
     return 'RM-' + (n < 100 ? ('00' + n).slice(-3) : String(n));
   }
 
-  /* Avvio di una modifica. Solo legale rappresentante e delegato amministrativo.
+  /* Tipi di modifica riservati al legale rappresentante: il delegato amministrativo non può avviarli né firmarli. */
+  var LR_ONLY = ['referente'];
+  function canStart(role, kind) {
+    if (role === 'lr') return true;
+    return role === 'amm' && LR_ONLY.indexOf(kind) < 0;
+  }
+
+  /* Avvio di una modifica. Solo legale rappresentante e delegato amministrativo, nei limiti di canStart.
      Con il delegato amministrativo la richiesta resta "in approvazione" finché il legale rappresentante non decide. */
   function create(o) {
-    if (!o || (o.role !== 'lr' && o.role !== 'amm') || !o.what) return null;
+    if (!o || !canStart(o.role, o.kind) || !o.what) return null;
     var all = load().slice(), now = Date.now();
-    var r = { id: nextId(all), what: String(o.what), detail: String(o.detail || ''), amount: typeof o.amount === 'number' ? o.amount : null,
+    var r = { id: nextId(all), kind: o.kind ? String(o.kind) : 'offerta', what: String(o.what), detail: String(o.detail || ''), amount: typeof o.amount === 'number' ? o.amount : null,
       by: o.role, created: now, state: 'approval', approval: null, signed: null, countersigned: null };
     if (o.role === 'lr') { r.state = 'countersign'; r.signed = { by: 'lr', at: now }; }
     all.push(r); save(all);
@@ -98,6 +106,8 @@
   }
   /* Firma dell'atto di modifica da parte del delegato amministrativo, dopo l'approvazione. */
   function sign(id) {
+    var cur = find(load(), id);
+    if (cur && LR_ONLY.indexOf(cur.kind) >= 0) return null;
     return change(id, 'sign', function (r) { r.signed = { by: 'amm', at: Date.now() }; r.state = 'countersign'; });
   }
   function countersign(id) {
@@ -140,8 +150,8 @@
   }
 
   root.DTPModifiche = {
-    KEY: KEY, PEOPLE: PEOPLE, STATES: STATES, PENDING: PENDING,
-    list: list, get: get, pending: pending, create: create, approve: approve, reject: reject, sign: sign, countersign: countersign,
+    KEY: KEY, PEOPLE: PEOPLE, STATES: STATES, PENDING: PENDING, LR_ONLY: LR_ONLY,
+    canStart: canStart, list: list, get: get, pending: pending, create: create, approve: approve, reject: reject, sign: sign, countersign: countersign,
     reset: reset, events: events, approvalText: approvalText, full: full, when: when
   };
 })(typeof window !== 'undefined' ? window : globalThis);

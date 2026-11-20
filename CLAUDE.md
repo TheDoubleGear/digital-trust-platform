@@ -60,6 +60,7 @@ Le due sessioni non si parlano direttamente: il canale è questo repository.
     (`dtp-auth.js`, `dtp-catalogo.js`, `dtp-contract-pdf.js`, `dtp-modifiche.js`, `dtp-theme.css`, `dtp-acquisto.css`).
     `dtp-modifiche.js` tiene le richieste di modifica dell'offerta del cliente di esempio (avvio, approvazione del
     legale rappresentante, firma, controfirma) in `localStorage` `dtp-demo-modifiche`, condivise da H, M5, U, N, O2 e O5.
+    Il pulsante "Ripristina dati demo" del login azzera queste richieste e i codici di configurazione (`dtp-demo-config-codes`).
   - `tests/`: test node su accesso demo, PDF del contratto e modifiche dell'offerta.
 - `artifacts/api-server`, `lib/db` — scaffolding non usato dalla demo.
 - `artifacts/mockup-sandbox` — ambiente di progettazione di Replit.
@@ -119,6 +120,11 @@ issue con etichetta `analisi` aperte: in caso di dubbio prevale la issue.
   contratto e non invia la richiesta.
 - Modifiche dell'offerta: il delegato amministrativo avvia, il legale rappresentante approva (evidenza conservata),
   il delegato firma l'atto, Postel controfirma. Il legale rappresentante può avviare e firmare direttamente.
+- La variazione del referente amministrativo per la fatturazione è riservata al legale rappresentante, che la avvia
+  e la firma; il delegato amministrativo non può avviarla né firmarla.
+- Deleghe gerarchiche (U): il legale rappresentante nomina e modifica i poteri di tutti i delegati, il delegato
+  amministrativo dei soli delegati operativo e tecnico, il delegato operativo del solo delegato tecnico. Sostituzione
+  e revoca restano al legale rappresentante. Chi firma l'atto di delega quando nomina è `[DA DEFINIRE]`.
 - Il rinnovo non è tacito: alla scadenza senza rinnovo il servizio è disabilitato e i dati sono conservati per
   `[DA DEFINIRE]` giorni, poi cancellati.
 - Cambio del legale rappresentante: percorso pubblico V-03, avviato da U-02 (legale rappresentante o delegato
