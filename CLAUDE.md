@@ -152,7 +152,11 @@ issue con etichetta `analisi` aperte: in caso di dubbio prevale la issue.
   amministrativo) o dall'area pubblica; l'utenza precedente è revocata solo dopo verifica della firma digitale,
   visura camerale e approvazione di Postel.
 - PS-01 e PS-02 fanno parte dell'onboarding e non vanno rimossi: valgono al primo login del legale rappresentante,
-  dopo l'attivazione. Solo "Concludi" in PS-02 completa il setup.
+  dopo l'attivazione. Solo "Concludi" in PS-02 completa il setup. In PS-01 ogni delega ha tre scelte: «Nomina un delegato»,
+  «La gestisco io», «Configura in un secondo momento». Con l'ultima funzioni e notifiche restano al legale rappresentante,
+  in PS-02 quella delega non ha un delegato tra i destinatari e in U-02 compare «Da configurare» con l'azione di nomina
+  (secondo le deleghe gerarchiche). Le deleghe rinviate sono salvate con lo stato del primo setup (`dtp-demo-lr-setup`,
+  campo `deferred`) e «Ripristina il primo accesso» le azzera.
 - Stile ispirato a Poste Italiane su tutte le pagine: testata gialla, blu `#0047BB`, sfondi chiari, font Inter,
   mantenendo l'identità Postel.
 

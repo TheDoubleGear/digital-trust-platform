@@ -138,8 +138,20 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div style="border: 1px solid #D9E1EC; border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
 <div style="display: flex; justify-content: space-between; gap: 8px; align-items: center">
 <span style="font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #4D5762; font-weight: 700">{{d.type}}</span>
-<span style="padding: 2px 8px; border-radius: 999px; background: #E3F3EA; color: #1A6B4A; font-size: 12px; font-weight: 600">Attivo</span>
+<span style="padding: 2px 8px; border-radius: 999px; background: {{d.stBg}}; color: {{d.stFg}}; font-size: 12px; font-weight: 600">{{d.status}}</span>
 </div>
+<sc-if value="{{d.pending}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 13px; color: #1A1C1E">{{d.pendingText}}</span>
+<sc-if value="{{d.canNominate}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; padding-top: 6px">
+<button class="dtp-btn dtp-btn-p" type="button" onClick="{{d.nominate}}" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">Nomina il delegato</button>
+</div>
+</sc-if>
+<sc-if value="{{d.readOnly}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 12px; color: #4D5762; padding-top: 6px">Sola lettura: {{d.readOnly}}</span>
+</sc-if>
+</sc-if>
+<sc-if value="{{d.active}}" hint-placeholder-val="{{ true }}">
 <span style="font-size: 16px; font-weight: 600">{{d.name}}</span>
 <span style="font-size: 13px; color: #4D5762">{{d.email}} · nominato il {{d.since}} · ultimo accesso {{d.last}}</span>
 <span style="font-size: 13px; color: #1A1C1E">{{d.scope}}</span>
@@ -174,6 +186,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <button class="dtp-btn dtp-btn-o" type="button" onClick="{{closeEdit}}" style="min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; color: #1A1C1E; cursor: pointer">Annulla</button>
 </div>
 </form>
+</sc-if>
 </sc-if>
 </div>
 </sc-for>
@@ -389,9 +402,13 @@ class Component extends DCLogic {
         set(r ? { subOpen: false, subError: '' } : { subError: 'Inserisci nome, cognome e un indirizzo e-mail valido.' });
       }
     };
+    /* Deleghe rinviate nel primo setup (PS-01 «Configura in un secondo momento», dtp-auth.js): in U-02 compaiono
+       «Da configurare» al posto del delegato di esempio, con l'azione di nomina secondo le deleghe gerarchiche. */
+    var deferred = window.DTPAuth.getSetup().deferred;
+    var activeKeys = ['amm', 'op', 'tec'].filter(function (k) { return deferred.indexOf(k) < 0; });
     var kpis = [
-      { label: 'Utenze del portale', value: '4', sub: 'legale rappresentante e 3 delegati', color: '#1A1C1E' },
-      { label: 'Deleghe attive', value: '3 di 3', sub: 'amministrativa, operativa, tecnica', color: '#1A6B4A' },
+      { label: 'Utenze del portale', value: String(1 + activeKeys.length), sub: 'legale rappresentante e ' + (activeKeys.length === 1 ? '1 delegato' : activeKeys.length + ' delegati'), color: '#1A1C1E' },
+      { label: 'Deleghe attive', value: activeKeys.length + ' di 3', sub: activeKeys.length ? activeKeys.map(function (k) { return TYPES[k].short; }).join(', ') + (deferred.length ? ' · da configurare: ' + deferred.map(function (k) { return TYPES[k].short; }).join(', ') : '') : 'da configurare: ' + deferred.map(function (k) { return TYPES[k].short; }).join(', '), color: deferred.length ? '#855800' : '#1A6B4A' },
       { label: 'Inviti in attesa', value: String(done.filter(function (e) { return e.kind === 'nomina'; }).length), sub: done.some(function (e) { return e.kind === 'nomina'; }) ? 'in attesa dell’accettazione del delegato' : 'nessun delegato da attivare', color: '#1A1C1E' },
       { label: 'Ultima variazione', value: done.length ? MOD.when(done[done.length - 1].ts) : '10 mar 2026', sub: done.length ? done[done.length - 1].what : 'nomina del delegato tecnico', color: '#1A1C1E' }
     ];
@@ -411,6 +428,18 @@ class Component extends DCLogic {
     ].map(function (d) {
       var canEdit = allowed.indexOf(d.key) >= 0, editing = canEdit && st.editing === d.key;
       d.type = TYPES[d.key].delegate;
+      if (deferred.indexOf(d.key) >= 0) {
+        var invited = done.filter(function (x) { return x.kind === 'nomina' && x.key === d.key; }).pop();
+        return { key: d.key, type: d.type, pending: true, active: false,
+          status: invited ? 'Invito in attesa' : 'Da configurare', stBg: invited ? '#E5EFFF' : '#FDF1D6', stFg: invited ? '#0047BB' : '#855800',
+          pendingText: invited
+            ? 'Delega rinviata nel primo setup. ' + invited.who + ' ' + invited.what + ' (' + MOD.when(invited.ts) + '). Fino all’accettazione funzioni e notifiche restano al legale rappresentante.'
+            : 'Delega rinviata nel primo setup: nessun delegato nominato. Funzioni e notifiche restano al legale rappresentante.',
+          canNominate: canEdit && !invited,
+          readOnly: canEdit || invited ? '' : 'la nomina di questa delega non rientra nei tuoi poteri',
+          nominate: function () { set({ nomina: true, nominaKey: d.key, editing: null, subOpen: false }); } };
+      }
+      d.active = true; d.status = 'Attivo'; d.stBg = '#E3F3EA'; d.stFg = '#1A6B4A';
       d.act += lastEdit(d.key);
       d.canEdit = canEdit; d.editing = editing; d.hasActions = canEdit || P === 'lr';
       d.readOnly = canEdit ? '' : 'la nomina e la modifica dei poteri di questa delega non rientrano nei tuoi poteri';
@@ -422,7 +451,8 @@ class Component extends DCLogic {
       };
       return d;
     });
-    var nominaTypes = allowed.map(function (k, i) { return { key: k, label: TYPES[k].label, first: i === 0 }; });
+    var preKey = st.nominaKey && allowed.indexOf(st.nominaKey) >= 0 ? st.nominaKey : allowed[0];
+    var nominaTypes = allowed.map(function (k) { return { key: k, label: TYPES[k].label, first: k === preKey }; });
     var confirmNomina = function () {
       var val = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
       var sel = document.querySelector('input[name="delega"]:checked');
@@ -462,7 +492,7 @@ class Component extends DCLogic {
     ].concat(done.map(function (e) { return { ts: e.ts, who: e.who, what: e.what }; })).map(function (l) { l.when = MOD.when(l.ts); return l; })).sort(function (x, y) { return y.ts - x.ts; });
     return {
       who: WHO[P], f: f, sub: sub, notice: notice, kpis: kpis, delegati: delegati, powers: powers, log: log, nominaTypes: nominaTypes,
-      nominaOpen: !!st.nomina && f.delegati, openNomina: function () { set({ nomina: true, editing: null, subOpen: false }); }, closeNomina: function () { set({ nomina: false }); },
+      nominaOpen: !!st.nomina && f.delegati, openNomina: function () { set({ nomina: true, nominaKey: null, editing: null, subOpen: false }); }, closeNomina: function () { set({ nomina: false }); },
       confirmNomina: confirmNomina, closeEdit: function () { set({ editing: null }); }
     };
   }

@@ -59,7 +59,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div class="dtp-hero">
 <span style="font-size: 12px; font-weight: 700; color: #0047BB; text-transform: uppercase; letter-spacing: 0.06em">Passo 1 di 2 · PS-01</span>
 <h1 style="margin: 4px 0 0; font-size: 28px; font-weight: 600; letter-spacing: -0.01em">Benvenuto, Paolo. Il contratto è attivo: configuriamo il portale</h1>
-<p style="margin: 8px 0 0; font-size: 15px; color: #4D5762; line-height: 1.55; max-width: 820px">Per ciascuna delega scegli se nominare ora un delegato o gestire tu la funzione. Le funzioni che non deleghi restano a te, insieme alle relative notifiche. Potrai modificare le deleghe in qualsiasi momento da «Utenze e deleghe».</p>
+<p style="margin: 8px 0 0; font-size: 15px; color: #4D5762; line-height: 1.55; max-width: 820px">Per ciascuna delega scegli se nominare ora un delegato, gestire tu la funzione o configurarla in un secondo momento. Le funzioni che non deleghi restano a te, insieme alle relative notifiche. Potrai nominare i delegati e modificare le deleghe in qualsiasi momento da «Utenze e deleghe».</p>
 </div>
 
 <section aria-label="Deleghe" style="display: flex; flex-direction: column; gap: 16px">
@@ -72,9 +72,10 @@ a{color:#0047BB}a:hover{color:#003A99}
 <sc-for list="{{d.perms}}" as="x" hint-placeholder-count="3"><li>{{x.t}}</li></sc-for>
 </ul>
 </div>
-<div class="dtp-seg" role="group" aria-label="Scelta per {{d.name}}" style="display: flex; gap: 6px; padding: 4px; border-radius: 999px; background: #E4EAF2">
+<div class="dtp-seg" role="group" aria-label="Scelta per {{d.name}}" style="display: flex; flex-wrap: wrap; gap: 6px; padding: 4px; border-radius: 26px; background: #E4EAF2">
 <button class="dtp-btn" type="button" aria-pressed="{{d.pressNom}}" onClick="{{d.pickNom}}" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 0; background: {{d.bgNom}}; color: #1A1C1E; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">Nomina un delegato</button>
 <button class="dtp-btn" type="button" aria-pressed="{{d.pressIo}}" onClick="{{d.pickIo}}" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 0; background: {{d.bgIo}}; color: #1A1C1E; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">La gestisco io</button>
+<button class="dtp-btn" type="button" aria-pressed="{{d.pressDopo}}" onClick="{{d.pickDopo}}" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 0; background: {{d.bgDopo}}; color: #1A1C1E; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">Configura in un secondo momento</button>
 </div>
 </div>
 <sc-if value="{{d.isNom}}" hint-placeholder-val="{{ false }}">
@@ -91,6 +92,9 @@ a{color:#0047BB}a:hover{color:#003A99}
 <sc-if value="{{d.isIo}}" hint-placeholder-val="{{ false }}">
 <p style="margin: 0; border-top: 1px solid #EAEFF5; padding-top: 14px; font-size: 14px; color: #1A6B4A; font-weight: 500">Gestirai tu queste funzioni e riceverai le notifiche collegate.</p>
 </sc-if>
+<sc-if value="{{d.isDopo}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; border-top: 1px solid #EAEFF5; padding-top: 14px; font-size: 14px; color: #3A424C; font-weight: 500">Per ora gestirai tu queste funzioni e riceverai le notifiche collegate. Potrai nominare il delegato in seguito da «Utenze e deleghe».</p>
+</sc-if>
 </article>
 </sc-for>
 </section>
@@ -98,7 +102,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-top: 8px; border-top: 1px solid #D9E1EC">
 <span style="font-size: 13px; color: {{hintColor}}">{{hint}}</span>
 <sc-if value="{{ready}}" hint-placeholder-val="{{ true }}">
-<a class="dtp-btn dtp-btn-p" href="cliente-PS02-soglie.html" data-dtp-setup="delegates" data-testid="link-setup-continue" style="min-height: 48px; padding: 0 26px; border-radius: 999px; background: #0047BB; color: #FFFFFF; font-size: 15px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Continua</a>
+<a class="dtp-btn dtp-btn-p" href="cliente-PS02-soglie.html" data-dtp-setup="delegates" data-dtp-deferred="{{deferred}}" data-testid="link-setup-continue" style="min-height: 48px; padding: 0 26px; border-radius: 999px; background: #0047BB; color: #FFFFFF; font-size: 15px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Continua</a>
 </sc-if>
 <sc-if value="{{notReady}}" hint-placeholder-val="{{ false }}">
 <button class="dtp-btn" type="button" disabled style="min-height: 48px; padding: 0 26px; border-radius: 999px; border: 0; background: #B8C2CF; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600">Continua</button>
@@ -204,7 +208,11 @@ class Component extends DCLogic {
   renderVals() {
     var self = this;
     var st = this.state || {};
-    var ch = st.ch || { amm: 'nom', op: 'nom', tec: null };
+    /* Tre scelte per delega: "nom" nomina un delegato, "io" la gestisce il LR, "dopo" configura in un secondo momento
+       (funzioni e notifiche restano al LR; la delega compare "Da configurare" in U-02). Le deleghe già rinviate
+       tornando su PS-01 prima di concludere il setup restano selezionate. */
+    var saved = window.DTPAuth.getSetup().deferred;
+    var ch = st.ch || { amm: saved.indexOf('amm') >= 0 ? 'dopo' : 'nom', op: saved.indexOf('op') >= 0 ? 'dopo' : 'nom', tec: saved.indexOf('tec') >= 0 ? 'dopo' : null };
     var D = [
       ['amm', 'Delega amministrativa', ['compone e avvia upgrade e modifiche dell’offerta', 'gestisce soglie e destinatari delle notifiche', 'consulta consumi, importi e fatture'], 'Giulia', 'Marchetti', 'g.marchetti@aurora.example'],
       ['op', 'Delega operativa', ['configura servizi e journey', 'consulta i consumi in quantità, senza importi'], 'Davide', 'Sala', 'd.sala@aurora.example'],
@@ -215,16 +223,17 @@ class Component extends DCLogic {
       var c = ch[d[0]];
       return {
         name: d[1], perms: d[2].map(function (t) { return { t: t }; }), fn: d[3], ln: d[4], em: d[5],
-        isNom: c === 'nom', isIo: c === 'io',
-        pressNom: c === 'nom' ? 'true' : 'false', pressIo: c === 'io' ? 'true' : 'false',
-        bgNom: c === 'nom' ? '#FFFFFF' : 'transparent', bgIo: c === 'io' ? '#FFFFFF' : 'transparent',
+        isNom: c === 'nom', isIo: c === 'io', isDopo: c === 'dopo',
+        pressNom: c === 'nom' ? 'true' : 'false', pressIo: c === 'io' ? 'true' : 'false', pressDopo: c === 'dopo' ? 'true' : 'false',
+        bgNom: c === 'nom' ? '#FFFFFF' : 'transparent', bgIo: c === 'io' ? '#FFFFFF' : 'transparent', bgDopo: c === 'dopo' ? '#FFFFFF' : 'transparent',
         border: c ? '#0047BB' : '#D9E1EC',
-        pickNom: function () { set(d[0], 'nom'); }, pickIo: function () { set(d[0], 'io'); }
+        pickNom: function () { set(d[0], 'nom'); }, pickIo: function () { set(d[0], 'io'); }, pickDopo: function () { set(d[0], 'dopo'); }
       };
     });
     var n = D.filter(function (d) { return ch[d[0]]; }).length;
     return {
       deleghe: deleghe, ready: n === 3, notReady: n < 3,
+      deferred: D.filter(function (d) { return ch[d[0]] === 'dopo'; }).map(function (d) { return d[0]; }).join(','),
       hint: n === 3 ? 'Tutte le deleghe sono definite.' : 'Scegli un’opzione per ciascuna delega (' + n + ' di 3).',
       hintColor: n === 3 ? '#1A6B4A' : '#4D5762'
     };
