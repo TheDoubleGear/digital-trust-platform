@@ -16,6 +16,7 @@ import {
   FileText,
   Fingerprint,
   Gauge,
+  Headset,
   Layers3,
   LifeBuoy,
   Lock,
@@ -74,9 +75,10 @@ export default function Workspace() {
   }, []);
 
   const catalog = [
-    { code: 'V-01', name: 'Vetrina pubblica dei servizi', detail: 'Consulta i servizi, poi avvia la richiesta di attivazione', group: 'storefront', file: 'vetrina-V01-catalogo.html', icon: Store, tag: 'Vetrina' },
+    { code: 'V-01', name: 'Vetrina pubblica dei servizi', detail: 'Pagina iniziale · consulta i servizi, poi acquista o contatta un consulente', group: 'storefront', file: 'vetrina-V01-catalogo.html', icon: Store, tag: 'Vetrina' },
     { code: 'V-02', name: 'Richiesta di attivazione', detail: 'Dati, catalogo e carrello, contratto firmato e attesa verifica', group: 'storefront', file: 'vetrina-V02-contratto.html', icon: FileSignature, tag: 'Attivazione' },
     { code: 'V-03', name: 'Subentro del legale rappresentante', detail: 'Il nuovo legale rappresentante subentra con invito o dall’area pubblica, firma e verifiche', group: 'storefront', file: 'vetrina-V03-subentro.html', icon: UserCheck, tag: 'Subentro' },
+    { code: 'V-05', name: 'Contatta un consulente', detail: 'Richiesta di contatto con i servizi di interesse, informativa e conferma', group: 'storefront', file: 'vetrina-V05-consulente.html', icon: Headset, tag: 'Contatto' },
     { code: 'H', name: 'Catalogo e acquisti', detail: 'Home cliente · offerte, ordini e consumi', group: 'client', file: 'cliente-H-catalogo.html', icon: Layers3, tag: 'Ingresso' },
     { code: 'U', name: 'Utenze e deleghe', detail: 'Accessi, poteri e registro attività', group: 'client', file: 'cliente-U-utenze.html', icon: UsersRound, tag: 'Accessi' },
     { code: 'M1', name: 'Contratto e consumi', detail: 'Panoramica · servizi, soglie e trend', group: 'client', file: 'cliente-M1-panoramica.html', icon: Gauge, tag: 'Contratto' },
@@ -96,8 +98,8 @@ export default function Workspace() {
     { code: 'O5', name: 'Scheda cliente 360°', detail: 'Vista Postel del cliente, in sola lettura', group: 'postel', file: 'postel-O5-scheda-cliente.html', icon: Fingerprint, tag: 'Clienti' },
   ] as const;
   const filters: { id: Group; label: string; count: string }[] = [
-    { id: 'all', label: 'Tutte', count: '20' },
-    { id: 'storefront', label: 'Vetrina', count: '03' },
+    { id: 'all', label: 'Tutte', count: '21' },
+    { id: 'storefront', label: 'Vetrina', count: '04' },
     { id: 'client', label: 'Cliente', count: '11' },
     { id: 'technical', label: 'Tecnico', count: '01' },
     { id: 'postel', label: 'Postel', count: '05' },
@@ -142,11 +144,11 @@ export default function Workspace() {
             </div>
           </div>
           <div className="intro-aside" aria-label="Riepilogo del prototipo">
-            <div className="aside-topline"><span>Indice schermate</span><span className="mono">DTP / 01—20</span></div>
-            <div className="big-count">20<span>pagine navigabili</span></div>
+            <div className="aside-topline"><span>Indice schermate</span><span className="mono">DTP / 01—21</span></div>
+            <div className="big-count">21<span>pagine navigabili</span></div>
             <div className="aside-rule" />
             <div className="aside-meta">
-              <span><b>03</b> vetrina</span><span><b>11</b> cliente</span><span><b>01</b> tecnico</span><span><b>05</b> Postel</span>
+              <span><b>04</b> vetrina</span><span><b>11</b> cliente</span><span><b>01</b> tecnico</span><span><b>05</b> Postel</span>
             </div>
             <div className="aside-foot"><span className="mini-shield"><ShieldCheck size={14} /></span> Le schermate originali restano la fonte di verità</div>
           </div>
@@ -203,7 +205,7 @@ export default function Workspace() {
         <section className="library-section" id="screen-library" aria-labelledby="library-title">
           <div className="section-wrap">
             <div className="library-top">
-              <div><div className="eyebrow">Libreria schermate <span className="count-pill">20</span></div><h2 id="library-title">Apri una vista specifica.</h2><p>Ogni link porta al mockup HTML originale. Si aprono le schermate previste per il tuo ruolo.</p></div>
+              <div><div className="eyebrow">Libreria schermate <span className="count-pill">21</span></div><h2 id="library-title">Apri una vista specifica.</h2><p>Ogni link porta al mockup HTML originale. Si aprono le schermate previste per il tuo ruolo.</p></div>
               <label className="search-box"><Search size={17} aria-hidden="true" /><span className="visually-hidden">Cerca schermata</span><input ref={searchRef} type="search" placeholder="Cerca una schermata…" value={query} onChange={(event) => setQuery(event.target.value)} data-testid="input-search-pages" /><kbd aria-hidden="true">/</kbd></label>
             </div>
             <div className="library-controls">

@@ -12,7 +12,8 @@ pnpm install --frozen-lockfile
 PORT=5173 BASE_PATH=/ pnpm --filter @workspace/dtp-portal dev
 ```
 
-Aprire http://localhost:5173. I comandi con variabili inline sono per shell
+Aprire http://localhost:5173: la radice apre la vetrina V-01, l'accesso demo è su
+http://localhost:5173/accesso. I comandi con variabili inline sono per shell
 Linux/macOS; in PowerShell impostare prima `$env:PORT="5173"` e `$env:BASE_PATH="/"`.
 
 ## Verifiche e build

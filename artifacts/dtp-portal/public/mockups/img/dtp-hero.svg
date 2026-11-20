@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400" role="img" aria-labelledby="t">
+  <title id="t">Illustrazione: documento firmato digitalmente, identità verificata e scudo di sicurezza</title>
+  <defs>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3D7BFF" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#0047BB" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#EAF1FF"/>
+    </linearGradient>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#020B24" flood-opacity=".45"/>
+    </filter>
+  </defs>
+
+  <!-- alone e trama di fondo -->
+  <circle cx="300" cy="200" r="190" fill="url(#glow)"/>
+  <g fill="#8DB3FF" opacity=".28">
+    <circle cx="70" cy="70" r="3"/><circle cx="100" cy="70" r="3"/><circle cx="130" cy="70" r="3"/>
+    <circle cx="70" cy="100" r="3"/><circle cx="100" cy="100" r="3"/><circle cx="130" cy="100" r="3"/>
+    <circle cx="430" cy="320" r="3"/><circle cx="460" cy="320" r="3"/><circle cx="490" cy="320" r="3"/>
+    <circle cx="430" cy="350" r="3"/><circle cx="460" cy="350" r="3"/><circle cx="490" cy="350" r="3"/>
+  </g>
+  <circle cx="300" cy="200" r="150" fill="none" stroke="#8DB3FF" stroke-opacity=".25" stroke-dasharray="4 8"/>
+
+  <!-- documento -->
+  <g filter="url(#sh)">
+    <rect x="188" y="58" width="196" height="258" rx="14" fill="url(#paper)"/>
+    <rect x="212" y="86" width="96" height="10" rx="5" fill="#0047BB"/>
+    <rect x="212" y="110" width="148" height="7" rx="3.5" fill="#C9D6EC"/>
+    <rect x="212" y="126" width="132" height="7" rx="3.5" fill="#C9D6EC"/>
+    <rect x="212" y="142" width="148" height="7" rx="3.5" fill="#C9D6EC"/>
+    <rect x="212" y="158" width="104" height="7" rx="3.5" fill="#C9D6EC"/>
+    <rect x="212" y="184" width="148" height="7" rx="3.5" fill="#C9D6EC"/>
+    <rect x="212" y="200" width="120" height="7" rx="3.5" fill="#C9D6EC"/>
+    <line x1="212" y1="276" x2="330" y2="276" stroke="#9FB2D3" stroke-width="2"/>
+    <path d="M216 266c12-22 22-26 26-14s-6 18 4 10 14-20 22-12 2 16 12 10 12-10 20-8" fill="none" stroke="#0B2A5B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="212" y="296" font-family="Inter, Arial, sans-serif" font-size="11" fill="#4D5762">Firma digitale</text>
+  </g>
+
+  <!-- documento d'identità -->
+  <g filter="url(#sh)" transform="rotate(-8 112 252)">
+    <rect x="40" y="208" width="150" height="96" rx="12" fill="#FFFFFF"/>
+    <rect x="40" y="208" width="150" height="22" rx="12" fill="#EEDC00"/>
+    <rect x="40" y="220" width="150" height="10" fill="#EEDC00"/>
+    <circle cx="78" cy="262" r="18" fill="#DCE6F7"/>
+    <circle cx="78" cy="256" r="7" fill="#0047BB"/>
+    <path d="M64 276c3-9 9-12 14-12s11 3 14 12" fill="#0047BB"/>
+    <rect x="106" y="248" width="66" height="7" rx="3.5" fill="#C9D6EC"/>
+    <rect x="106" y="262" width="52" height="7" rx="3.5" fill="#C9D6EC"/>
+    <rect x="106" y="276" width="60" height="7" rx="3.5" fill="#C9D6EC"/>
+  </g>
+
+  <!-- scudo con spunta -->
+  <g filter="url(#sh)">
+    <path d="M420 92l52 20v40c0 34-22 58-52 68-30-10-52-34-52-68v-40z" fill="#EEDC00"/>
+    <path d="M420 106l38 14v32c0 25-16 43-38 51-22-8-38-26-38-51v-32z" fill="#FFF7A8" opacity=".55"/>
+    <path d="M400 154l14 14 26-30" fill="none" stroke="#0B2A5B" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- telefono con codice di conferma -->
+  <g filter="url(#sh)">
+    <rect x="392" y="236" width="86" height="150" rx="16" fill="#0B2A5B"/>
+    <rect x="399" y="250" width="72" height="122" rx="10" fill="#FFFFFF"/>
+    <rect x="410" y="264" width="50" height="7" rx="3.5" fill="#C9D6EC"/>
+    <g font-family="Inter, Arial, sans-serif" font-size="15" font-weight="700" fill="#0047BB" text-anchor="middle">
+      <rect x="408" y="284" width="15" height="22" rx="4" fill="#E5EFFF"/><text x="415.5" y="300">4</text>
+      <rect x="427" y="284" width="15" height="22" rx="4" fill="#E5EFFF"/><text x="434.5" y="300">8</text>
+      <rect x="446" y="284" width="15" height="22" rx="4" fill="#E5EFFF"/><text x="453.5" y="300">2</text>
+    </g>
+    <rect x="410" y="324" width="50" height="22" rx="11" fill="#0047BB"/>
+    <path d="M427 335l5 5 10-10" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- sigillo di verifica sul documento -->
+  <g filter="url(#sh)">
+    <circle cx="368" cy="296" r="26" fill="#0047BB"/>
+    <circle cx="368" cy="296" r="19" fill="none" stroke="#FFFFFF" stroke-opacity=".6" stroke-dasharray="3 3"/>
+    <path d="M358 296l7 7 13-14" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

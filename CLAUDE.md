@@ -54,10 +54,12 @@ Le due sessioni non si parlano direttamente: il canale è questo repository.
 ## Struttura
 
 - `artifacts/dtp-portal` — applicazione React/Vite.
-  - `src/pages/login.tsx`: accesso demo su `/`.
+  - `src/App.tsx`: la radice `/` apre la vetrina V-01, pagina iniziale del sito.
+  - `src/pages/login.tsx`: accesso demo su `/accesso`.
   - `src/pages/workspace.tsx`: indice delle schermate su `/workspace`, richiede una sessione demo.
-  - `public/mockups/`: le 20 schermate come pagine HTML indipendenti, più i moduli condivisi
-    (`dtp-auth.js`, `dtp-catalogo.js`, `dtp-contract-pdf.js`, `dtp-modifiche.js`, `dtp-subentro.js`, `dtp-theme.css`, `dtp-acquisto.css`).
+  - `public/mockups/`: le 21 schermate come pagine HTML indipendenti, più i moduli condivisi
+    (`dtp-auth.js`, `dtp-catalogo.js`, `dtp-contract-pdf.js`, `dtp-modifiche.js`, `dtp-subentro.js`, `dtp-theme.css`, `dtp-acquisto.css`,
+    `dtp-vetrina.css` e `dtp-vetrina.js` per testata, banner e modulo di contatto dell'area pubblica, `img/dtp-hero.svg`).
     `dtp-modifiche.js` tiene le richieste di modifica dell'offerta del cliente di esempio (avvio, approvazione del
     legale rappresentante, firma, controfirma) in `localStorage` `dtp-demo-modifiche`, condivise da H, M5, U, N, O2 e O5.
     `dtp-subentro.js` tiene il cambio del legale rappresentante del cliente di esempio (invito da U-02, richiesta in V-03,
@@ -72,7 +74,7 @@ Le due sessioni non si parlano direttamente: il canale è questo repository.
 
 | Gruppo | Codici | File |
 |---|---|---|
-| Vetrina (pubblica) | V-01 vetrina, V-02 attivazione, V-03 subentro del legale rappresentante | `vetrina-V01-catalogo.html`, `vetrina-V02-contratto.html`, `vetrina-V03-subentro.html` |
+| Vetrina (pubblica) | V-01 vetrina (pagina iniziale), V-02 attivazione, V-03 subentro del legale rappresentante, V-05 contatta un consulente | `vetrina-V01-catalogo.html`, `vetrina-V02-contratto.html`, `vetrina-V03-subentro.html`, `vetrina-V05-consulente.html` |
 | Cliente | H, U, M1–M5, A, N | `cliente-*.html` |
 | Primo setup | PS-01 delegati, PS-02 soglie e notifiche | `cliente-PS01-delegati.html`, `cliente-PS02-soglie.html` |
 | Tecnico | D0 developer portal | `tecnico-D0-developer-portal.html` |
@@ -108,8 +110,12 @@ issue con etichetta `analisi` aperte: in caso di dubbio prevale la issue.
 - Offerta componibile: non esistono bundle predefiniti (Base, Medium, Pro, Enterprise) né ricariche. Il cliente
   sceglie servizi e quantità; il prezzo è calcolato dalla piattaforma come componente variabile, fee di attivazione
   e canone periodico. Ogni variazione è un upgrade o una modifica dell'offerta e del contratto.
-- V-01 è in sola consultazione, senza carrello: per ogni servizio caratteristiche, finalità, dipendenze, condizioni
-  di utilizzo e approfondimenti o documentazione; collegamento "Attivazione servizio" verso V-02.
+- V-01 è la pagina iniziale del sito, in sola consultazione e senza carrello: testata con le aree di offerta, banner
+  con le azioni «Acquista» (verso V-02) e «Contatta un consulente» (verso V-05); per ogni servizio caratteristiche,
+  finalità, dipendenze, condizioni di utilizzo e approfondimenti o documentazione.
+- Le pagine pubbliche (V-01, V-02, V-03, V-05) condividono la testata a due livelli: segmenti di clientela con
+  «Contatta un consulente» e barra di sessione, marchio Postel e menu delle aree di offerta. L'accesso demo è su `/accesso`.
+- V-05 raccoglie la richiesta di contatto con controlli formali e conferma; nel prototipo nulla viene inviato o salvato.
 - V-02 segue l'ordine: configurazione di servizi e quantità con carrello, con "Genera codice di configurazione" e
   campo per inserire un codice esistente; dati di azienda e legale rappresentante con controlli formali
   all'inserimento; contratto con i soli servizi configurati, firmato fuori dalla pagina e caricato; verifica della

@@ -7,38 +7,74 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="dtp-acquisto.css">
+<link rel="stylesheet" href="dtp-vetrina.css">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
+<script src="dtp-vetrina.js"></script>
 </head>
 <body>
-<header class="top">
+<a class="pv-skip" href="#contenuto">Vai al contenuto</a>
+
+<!-- TESTATA PUBBLICA (comune a V-01 … V-05) -->
+<div class="pv-util">
 <div class="wrap">
-<a class="brand" href="#top" aria-label="Postel Digital Trust Platform">
-<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-<span><b>postel</b><small>Digital Trust Platform</small></span>
+<ul class="pv-seg" aria-label="Segmenti di clientela">
+<li><span title="Voce dimostrativa">Privati</span></li>
+<li><a href="vetrina-V01-catalogo.html" aria-current="true">Imprese</a></li>
+<li><span title="Voce dimostrativa">Pubblica amministrazione</span></li>
+</ul>
+<div class="pv-util-r">
+<a href="vetrina-V05-consulente.html">Contatta un consulente</a>
+<div class="dtp-header-session" data-dtp-publicbar><a class="dtp-home" href="../accesso" data-testid="link-login">Accedi</a></div>
+</div>
+</div>
+</div>
+<header class="pv-head">
+<div class="wrap">
+<a class="pv-brand" href="vetrina-V01-catalogo.html" aria-label="Postel – vai alla vetrina della Digital Trust Platform">
+<svg width="36" height="36" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span><b>postel</b><small>Professionisti e imprese</small></span>
 </a>
-<nav class="nav" aria-label="Sezioni della vetrina">
-<a href="#catalogo">Catalogo</a><a href="#contatti">Parla con un commerciale</a>
+<button class="pv-toggle" type="button" aria-expanded="false" aria-controls="pv-menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu</button>
+<nav aria-label="Aree di offerta">
+<ul class="pv-menu" id="pv-menu">
+<li><span title="Voce dimostrativa">Comunicazione<br>e stampa</span></li>
+<li><span title="Voce dimostrativa">Gestione<br>documentale</span></li>
+<li><span title="Voce dimostrativa">Pagamenti<br>e incassi</span></li>
+<li><span title="Voce dimostrativa">Soluzioni<br>digitali</span></li>
+<li><a href="vetrina-V01-catalogo.html" aria-current="page">Digital Trust<br>Platform</a></li>
+</ul>
 </nav>
-<a class="btn btn-p" href="vetrina-V02-contratto.html">Attivazione servizio</a>
-<div class="dtp-header-session" data-dtp-publicbar><a class="dtp-home" href="../" data-testid="link-login">Accedi</a></div>
 </div>
 </header>
 
-<main id="top" class="wrap" style="padding-top:0;padding-bottom:56px;display:flex;flex-direction:column;gap:28px">
+<div class="pv-demo" role="note"><div class="wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span><strong>Prototipo dimostrativo.</strong> Servizi, prezzi e dati mostrati sono di esempio.</span></div></div>
 
-<section class="hero" aria-labelledby="titolo-vetrina">
-<div style="position:relative;z-index:1">
-<span class="eyebrow">Vetrina ad accesso libero · solo consultazione</span>
+<section class="pv-hero" aria-labelledby="titolo-vetrina">
+<div class="wrap">
+<div>
+<span class="eyebrow">Digital Trust Platform</span>
 <h1 id="titolo-vetrina">Identificazione, firma e documenti digitali per la tua azienda</h1>
-<p>Consulta i servizi con caratteristiche, finalità, dipendenze, condizioni di utilizzo e prezzi unitari di listino. L'offerta è componibile: durante l'attivazione scegli servizi e quantità e la piattaforma calcola il prezzo.</p>
+<p class="sub">Consulta i servizi con caratteristiche, finalità, dipendenze, condizioni di utilizzo e prezzi unitari di listino. L'offerta è componibile: durante l'attivazione scegli servizi e quantità e la piattaforma calcola il prezzo.</p>
+<div class="pv-cta">
+<a class="btn btn-w btn-lg" href="vetrina-V02-contratto.html" data-testid="link-acquista-hero">Acquista</a>
+<a class="btn btn-ow btn-lg" href="vetrina-V05-consulente.html" data-testid="link-consulente-hero">Contatta un consulente</a>
 </div>
-<ol id="come-funziona" class="steps" aria-label="Come funziona l'attivazione">
-<li><span aria-hidden="true">1</span>Configura servizi e quantità: puoi salvare la configurazione con un codice</li>
-<li><span aria-hidden="true">2</span>Inserisci i dati di azienda e legale rappresentante</li>
-<li><span aria-hidden="true">3</span>Scarica il contratto, firmalo e caricalo firmato</li>
-<li><span aria-hidden="true">4</span>Dopo verifica, controfirma e pagamento della prima fattura ricevi le credenziali</li>
+</div>
+<div class="pv-hero-img"><img src="img/dtp-hero.svg" alt="" width="520" height="400"></div>
+</div>
+</section>
+
+<main id="contenuto" tabindex="-1" class="wrap" style="padding-top:28px;padding-bottom:56px;display:flex;flex-direction:column;gap:28px">
+
+<section id="come-funziona" aria-labelledby="titolo-come">
+<h2 id="titolo-come" style="font-size:20px">Come funziona l'attivazione</h2>
+<ol class="pv-how">
+<li><span>Configura servizi e quantità: puoi salvare la configurazione con un codice</span></li>
+<li><span>Inserisci i dati di azienda e legale rappresentante</span></li>
+<li><span>Scarica il contratto, firmalo e caricalo firmato</span></li>
+<li><span>Dopo verifica, controfirma e pagamento della prima fattura ricevi le credenziali</span></li>
 </ol>
 </section>
 
@@ -57,10 +93,11 @@
 <section id="contatti" class="card cta-band" aria-labelledby="titolo-contatti">
 <div style="max-width:640px">
 <h2 id="titolo-contatti" style="font-size:18px">Hai trovato quello che ti serve?</h2>
-<p class="muted" style="margin:4px 0 0;font-size:14px">L'attivazione richiede pochi minuti: configurazione dei servizi, dati, contratto. Se preferisci, un commerciale Postel può seguirti lungo lo stesso percorso.</p>
+<p class="muted" style="margin:4px 0 0;font-size:14px">L'attivazione richiede pochi minuti: configurazione dei servizi, dati, contratto. Se preferisci, un consulente Postel può seguirti lungo lo stesso percorso.</p>
 </div>
 <div style="display:flex;flex-wrap:wrap;gap:8px">
-<a class="btn btn-p" href="vetrina-V02-contratto.html">Attivazione servizio</a>
+<a class="btn btn-p" href="vetrina-V02-contratto.html">Acquista</a>
+<a class="btn btn-o" href="vetrina-V05-consulente.html">Contatta un consulente</a>
 </div>
 </section>
 
