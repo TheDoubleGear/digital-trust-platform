@@ -10,6 +10,8 @@
 
   var ROLE_KEY = 'dtp-demo-role';
   var SETUP_KEY = 'dtp-demo-lr-setup';
+  /* Dati dimostrativi condivisi tra le pagine: richieste di modifica (dtp-modifiche.js) e codici di configurazione (V-02). */
+  var DEMO_DATA_KEYS = ['dtp-demo-modifiche', 'dtp-demo-config-codes'];
   var FLASH_KEY = 'dtp-demo-flash';
   var LEGACY_KEYS = ['dtp-persona-cliente', 'dtp-persona-postel'];
   var LOGIN = 'login';
@@ -154,6 +156,8 @@
   /* Solo PS-02 "Concludi" chiude il setup; resta chiuso anche dopo logout e nuovi accessi. */
   function completeSetup() { saveSetup({ delegates: true, done: true }); return getSetup(); }
   function resetSetup() { drop('localStorage', SETUP_KEY); return getSetup(); }
+  /* "Ripristina dati demo": riporta modifiche e codici allo stato iniziale. Il primo accesso del LR ha il suo pulsante. */
+  function resetDemoData() { DEMO_DATA_KEYS.forEach(function (k) { drop('localStorage', k); }); }
 
   function homeFor(role, setup) {
     if (!isRole(role)) return LOGIN;
@@ -200,9 +204,9 @@
 
   var api = {
     ROLES: ROLES, ACCOUNTS: ACCOUNTS, PAGES: PAGES, LOGIN: LOGIN, LEGACY_KEYS: LEGACY_KEYS,
-    KEYS: { role: ROLE_KEY, setup: SETUP_KEY, flash: FLASH_KEY },
+    KEYS: { role: ROLE_KEY, setup: SETUP_KEY, flash: FLASH_KEY }, DEMO_DATA_KEYS: DEMO_DATA_KEYS,
     authenticate: authenticate, login: login, clearSession: clearSession, getRole: getRole,
-    getSetup: getSetup, markDelegates: markDelegates, completeSetup: completeSetup, resetSetup: resetSetup,
+    getSetup: getSetup, markDelegates: markDelegates, completeSetup: completeSetup, resetSetup: resetSetup, resetDemoData: resetDemoData,
     homeFor: homeFor, decide: decide, destinationAfterLogin: destinationAfterLogin, reasonText: reasonText,
     isStorageError: isStorageError,
     /* Messaggio di cortesia: se non si può salvare si rinuncia al messaggio, non è stato di sessione. */

@@ -385,3 +385,14 @@ test('dati del cliente di esempio coerenti tra le pagine (valore, upgrade in cor
     assert.ok(!/\b(Base|Medium|Pro|Enterprise)\b/.test(p.text.replace(/Identificazioni Proprietarie/g, '')), name + ' senza livelli di offerta');
   }
 });
+
+test('«Ripristina dati demo» azzera modifiche e codici di configurazione, non il primo accesso del LR', () => {
+  const c = core();
+  c.local.setItem('dtp-demo-modifiche', '[]');
+  c.local.setItem('dtp-demo-config-codes', '{}');
+  c.local.setItem('dtp-demo-lr-setup', JSON.stringify(done));
+  c.A.resetDemoData();
+  assert.equal(c.local.getItem('dtp-demo-modifiche'), null);
+  assert.equal(c.local.getItem('dtp-demo-config-codes'), null);
+  assert.deepEqual({ ...c.A.getSetup() }, done);
+});

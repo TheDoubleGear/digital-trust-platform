@@ -99,7 +99,10 @@ test('percorso nelle pagine: DA invia da H, LR vede H-10 e approva in M5-03, evi
 
   const lrM5 = openPage('cliente-M5-contratto.html', 'lr', stored);
   assert.equal(lrM5.buttons('Approva').length, 2);
-  lrM5.click('Approva');
+  /* Approva proprio RM-015: l'ordine delle righe dipende dall'ora in cui gira il test. */
+  const row = [...lrM5.w.document.querySelectorAll('#app [id^="richiesta-"]')].find(r => r.textContent.includes('RM-015') && [...r.querySelectorAll('button')].some(b => b.textContent.trim() === 'Approva'));
+  assert.ok(row, 'riga RM-015');
+  [...row.querySelectorAll('button')].find(b => b.textContent.trim() === 'Approva').click();
   stored = lrM5.stored();
   const t = openPage('cliente-M5-contratto.html', 'amm', stored).text();
   assert.match(t, /RM-015 .*Approvata da Paolo Ferretti il .* · evidenza conservata .*Approvata, da firmare/);
@@ -140,4 +143,61 @@ test('nessun testo «presa visione» residuo nelle pagine', () => {
   for (const f of ['cliente-H-catalogo.html', 'cliente-M5-contratto.html', 'cliente-U-utenze.html', 'cliente-N-notifiche.html', 'postel-O2-portafoglio.html', 'postel-O5-scheda-cliente.html']) {
     assert.doesNotMatch(src(f), /presa visione|prendi visione/i, f);
   }
+});
+
+test('la variazione del referente amministrativo è riservata al legale rappresentante', () => {
+  const { M } = core();
+  const seed = M.get('RM-011');
+  assert.equal(seed.kind, 'referente');
+  assert.equal(seed.by, 'lr');
+  assert.equal(seed.approval, null, 'avviata e firmata dal LR senza approvazione');
+  assert.equal(seed.signed.by, 'lr');
+  assert.equal(M.canStart('amm', 'referente'), false);
+  assert.equal(M.create({ role: 'amm', kind: 'referente', what: 'Variazione del referente amministrativo' }), null);
+  const r = M.create({ role: 'lr', kind: 'referente', what: 'Variazione del referente amministrativo' });
+  assert.equal(r.state, 'countersign');
+  assert.equal(r.approval, null);
+});
+
+test('M5: la variazione del referente amministrativo compare tra le azioni del LR, non del DA', () => {
+  const card = p => [...p.w.document.querySelectorAll('#app article h3')].map(h => h.textContent.trim());
+  assert.ok(card(openPage('cliente-M5-contratto.html', 'lr')).includes('Referente amministrativo'));
+  const amm = openPage('cliente-M5-contratto.html', 'amm');
+  assert.equal(card(amm).includes('Referente amministrativo'), false);
+  assert.doesNotMatch(amm.text(), /referenti amministrativi/);
+  assert.ok(card(amm).includes('Modifica'));
+});
+
+test('U: deleghe gerarchiche per nomina e modifica dei poteri; sostituzione e revoca solo con il LR', () => {
+  const types = p => [...p.w.document.querySelectorAll('input[name="delega"]')].map(i => i.value);
+  const expect = { lr: ['amm', 'op', 'tec'], amm: ['op', 'tec'], op: ['tec'] };
+  const editable = { lr: 3, amm: 2, op: 1 };
+  for (const role of ['lr', 'amm', 'op']) {
+    const u = openPage('cliente-U-utenze.html', role);
+    assert.equal(u.buttons('Modifica poteri').length, editable[role], role + ' modifica poteri');
+    assert.equal(u.buttons('Revoca').length, role === 'lr' ? 3 : 0, role + ' revoca');
+    assert.equal(u.buttons('Sostituisci').length, role === 'lr' ? 3 : 0, role + ' sostituisci');
+    u.click('Nomina delegato');
+    assert.deepEqual(types(u), expect[role], role + ' tipi di delega');
+    assert.match(u.text(), /Chi firma l'atto quando nomina un delegato: \[DA DEFINIRE\]/);
+  }
+  const t = openPage('cliente-U-utenze.html', 'lr').text();
+  assert.match(t, /Nominare e modificare i poteri dei delegati tutti operativo e tecnico tecnico —/);
+  assert.match(t, /Sostituire e revocare i delegati ✓ — — —/);
+});
+
+test('U: la nomina e la modifica dei poteri registrano chi le ha fatte, che firma l\'atto', () => {
+  const amm = openPage('cliente-U-utenze.html', 'amm');
+  amm.click('Nomina delegato');
+  amm.w.document.getElementById('nomina-nome').value = 'Sara';
+  amm.w.document.getElementById('nomina-cognome').value = 'Neri';
+  amm.w.document.querySelector('input[name="delega"][value="tec"]').checked = true;
+  amm.click('Genera l\'atto e firma');
+  assert.match(amm.text(), /Giulia Marchetti ha nominato Sara Neri delegato tecnico e firmato l’atto di delega/);
+  const op = openPage('cliente-U-utenze.html', 'op');
+  op.click('Modifica poteri');
+  assert.match(op.text(), /Firmatario dell'atto di modifica: Davide Sala/);
+  op.click('Genera l\'atto e firma');
+  assert.match(op.text(), /Davide Sala ha modificato i poteri della delega tecnica di Andrea Colombo/);
+  assert.match(op.text(), /atto di modifica dei poteri firmato da Davide Sala .* chi firma l’atto: \[DA DEFINIRE\]/);
 });
