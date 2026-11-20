@@ -70,18 +70,11 @@
 <!-- PASSO 1: CONFIGURAZIONE -->
 <section class="card panel" id="s1" aria-labelledby="t1">
 <div><h1 id="t1" tabindex="-1">Configura servizi e quantità</h1><p class="lead">Componi la tua offerta: scegli i servizi e le quantità. Il prezzo è calcolato dalla piattaforma come componente variabile, fee di attivazione e canone periodico. Se un servizio ne richiede un altro, lo aggiungiamo noi al carrello.</p></div>
-<div class="codebox" id="code-restore">
-<label for="code-in"><strong>Hai già un codice? Inseriscilo</strong></label>
-<div class="coderow"><input id="code-in" autocomplete="off" spellcheck="false" placeholder="Es. DTP-AB12-CD34" aria-describedby="code-in-h code-in-e"><button type="button" class="btn btn-o" id="code-apply">Ripristina la configurazione</button></div>
-<span class="hint" id="code-in-h">Ripristina la configurazione salvata con il codice e riprendi il percorso da qui.</span>
-<span class="err" id="code-in-e" role="alert"></span>
-</div>
 <div id="cat"></div>
 <div class="discount" id="discount-box" hidden>
 <div class="f"><label for="sconto">Sconto sul prezzo complessivo (%)</label><input id="sconto" inputmode="decimal" autocomplete="off" placeholder="0" aria-describedby="sconto-h" data-testid="input-sconto"><span class="hint" id="sconto-h"></span><span class="err" id="sconto-e" role="alert"></span></div>
 </div>
-<div id="code-out" aria-live="polite"></div>
-<div class="actions"><a class="btn btn-o" href="vetrina-V01-catalogo.html">Torna alla vetrina</a><span class="actions-r"><button type="button" class="btn btn-l" id="gen-code">Genera codice di configurazione</button><button type="button" class="btn btn-p btn-lg" id="confirm">Conferma la configurazione</button></span></div>
+<div class="actions"><a class="btn btn-o" href="vetrina-V01-catalogo.html">Torna alla vetrina</a><span class="actions-r"><button type="button" class="btn btn-l" id="gen-code">Genera codice di configurazione</button><button type="button" class="btn btn-p btn-lg" id="confirm">Acquista</button></span></div>
 </section>
 
 <!-- PASSO 2: DATI -->
@@ -128,7 +121,19 @@
 <section class="card panel" id="done" aria-labelledby="t4" hidden></section>
 </div>
 
-<aside class="card side" aria-labelledby="t-side" id="side" hidden></aside>
+<!-- RIEPILOGO «IL TUO ORDINE»: nel passo 1 con il codice di configurazione e le azioni -->
+<aside class="card side" aria-labelledby="t-side" id="side" hidden>
+<h2 id="t-side">Il tuo ordine</h2>
+<div class="codebox" id="code-restore">
+<label for="code-in"><strong>Hai già un codice? Inseriscilo</strong></label>
+<div class="coderow"><input id="code-in" autocomplete="off" spellcheck="false" placeholder="Es. DTP-AB12-CD34" aria-describedby="code-in-h code-in-e"><button type="button" class="btn btn-o" id="code-apply">Ripristina la configurazione</button></div>
+<span class="hint" id="code-in-h">Ripristina la configurazione salvata con il codice e riprendi il percorso da qui.</span>
+<span class="err" id="code-in-e" role="alert"></span>
+</div>
+<div class="side-body" id="side-body"></div>
+<div class="side-actions" id="side-actions"><button type="button" class="btn btn-p btn-lg" id="side-buy">Acquista</button><button type="button" class="btn btn-l" id="side-gen">Genera codice di configurazione</button></div>
+<div id="code-out" aria-live="polite"></div>
+</aside>
 </div>
 </main>
 <div id="dlg-root"></div>
