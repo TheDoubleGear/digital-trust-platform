@@ -243,6 +243,32 @@ test('configuration code saves the current cart and restores it later', () => {
   } finally { dom.window.close(); }
 });
 
+test('«Compila con dati di esempio» riempie il passo Dati e porta subito al contratto, anche dopo il ripristino di un codice', () => {
+  const { w, $, dom, configure, submitData } = setup();
+  try {
+    $('[data-act="inc"][data-i="2"]').click();
+    $('#gen-code').click();
+    const code = $('#code-value').textContent;
+    $('#code-in').value = code;
+    $('#code-apply').click();
+    $('#confirm').click();
+    assert.equal($('#s2').hidden, false);
+    assert.equal($('#ragione').value, '', 'il codice non porta dati');
+    assert.equal($('#demo-fill-box').hidden, false);
+    $('#demo-fill').click();
+    for (const f of ['ragione', 'piva', 'sdi', 'sede', 'pec', 'nome', 'cognome', 'cf', 'tel', 'email', 'pw', 'pw2']) assert.notEqual($('#' + f).value, '', f);
+    assert.equal($('#demo-prefill').hidden, false);
+    submitData();
+    assert.equal($('#s3').hidden, false, 'si arriva al contratto');
+    assert.equal($('#pw').value, '', 'la password viene tolta dai campi');
+  } finally { dom.window.close(); }
+});
+
+test('in modalità assistita non compare «Compila con dati di esempio»', () => {
+  const { $, dom } = setup({ role: 'com' });
+  try { assert.equal($('#demo-fill-box').hidden, true); } finally { dom.window.close(); }
+});
+
 test('formal checks run when leaving each field and block the contract until data are valid', () => {
   const { w, $, dom, configure, submitData } = setup();
   try {

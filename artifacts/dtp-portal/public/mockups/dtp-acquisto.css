@@ -117,6 +117,7 @@ legend{font-size:16px;font-weight:700;padding:0;margin-bottom:12px}
 .errsum{padding:14px 16px;border-radius:6px;background:var(--err-l);border:1px solid #F4C5BF;border-left:4px solid var(--err);color:#7A1A12;font-size:14px}
 .errsum ul{margin:6px 0 0;padding-left:18px}.errsum a{color:#7A1A12;font-weight:600}
 .info{padding:12px 14px;border-radius:6px;background:var(--pale);border:1px solid #CFE0FA;color:#0B2A5B;font-size:13px}
+.demo-fill{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px}.demo-fill .btn{flex:0 0 auto}.demo-fill-ok{display:block;margin-top:4px;font-weight:600}.demo-fill-ok[hidden]{display:none}
 .actions{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;border-top:1px solid var(--line2);padding-top:18px}
 .okbox{padding:12px 14px;border-radius:6px;background:var(--ok-l);color:var(--ok-d);font-size:13px;display:flex;gap:10px;align-items:flex-start}
 .qty{display:inline-flex;align-items:center;gap:6px}
