@@ -525,5 +525,11 @@
     if (S.submitted || !(S.dirty || items().length)) return;
     ev.preventDefault(); ev.returnValue = '';
   });
+  /* Da «Acquista» nella scheda V-04: ?servizio=<id> apre la configurazione con quel servizio nel carrello alla quantità
+     minima; i servizi richiesti entrano come sempre, con il messaggio esplicativo. Un identificativo sconosciuto è ignorato.
+     Convive con la modalità assistita (?cliente=); un codice di configurazione inserito poi sostituisce il carrello. */
+  var PRESEL = '';
+  try { PRESEL = (new URLSearchParams(window.location.search).get('servizio') || '').trim(); } catch (x) {}
+  if (PRESEL && D.services.indexOf(D.byId(PRESEL)) >= 0) addWithDeps(PRESEL);
   render();
 })();

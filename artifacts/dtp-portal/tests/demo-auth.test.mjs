@@ -127,7 +127,7 @@ test('la tabella dei permessi coincide con le persone dichiarate in DC.mount', (
     if (meta.persona) assert.deepEqual([...A.PAGES[f].roles].sort(), [...meta.persona.options].sort(), f);
     else assert.ok(A.PAGES[f].roles.length === 1, f + ' senza persone ha un solo ruolo');
   }
-  assert.deepEqual(Object.keys(A.PAGES).filter(f => A.PAGES[f].open).sort(), ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html', 'vetrina-V03-subentro.html', 'vetrina-V05-consulente.html']);
+  assert.deepEqual(Object.keys(A.PAGES).filter(f => A.PAGES[f].open).sort(), ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html', 'vetrina-V03-subentro.html', 'vetrina-V04-servizio.html', 'vetrina-V05-consulente.html']);
 });
 
 test('guardia delle rotte: anonimi al login, ruoli non ammessi alla propria area, mai un cambio di ruolo', () => {
@@ -281,7 +281,7 @@ test('logout: sessione e vecchie chiavi cancellate, ritorno al login, il tasto I
 });
 
 test('vetrina pubblica: aperta a tutti, con Accedi oppure ruolo e uscita', () => {
-  for (const f of ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html', 'vetrina-V03-subentro.html', 'vetrina-V05-consulente.html']) {
+  for (const f of ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html', 'vetrina-V03-subentro.html', 'vetrina-V04-servizio.html', 'vetrina-V05-consulente.html']) {
     const anon = openPage(f);
     assert.equal(anon.nav.length, 0, f);
     const bar = anon.w.document.querySelector('[data-dtp-publicbar]');
@@ -400,7 +400,7 @@ test('«Ripristina dati demo» azzera modifiche, codici di configurazione e sube
 });
 
 test('area pubblica: stessa testata a due livelli, V-01 con «Acquista» e «Contatta un consulente»', () => {
-  const pub = ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html', 'vetrina-V03-subentro.html', 'vetrina-V05-consulente.html'];
+  const pub = ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html', 'vetrina-V03-subentro.html', 'vetrina-V04-servizio.html', 'vetrina-V05-consulente.html'];
   for (const f of pub) {
     const { w } = openPage(f);
     const d = w.document;

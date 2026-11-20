@@ -55,6 +55,14 @@
 /* Barra dei filtri di V-01: resta sotto la testata quando si scorre. */
 .pv-head~main .toolbar{top:78px}
 
+/* Card dei servizi di V-01: il collegamento «Scopri il servizio» si estende a tutta la card. */
+.scard:has(.scard-link){position:relative;cursor:pointer}
+.scard-link::after{content:"";position:absolute;inset:0;border-radius:inherit}
+/* Una trasformazione sul collegamento ridurrebbe l'area estesa al solo pulsante durante il clic. */
+.scard-link,.scard-link:hover,.scard-link:active{transform:none}
+.scard:has(.scard-link:focus-visible){outline:3px solid var(--blue);outline-offset:2px}
+.scard:hover .scard-link{background:var(--blue-l)}
+
 /* ---------- Percorso di navigazione ---------- */
 .pv-crumb{background:#FFFFFF;border-bottom:1px solid var(--line2)}
 .pv-crumb ol{display:flex;flex-wrap:wrap;gap:4px 8px;margin:0;padding:12px 0;list-style:none;font-size:13px;color:var(--mut)}
