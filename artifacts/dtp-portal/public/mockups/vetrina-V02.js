@@ -15,20 +15,22 @@
   var MAX = 10 * 1024 * 1024;
   var CODE_KEY = 'dtp-demo-config-codes';
   var CODE_RE = /^DTP-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
-  // Temporary preview aid: switch off to restore an empty registration form.
+  /* Dati fittizi di esempio per esplorare il percorso fino al contratto: precompilati all'apertura e
+     reinseribili in ogni momento con «Compila con dati di esempio» (anche dopo il ripristino di un codice). */
   var DEMO_PREFILL = true;
-  if (DEMO_PREFILL) {
-    var demo = {
-      ragione: 'Azienda Demo S.r.l.', piva: '12345678901', sdi: '0000000',
-      sede: 'Via Esempio 10, 00100 Roma', pec: 'azienda@pec.example',
-      nome: 'Mario', cognome: 'Rossi', cf: 'RSSMRA80A01H501U',
-      tel: '+390000000000', email: 'mario.rossi@example.com',
-      pw: 'DemoTemporanea2026!', pw2: 'DemoTemporanea2026!'
-    };
-    Object.keys(demo).forEach(function (id) { $(id).value = demo[id]; });
-    demo = null;
+  var DEMO = {
+    ragione: 'Azienda Demo S.r.l.', piva: '12345678901', sdi: '0000000',
+    sede: 'Via Esempio 10, 00100 Roma', pec: 'azienda@pec.example',
+    nome: 'Mario', cognome: 'Rossi', cf: 'RSSMRA80A01H501U',
+    tel: '+390000000000', email: 'mario.rossi@example.com'
+  };
+  var DEMO_PW = 'DemoTemporanea2026!';
+  function fillDemo() {
+    Object.keys(DEMO).forEach(function (id) { $(id).value = DEMO[id]; });
+    $('pw').value = DEMO_PW; $('pw2').value = DEMO_PW;
     $('demo-prefill').hidden = false;
   }
+  if (DEMO_PREFILL) fillDemo();
   var S = {
     step: 1, qty: {}, configured: false, autoAdded: [], code: null, codeErr: '', restored: '',
     data: null, pwOk: false, dirty: false,
@@ -215,6 +217,16 @@
     if (ev.target.getAttribute('aria-invalid') === 'true') fieldError(id, '');
     if (id === 'pw' || id === 'pw2') { if (S.pwOk) { S.pwOk = false; $('pw-ok').hidden = true; S.data = null; invalidate(); render(); } return; }
     if (S.data && S.data[id] !== undefined) { S.data = null; invalidate(); render(); }
+  });
+
+  $('demo-fill').addEventListener('click', function () {
+    if (S.submitted || ASSIST) return;
+    fillDemo();
+    FIELDS.concat(['pw', 'pw2']).forEach(function (f) { fieldError(f, ''); });
+    $('errsum').hidden = true; $('pw-ok').hidden = true;
+    S.pwOk = false; S.dirty = true;
+    if (S.data) { S.data = null; invalidate(); render(); }
+    $('data-submit').focus();
   });
 
   /* ---------- navigazione ---------- */
@@ -498,7 +510,7 @@
     $('discount-box').hidden = false;
     /* Nessun dato in modalità assistita: il modulo dei dati resta vuoto e non raggiungibile. */
     FIELDS.concat(['pw', 'pw2']).forEach(function (f) { $(f).value = ''; $(f).disabled = true; });
-    $('demo-prefill').hidden = true;
+    $('demo-prefill').hidden = true; $('demo-fill-box').hidden = true;
     /* Nessun «Acquista» per il commerciale: resta solo «Genera codice di configurazione», come pulsante principale. */
     $('confirm').hidden = true;
     $('side-buy').hidden = true;
