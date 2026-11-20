@@ -127,7 +127,7 @@ test('la tabella dei permessi coincide con le persone dichiarate in DC.mount', (
     if (meta.persona) assert.deepEqual([...A.PAGES[f].roles].sort(), [...meta.persona.options].sort(), f);
     else assert.ok(A.PAGES[f].roles.length === 1, f + ' senza persone ha un solo ruolo');
   }
-  assert.deepEqual(Object.keys(A.PAGES).filter(f => A.PAGES[f].open).sort(), ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html', 'vetrina-V03-subentro.html']);
+  assert.deepEqual(Object.keys(A.PAGES).filter(f => A.PAGES[f].open).sort(), ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html', 'vetrina-V03-subentro.html', 'vetrina-V05-consulente.html']);
 });
 
 test('guardia delle rotte: anonimi al login, ruoli non ammessi alla propria area, mai un cambio di ruolo', () => {
@@ -163,7 +163,7 @@ test('pagine reali: ogni ruolo vede la propria vista oppure viene reindirizzato 
   for (const f of pageFiles.filter(x => !A.PAGES[x].open)) {
     const anon = openPage(f);
     assert.equal(anon.rendered, false, f + ' anonimo');
-    assert.deepEqual(anon.nav, [{ url: 'https://example.test/?next=' + encodeURIComponent(f), replace: true }], f);
+    assert.deepEqual(anon.nav, [{ url: 'https://example.test/accesso?next=' + encodeURIComponent(f), replace: true }], f);
     for (const role of ROLES) {
       const p = openPage(f, { role, setup: done, legacy: true });
       const d = A.decide(f, role, done);
@@ -268,7 +268,7 @@ test('logout: sessione e vecchie chiavi cancellate, ritorno al login, il tasto I
   const p = openPage(H, { role: 'amm', legacy: true });
   assert.ok(p.rendered);
   p.app.querySelector('[data-dtp-logout]').dispatchEvent(new p.w.MouseEvent('click', { bubbles: true, cancelable: true }));
-  assert.deepEqual(p.nav, [{ url: 'https://example.test/', replace: true }]);
+  assert.deepEqual(p.nav, [{ url: 'https://example.test/accesso', replace: true }]);
   assert.equal(p.w.sessionStorage.getItem('dtp-demo-role'), null);
   assert.equal(p.w.sessionStorage.getItem('dtp-persona-cliente'), null);
   assert.equal(p.w.sessionStorage.getItem('dtp-persona-postel'), null);
@@ -277,15 +277,15 @@ test('logout: sessione e vecchie chiavi cancellate, ritorno al login, il tasto I
   back.w.sessionStorage.removeItem('dtp-demo-role');
   back.w.dispatchEvent(new back.w.Event('pageshow'));
   assert.equal(back.app.childElementCount, 0, 'il contenuto ripristinato viene rimosso');
-  assert.equal(back.nav[0].url, 'https://example.test/?next=' + encodeURIComponent(O1));
+  assert.equal(back.nav[0].url, 'https://example.test/accesso?next=' + encodeURIComponent(O1));
 });
 
 test('vetrina pubblica: aperta a tutti, con Accedi oppure ruolo e uscita', () => {
-  for (const f of ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html', 'vetrina-V03-subentro.html']) {
+  for (const f of ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html', 'vetrina-V03-subentro.html', 'vetrina-V05-consulente.html']) {
     const anon = openPage(f);
     assert.equal(anon.nav.length, 0, f);
     const bar = anon.w.document.querySelector('[data-dtp-publicbar]');
-    assert.equal(bar.querySelector('[data-testid="link-login"]').href, 'https://example.test/');
+    assert.equal(bar.querySelector('[data-testid="link-login"]').href, 'https://example.test/accesso');
     assert.equal(bar.querySelector('[data-dtp-logout]'), null);
 
     const ops = openPage(f, { role: 'ops' });
@@ -397,4 +397,33 @@ test('«Ripristina dati demo» azzera modifiche, codici di configurazione e sube
   assert.equal(c.local.getItem('dtp-demo-config-codes'), null);
   assert.equal(c.local.getItem('dtp-demo-subentro'), null);
   assert.deepEqual({ ...c.A.getSetup() }, done);
+});
+
+test('area pubblica: stessa testata a due livelli, V-01 con «Acquista» e «Contatta un consulente»', () => {
+  const pub = ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html', 'vetrina-V03-subentro.html', 'vetrina-V05-consulente.html'];
+  for (const f of pub) {
+    const { w } = openPage(f);
+    const d = w.document;
+    assert.ok(d.querySelector('.pv-util [data-dtp-publicbar]'), f + ': barra di sessione nel primo livello');
+    assert.equal(d.querySelector('.pv-seg [aria-current]').textContent, 'Imprese', f);
+    assert.ok(d.querySelector('.pv-util-r a[href="vetrina-V05-consulente.html"]'), f + ': «Contatta un consulente» in testata');
+    assert.equal(d.querySelector('.pv-menu a[aria-current="page"]').getAttribute('href'), 'vetrina-V01-catalogo.html', f);
+    assert.equal(d.querySelectorAll('.pv-menu a').length, 1, f + ': le altre voci del menu non sono navigabili');
+    assert.ok(d.querySelector('.pv-toggle[aria-controls="pv-menu"]'), f);
+    assert.equal(d.querySelector('header.top'), null, f + ': nessuna testata precedente');
+  }
+  const crumb = f => [...openPage(f).w.document.querySelectorAll('.pv-crumb li')].map(li => li.textContent);
+  assert.deepEqual(crumb('vetrina-V02-contratto.html'), ['Digital Trust Platform', 'Attivazione']);
+  assert.deepEqual(crumb('vetrina-V03-subentro.html'), ['Digital Trust Platform', 'Subentro del legale rappresentante']);
+
+  const v01 = html['vetrina-V01-catalogo.html'] + readFileSync(new URL('vetrina-V01.js', mockups), 'utf8');
+  assert.doesNotMatch(v01, /Attivazione servizio|Parla con un commerciale/);
+  const { w } = openPage('vetrina-V01-catalogo.html');
+  const hero = w.document.querySelector('.pv-hero');
+  assert.equal(hero.querySelector('img').getAttribute('src'), 'img/dtp-hero.svg');
+  assert.deepEqual([...hero.querySelectorAll('.pv-cta a')].map(a => [a.textContent, a.getAttribute('href')]),
+    [['Acquista', 'vetrina-V02-contratto.html'], ['Contatta un consulente', 'vetrina-V05-consulente.html']]);
+  assert.deepEqual([...w.document.querySelectorAll('#contatti a.btn')].map(a => a.textContent), ['Acquista', 'Contatta un consulente']);
+  assert.equal(w.document.querySelectorAll('.pv-how li').length, 4);
+  assert.match(w.document.body.textContent, /Prototipo dimostrativo\./);
 });

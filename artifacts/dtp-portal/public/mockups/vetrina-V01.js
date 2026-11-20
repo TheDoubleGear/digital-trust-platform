@@ -37,7 +37,7 @@
       '<div><dt>Prezzo di listino</dt><dd>' + D.unit3(s.unit) + ' € per unità, IVA esclusa · quantità a multipli di ' + D.num(s.step) + ' unità. Al prezzo dei servizi si aggiungono fee di attivazione e canone periodico.</dd></div>' +
       '<div><dt>Approfondimento</dt><dd>[CONTENUTO DA FORNIRE A CURA DI POSTEL]</dd></div></dl>' +
       '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><a class="btn btn-o" aria-disabled="true" role="link" tabindex="0" id="detail-doc">Scarica la documentazione</a><span class="muted" style="font-size:13px">' + e(s.doc) + '</span></div>' +
-      '<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;border-top:1px solid #EAEFF5;padding-top:14px"><button type="button" class="btn btn-o" id="detail-close">Chiudi</button><a class="btn btn-p" href="vetrina-V02-contratto.html">Attivazione servizio</a></div></div>';
+      '<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;border-top:1px solid #EAEFF5;padding-top:14px"><button type="button" class="btn btn-o" id="detail-close">Chiudi</button><a class="btn btn-p" href="vetrina-V02-contratto.html">Acquista</a></div></div>';
     opener = btn;
     if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
     document.getElementById('detail-x').onclick = closeDetail;
