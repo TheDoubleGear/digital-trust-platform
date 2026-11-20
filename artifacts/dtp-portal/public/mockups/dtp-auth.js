@@ -146,19 +146,35 @@
     clearLegacy();
   }
 
+  /* Deleghe del primo setup. "deferred" elenca quelle che il legale rappresentante ha scelto di configurare
+     in un secondo momento in PS-01: funzioni e notifiche restano a lui e in U-02 compaiono "Da configurare". */
+  var DELEGHE = ['amm', 'op', 'tec'];
+  function cleanDeferred(list) {
+    return Array.isArray(list) ? DELEGHE.filter(function (k) { return list.indexOf(k) >= 0; }) : [];
+  }
   function getSetup() {
-    var out = { delegates: false, done: false };
+    var out = { delegates: false, done: false, deferred: [] };
     try {
       var v = JSON.parse(read('localStorage', SETUP_KEY) || 'null');
-      if (v && typeof v === 'object') { out.done = v.done === true; out.delegates = out.done || v.delegates === true; }
+      if (v && typeof v === 'object') { out.done = v.done === true; out.delegates = out.done || v.delegates === true; out.deferred = cleanDeferred(v.deferred); }
     } catch (e) {}
     return out;
   }
-  function saveSetup(s) { write('localStorage', SETUP_KEY, JSON.stringify({ delegates: !!s.delegates, done: !!s.done })); }
-  /* PS-01 "Continua": sblocca PS-02, il setup resta da concludere. Come completeSetup, solleva DTPStorageError se non riesce a salvare. */
-  function markDelegates() { var s = getSetup(); if (!s.delegates) saveSetup({ delegates: true, done: s.done }); return getSetup(); }
+  function saveSetup(s) {
+    var o = { delegates: !!s.delegates, done: !!s.done }, d = cleanDeferred(s.deferred);
+    if (d.length) o.deferred = d;
+    write('localStorage', SETUP_KEY, JSON.stringify(o));
+  }
+  /* PS-01 "Continua": sblocca PS-02 e registra le deleghe rinviate; il setup resta da concludere.
+     Come completeSetup, solleva DTPStorageError se non riesce a salvare. A setup concluso non cambia nulla. */
+  function markDelegates(deferred) {
+    var s = getSetup();
+    if (!s.done) saveSetup({ delegates: true, done: false, deferred: deferred === undefined ? s.deferred : deferred });
+    return getSetup();
+  }
   /* Solo PS-02 "Concludi" chiude il setup; resta chiuso anche dopo logout e nuovi accessi. */
-  function completeSetup() { saveSetup({ delegates: true, done: true }); return getSetup(); }
+  function completeSetup() { saveSetup({ delegates: true, done: true, deferred: getSetup().deferred }); return getSetup(); }
+  /* "Ripristina il primo accesso": azzera anche le deleghe rinviate. */
   function resetSetup() { drop('localStorage', SETUP_KEY); return getSetup(); }
   /* "Ripristina dati demo": riporta modifiche, codici e subentro allo stato iniziale. Il primo accesso del LR ha il suo pulsante. */
   function resetDemoData() { DEMO_DATA_KEYS.forEach(function (k) { drop('localStorage', k); }); }
@@ -207,7 +223,7 @@
   }
 
   var api = {
-    ROLES: ROLES, ACCOUNTS: ACCOUNTS, PAGES: PAGES, LOGIN: LOGIN, LEGACY_KEYS: LEGACY_KEYS,
+    ROLES: ROLES, ACCOUNTS: ACCOUNTS, PAGES: PAGES, LOGIN: LOGIN, LEGACY_KEYS: LEGACY_KEYS, DELEGHE: DELEGHE,
     KEYS: { role: ROLE_KEY, setup: SETUP_KEY, flash: FLASH_KEY }, DEMO_DATA_KEYS: DEMO_DATA_KEYS,
     authenticate: authenticate, login: login, clearSession: clearSession, getRole: getRole,
     getSetup: getSetup, markDelegates: markDelegates, completeSetup: completeSetup, resetSetup: resetSetup, resetDemoData: resetDemoData,
@@ -381,7 +397,10 @@
     if (step && getRole() === 'lr') {
       /* Se l'avanzamento non si salva non si prosegue: la pagina successiva lo rifiuterebbe comunque. */
       try {
-        if (step === 'delegates') markDelegates();
+        if (step === 'delegates') {
+          var def = a.getAttribute('data-dtp-deferred');
+          markDelegates(def === null ? undefined : def.split(',').filter(Boolean));
+        }
         if (step === 'complete') completeSetup();
       } catch (err) {
         ev.preventDefault();

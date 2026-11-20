@@ -116,15 +116,15 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div role="row" style="display: grid; grid-template-columns: 2.4fr 1fr 1fr 1fr; border-bottom: 1px solid #D9E1EC; font-size: 12px; color: #4D5762">
 <span role="columnheader" style="padding: 10px">Avviso</span>
 <span role="columnheader" style="padding: 10px; text-align: center">Tu<br>legale rappresentante</span>
-<span role="columnheader" style="padding: 10px; text-align: center">Delegato amministrativo<br>invito in preparazione</span>
-<span role="columnheader" style="padding: 10px; text-align: center">Delegato operativo<br>invito in preparazione</span>
+<span role="columnheader" style="padding: 10px; text-align: center">Delegato amministrativo<br>{{hdrAmm}}</span>
+<span role="columnheader" style="padding: 10px; text-align: center">Delegato operativo<br>{{hdrOp}}</span>
 </div>
 <sc-for list="{{events}}" as="e" hint-placeholder-count="7">
 <div role="row" style="display: grid; grid-template-columns: 2.4fr 1fr 1fr 1fr; align-items: center; border-bottom: 1px solid #EAEFF5">
 <span role="rowheader" style="padding: 10px; display: flex; flex-direction: column; gap: 2px"><strong style="font-weight: 600">{{e.name}}</strong><span style="font-size: 12px; color: #4D5762">{{e.sub}}</span></span>
 <span role="cell" style="padding: 10px; display: flex; justify-content: center"><input type="checkbox" aria-label="{{e.name}}: legale rappresentante" defaultChecked="{{e.lr}}" style="width: 20px; height: 20px"></span>
-<span role="cell" style="padding: 10px; display: flex; justify-content: center"><input type="checkbox" aria-label="{{e.name}}: delegato amministrativo" defaultChecked="{{e.amm}}" style="width: 20px; height: 20px"></span>
-<span role="cell" style="padding: 10px; display: flex; justify-content: center"><sc-if value="{{e.opAllowed}}" hint-placeholder-val="{{ true }}"><input type="checkbox" aria-label="{{e.name}}: delegato operativo" defaultChecked="{{e.op}}" style="width: 20px; height: 20px"></sc-if><sc-if value="{{e.opNo}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: #4D5762">non previsto</span></sc-if></span>
+<span role="cell" style="padding: 10px; display: flex; justify-content: center"><sc-if value="{{ammOn}}" hint-placeholder-val="{{ true }}"><input type="checkbox" aria-label="{{e.name}}: delegato amministrativo" defaultChecked="{{e.amm}}" style="width: 20px; height: 20px"></sc-if><sc-if value="{{ammOff}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: #4D5762">nessun delegato</span></sc-if></span>
+<span role="cell" style="padding: 10px; display: flex; justify-content: center"><sc-if value="{{opOff}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: #4D5762">nessun delegato</span></sc-if><sc-if value="{{e.opAllowed}}" hint-placeholder-val="{{ true }}"><input type="checkbox" aria-label="{{e.name}}: delegato operativo" defaultChecked="{{e.op}}" style="width: 20px; height: 20px"></sc-if><sc-if value="{{e.opNo}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: #4D5762">non previsto</span></sc-if></span>
 </div>
 </sc-for>
 </div>
@@ -287,7 +287,15 @@ class Component extends DCLogic {
       ['Servizio disabilitato per mancato rinnovo', 'alla scadenza senza rinnovo · e-mail, PEC, in-app', true, true, false, false],
       ['Cancellazione dei dati imminente', 'prima della fine della conservazione · e-mail, PEC, in-app', true, true, false, false]
     ].map(function (e) { return { name: e[0], sub: e[1], lr: e[2], amm: e[3], op: e[4], opAllowed: e[5], opNo: !e[5] }; });
+    /* Deleghe rinviate in PS-01: nessun delegato tra i destinatari; gli avvisi restano al legale rappresentante. */
+    var deferred = window.DTPAuth.getSetup().deferred, ammOff = deferred.indexOf('amm') >= 0, opOff = deferred.indexOf('op') >= 0;
+    events.forEach(function (e) {
+      e.lr = e.lr || (ammOff && e.amm) || (opOff && e.opAllowed && e.op);
+      if (opOff) { e.opAllowed = false; e.opNo = false; }
+    });
+    var hdr = function (off) { return off ? 'da configurare · nessun delegato' : 'invito in preparazione'; };
     return {
+      hdrAmm: hdr(ammOff), hdrOp: hdr(opOff), ammOn: !ammOff, ammOff: ammOff, opOff: opOff,
       services: services, events: events, customOpen: open,
       summarySoglie: open ? 'Soglie personalizzate per singolo servizio; riepilogo settimanale attivo.' : 'Attenzione 70%, critica 90% per tutti i servizi; riepilogo settimanale attivo.',
       customLabel: open ? 'Usa le stesse soglie per tutti i servizi' : 'Personalizza le soglie per singolo servizio',

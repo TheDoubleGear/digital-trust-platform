@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import vm from 'node:vm';
 import { JSDOM } from 'jsdom';
+/* Copia senza prototipi del contesto vm, per i confronti profondi. */
+const plain = v => JSON.parse(JSON.stringify(v));
 
 const mockups = new URL('../public/mockups/', import.meta.url);
 const authSrc = readFileSync(new URL('dtp-auth.js', mockups), 'utf8');
@@ -114,7 +116,7 @@ test('primo setup LR: PS-01, poi PS-02, poi H; completamento solo da PS-02 e per
   assert.equal(A.destinationAfterLogin('lr', A.getSetup(), M1), M1);
 
   local.setItem('dtp-demo-lr-setup', '{non json');
-  assert.deepEqual({ ...A.getSetup() }, { delegates: false, done: false });
+  assert.deepEqual(plain(A.getSetup()), { delegates: false, done: false, deferred: [] });
 });
 
 test('la tabella dei permessi coincide con le persone dichiarate in DC.mount', () => {
@@ -333,7 +335,7 @@ test('archiviazione bloccata: l\'avanzamento del setup non viene finto', () => {
     A.login('lr');
     assert.throws(() => A.markDelegates(), isStorageErr('localStorage'));
     assert.throws(() => A.completeSetup(), isStorageErr('localStorage'));
-    assert.deepEqual({ ...A.getSetup() }, { delegates: false, done: false });
+    assert.deepEqual(plain(A.getSetup()), { delegates: false, done: false, deferred: [] });
     assert.equal(A.decide(PS02, 'lr').allow, false);
     assert.equal(A.homeFor('lr'), PS01);
   }
@@ -399,7 +401,7 @@ test('«Ripristina dati demo» azzera modifiche, codici di configurazione e sube
   assert.equal(c.local.getItem('dtp-demo-modifiche'), null);
   assert.equal(c.local.getItem('dtp-demo-config-codes'), null);
   assert.equal(c.local.getItem('dtp-demo-subentro'), null);
-  assert.deepEqual({ ...c.A.getSetup() }, done);
+  assert.deepEqual(plain(c.A.getSetup()), { ...done, deferred: [] });
 });
 
 test('area pubblica: stessa testata a due livelli, V-01 con «Acquista» e «Contatta un consulente»', () => {
@@ -429,4 +431,88 @@ test('area pubblica: stessa testata a due livelli, V-01 con «Acquista» e «Con
   assert.deepEqual([...w.document.querySelectorAll('#contatti a.btn')].map(a => a.textContent), ['Acquista', 'Contatta un consulente']);
   assert.equal(w.document.querySelectorAll('.pv-how li').length, 4);
   assert.match(w.document.body.textContent, /Prototipo dimostrativo\./);
+});
+
+test('deleghe rinviate nel primo setup: salvate con lo stato, conservate alla conclusione, azzerate dal ripristino', () => {
+  const { A, local } = core();
+  assert.deepEqual(plain(A.getSetup().deferred), []);
+  A.markDelegates(['tec', 'sconosciuta', 'amm']);
+  assert.deepEqual(JSON.parse(local.getItem('dtp-demo-lr-setup')), { delegates: true, done: false, deferred: ['amm', 'tec'] });
+  A.markDelegates([]);
+  assert.deepEqual(JSON.parse(local.getItem('dtp-demo-lr-setup')), { delegates: true, done: false }, 'tornando su PS-01 la scelta si aggiorna');
+  A.markDelegates(['op']);
+  A.completeSetup();
+  assert.deepEqual(plain(A.getSetup()), { delegates: true, done: true, deferred: ['op'] });
+  A.markDelegates([]);
+  assert.deepEqual(plain(A.getSetup().deferred), ['op'], 'a setup concluso PS-01 non cambia più nulla');
+  A.resetSetup();
+  assert.deepEqual(plain(A.getSetup()), { delegates: false, done: false, deferred: [] });
+});
+
+test('PS-01: terza scelta «Configura in un secondo momento», «Continua» con una scelta per delega, PS-02 senza delegato', () => {
+  const p = openPage(PS01, { role: 'lr' });
+  const cards = () => [...p.app.querySelectorAll('article')];
+  const pick = (i, label) => [...cards()[i].querySelectorAll('[role="group"] button')].find(b => b.textContent.trim() === label).click();
+  for (const c of cards()) {
+    assert.deepEqual([...c.querySelectorAll('[role="group"] button')].map(b => b.textContent.trim()), ['Nomina un delegato', 'La gestisco io', 'Configura in un secondo momento']);
+  }
+  assert.equal(p.app.querySelector('[data-dtp-setup="delegates"]'), null);
+  pick(2, 'Configura in un secondo momento');
+  pick(1, 'Configura in un secondo momento');
+  const tec = cards()[2];
+  assert.equal([...tec.querySelectorAll('button')].find(b => b.textContent.includes('secondo momento')).getAttribute('aria-pressed'), 'true');
+  assert.match(tec.textContent, /Potrai nominare il delegato in seguito da «Utenze e deleghe»/);
+  assert.match(tec.textContent, /gestirai tu queste funzioni e riceverai le notifiche collegate/);
+  const cont = p.app.querySelector('[data-dtp-setup="delegates"]');
+  assert.ok(cont, 'Continua abilitato con tre scelte');
+  cont.dispatchEvent(new p.w.MouseEvent('click', { bubbles: true, cancelable: true }));
+  const saved = JSON.parse(p.w.localStorage.getItem('dtp-demo-lr-setup'));
+  assert.deepEqual(saved, { delegates: true, done: false, deferred: ['op', 'tec'] });
+
+  const ps02 = openPage(PS02, { role: 'lr', setup: saved });
+  const t = ps02.text.replace(/\s+/g, ' ');
+  assert.match(t, /Delegato operativo ?da configurare · nessun delegato/);
+  assert.match(t, /Delegato amministrativo ?invito in preparazione/);
+  assert.equal(ps02.app.querySelectorAll('input[aria-label$=": delegato operativo"]').length, 0, 'nessun delegato operativo tra i destinatari');
+  assert.ok(ps02.app.querySelectorAll('input[aria-label$=": delegato amministrativo"]').length > 0);
+  assert.equal(ps02.app.querySelector('input[aria-label="Soglia di attenzione superata: legale rappresentante"]').checked, false);
+  const ps02amm = openPage(PS02, { role: 'lr', setup: { delegates: true, done: false, deferred: ['amm'] } });
+  assert.equal(ps02amm.app.querySelectorAll('input[aria-label$=": delegato amministrativo"]').length, 0);
+  assert.equal(ps02amm.app.querySelector('input[aria-label="Soglia di attenzione superata: legale rappresentante"]').checked, true, 'gli avvisi del delegato rinviato restano al LR');
+
+  const back = openPage(PS01, { role: 'lr', setup: saved });
+  assert.equal([...back.app.querySelectorAll('article')[2].querySelectorAll('button')].find(b => b.textContent.includes('secondo momento')).getAttribute('aria-pressed'), 'true', 'tornando su PS-01 le deleghe rinviate restano selezionate');
+});
+
+test('U-02: deleghe rinviate «Da configurare» con la nomina secondo le deleghe gerarchiche', () => {
+  const U = 'cliente-U-utenze.html';
+  const setup = { delegates: true, done: true, deferred: ['amm', 'tec'] };
+  const card = (p, type) => [...p.app.querySelectorAll('#app span')].find(s => s.textContent.trim() === type).closest('div[style*="border: 1px solid #D9E1EC"]');
+  const lr = openPage(U, { role: 'lr', setup });
+  for (const type of ['Delegato amministrativo', 'Delegato tecnico']) {
+    const c = card(lr, type);
+    assert.match(c.textContent, /Da configurare/, type);
+    assert.match(c.textContent, /rinviata nel primo setup/, type);
+    assert.ok([...c.querySelectorAll('button')].some(b => b.textContent.trim() === 'Nomina il delegato'), type);
+  }
+  assert.match(card(lr, 'Delegato operativo').textContent, /Davide Sala.*Attivo|Attivo.*Davide Sala/s, 'le altre deleghe non cambiano');
+  assert.doesNotMatch(card(lr, 'Delegato amministrativo').textContent, /Giulia Marchetti/);
+  assert.doesNotMatch(card(lr, 'Delegato tecnico').textContent, /Andrea Colombo/);
+  assert.match(lr.text.replace(/\s+/g, ' '), /Deleghe attive ?1 di 3/);
+  [...card(lr, 'Delegato tecnico').querySelectorAll('button')].find(b => b.textContent.trim() === 'Nomina il delegato').click();
+  assert.equal(lr.app.querySelector('input[name="delega"]:checked').value, 'tec', 'la nomina parte dalla delega da configurare');
+  [...lr.app.querySelectorAll('button')].find(b => b.textContent.trim() === 'Genera l\'atto e firma').click();
+  assert.match(card(lr, 'Delegato tecnico').textContent, /Invito in attesa/);
+
+  const amm = openPage(U, { role: 'amm', setup: { delegates: true, done: true, deferred: ['op', 'tec'] } });
+  for (const type of ['Delegato operativo', 'Delegato tecnico']) {
+    assert.ok([...card(amm, type).querySelectorAll('button')].some(b => b.textContent.trim() === 'Nomina il delegato'), 'DA: ' + type);
+  }
+  const ammOnAmm = openPage(U, { role: 'amm', setup });
+  const c = card(ammOnAmm, 'Delegato amministrativo');
+  assert.match(c.textContent, /Da configurare/);
+  assert.equal([...c.querySelectorAll('button')].some(b => b.textContent.trim() === 'Nomina il delegato'), false, 'il DA non nomina il delegato amministrativo');
+  assert.match(c.textContent, /non rientra nei tuoi poteri/);
+
+  assert.doesNotMatch(openPage(U, { role: 'lr', setup: done }).text, /Da configurare/, 'senza deleghe rinviate U-02 non cambia');
 });

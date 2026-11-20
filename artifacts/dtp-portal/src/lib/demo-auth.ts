@@ -4,7 +4,8 @@
 import { useEffect, useState } from 'react';
 
 export type DemoRole = 'lr' | 'amm' | 'op' | 'tec' | 'com' | 'ops' | 'cdg';
-export type SetupState = { delegates: boolean; done: boolean };
+/** deferred: deleghe rinviate in PS-01 («Configura in un secondo momento»). */
+export type SetupState = { delegates: boolean; done: boolean; deferred: string[] };
 export type Decision = { allow: boolean; reason: string; redirect?: string };
 
 interface DemoAuthApi {

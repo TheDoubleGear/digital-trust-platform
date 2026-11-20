@@ -32,7 +32,7 @@ import { type DemoSession, demoAuth, useDemoSession } from '@/lib/demo-auth';
 
 type Group = 'all' | 'storefront' | 'client' | 'technical' | 'postel';
 
-const SessionContext = createContext<DemoSession>({ role: null, setup: { delegates: false, done: false } });
+const SessionContext = createContext<DemoSession>({ role: null, setup: { delegates: false, done: false, deferred: [] } });
 
 /* Collegamento a una schermata: se il ruolo della sessione non può aprirla diventa un'etichetta non attivabile,
    con il motivo leggibile anche dagli screen reader. Le pagine applicano comunque la stessa regola all'ingresso. */
