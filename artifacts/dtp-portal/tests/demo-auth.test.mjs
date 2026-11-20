@@ -127,7 +127,7 @@ test('la tabella dei permessi coincide con le persone dichiarate in DC.mount', (
     if (meta.persona) assert.deepEqual([...A.PAGES[f].roles].sort(), [...meta.persona.options].sort(), f);
     else assert.ok(A.PAGES[f].roles.length === 1, f + ' senza persone ha un solo ruolo');
   }
-  assert.deepEqual(Object.keys(A.PAGES).filter(f => A.PAGES[f].open).sort(), ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html']);
+  assert.deepEqual(Object.keys(A.PAGES).filter(f => A.PAGES[f].open).sort(), ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html', 'vetrina-V03-subentro.html']);
 });
 
 test('guardia delle rotte: anonimi al login, ruoli non ammessi alla propria area, mai un cambio di ruolo', () => {
@@ -281,7 +281,7 @@ test('logout: sessione e vecchie chiavi cancellate, ritorno al login, il tasto I
 });
 
 test('vetrina pubblica: aperta a tutti, con Accedi oppure ruolo e uscita', () => {
-  for (const f of ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html']) {
+  for (const f of ['vetrina-V01-catalogo.html', 'vetrina-V02-contratto.html', 'vetrina-V03-subentro.html']) {
     const anon = openPage(f);
     assert.equal(anon.nav.length, 0, f);
     const bar = anon.w.document.querySelector('[data-dtp-publicbar]');
@@ -386,13 +386,15 @@ test('dati del cliente di esempio coerenti tra le pagine (valore, upgrade in cor
   }
 });
 
-test('«Ripristina dati demo» azzera modifiche e codici di configurazione, non il primo accesso del LR', () => {
+test('«Ripristina dati demo» azzera modifiche, codici di configurazione e subentro, non il primo accesso del LR', () => {
   const c = core();
   c.local.setItem('dtp-demo-modifiche', '[]');
   c.local.setItem('dtp-demo-config-codes', '{}');
+  c.local.setItem('dtp-demo-subentro', '{}');
   c.local.setItem('dtp-demo-lr-setup', JSON.stringify(done));
   c.A.resetDemoData();
   assert.equal(c.local.getItem('dtp-demo-modifiche'), null);
   assert.equal(c.local.getItem('dtp-demo-config-codes'), null);
+  assert.equal(c.local.getItem('dtp-demo-subentro'), null);
   assert.deepEqual({ ...c.A.getSetup() }, done);
 });

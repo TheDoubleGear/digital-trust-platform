@@ -60,7 +60,7 @@ export default function Login() {
 
   const fill = (u: string, p: string) => { setUser(u); setPassword(p); setError(null); userRef.current?.focus(); };
   const logout = () => { auth.logout({ navigate: false }); auth.takeFlash(); refresh(); setNotice('Sei uscito dalla sessione demo.'); setUser(''); setPassword(''); };
-  const resetDemoData = () => { auth.resetDemoData(); setNotice('Dati demo ripristinati: richieste di modifica e codici di configurazione sono tornati allo stato iniziale.'); };
+  const resetDemoData = () => { auth.resetDemoData(); setNotice('Dati demo ripristinati: richieste di modifica, codici di configurazione e cambio del legale rappresentante sono tornati allo stato iniziale.'); };
   const resetSetup = () => { auth.resetSetup(); refresh(); setNotice('Primo accesso del legale rappresentante ripristinato: al prossimo login con LR riparte il setup.'); };
 
   return (

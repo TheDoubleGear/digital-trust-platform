@@ -56,12 +56,14 @@ Le due sessioni non si parlano direttamente: il canale è questo repository.
 - `artifacts/dtp-portal` — applicazione React/Vite.
   - `src/pages/login.tsx`: accesso demo su `/`.
   - `src/pages/workspace.tsx`: indice delle schermate su `/workspace`, richiede una sessione demo.
-  - `public/mockups/`: le 19 schermate come pagine HTML indipendenti, più i moduli condivisi
-    (`dtp-auth.js`, `dtp-catalogo.js`, `dtp-contract-pdf.js`, `dtp-modifiche.js`, `dtp-theme.css`, `dtp-acquisto.css`).
+  - `public/mockups/`: le 20 schermate come pagine HTML indipendenti, più i moduli condivisi
+    (`dtp-auth.js`, `dtp-catalogo.js`, `dtp-contract-pdf.js`, `dtp-modifiche.js`, `dtp-subentro.js`, `dtp-theme.css`, `dtp-acquisto.css`).
     `dtp-modifiche.js` tiene le richieste di modifica dell'offerta del cliente di esempio (avvio, approvazione del
     legale rappresentante, firma, controfirma) in `localStorage` `dtp-demo-modifiche`, condivise da H, M5, U, N, O2 e O5.
-    Il pulsante "Ripristina dati demo" del login azzera queste richieste e i codici di configurazione (`dtp-demo-config-codes`).
-  - `tests/`: test node su accesso demo, PDF del contratto e modifiche dell'offerta.
+    `dtp-subentro.js` tiene il cambio del legale rappresentante del cliente di esempio (invito da U-02, richiesta in V-03,
+    esiti e approvazione in O2-07) in `localStorage` `dtp-demo-subentro`.
+    Il pulsante "Ripristina dati demo" del login azzera queste richieste, il subentro e i codici di configurazione (`dtp-demo-config-codes`).
+  - `tests/`: test node su accesso demo, PDF del contratto, modifiche dell'offerta, rinnovo e subentro del legale rappresentante.
 - `artifacts/api-server`, `lib/db` — scaffolding non usato dalla demo.
 - `artifacts/mockup-sandbox` — ambiente di progettazione di Replit.
 - `.github/workflows/pages.yml` — pubblicazione su GitHub Pages.
@@ -70,7 +72,7 @@ Le due sessioni non si parlano direttamente: il canale è questo repository.
 
 | Gruppo | Codici | File |
 |---|---|---|
-| Vetrina (pubblica) | V-01 vetrina, V-02 attivazione, V-03 subentro del legale rappresentante | `vetrina-V01-catalogo.html`, `vetrina-V02-contratto.html`, `vetrina-V03-subentro.html` (da integrare, issue #10) |
+| Vetrina (pubblica) | V-01 vetrina, V-02 attivazione, V-03 subentro del legale rappresentante | `vetrina-V01-catalogo.html`, `vetrina-V02-contratto.html`, `vetrina-V03-subentro.html` |
 | Cliente | H, U, M1–M5, A, N | `cliente-*.html` |
 | Primo setup | PS-01 delegati, PS-02 soglie e notifiche | `cliente-PS01-delegati.html`, `cliente-PS02-soglie.html` |
 | Tecnico | D0 developer portal | `tecnico-D0-developer-portal.html` |
