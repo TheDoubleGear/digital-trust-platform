@@ -76,6 +76,36 @@ test('V-01: ogni card apre la scheda del proprio servizio e la finestra «Approf
   } finally { p.close(); }
 });
 
+test('V-01: card essenziali con immagine, descrizione breve e prezzo «a partire da» della quantità minima', () => {
+  const p = open('vetrina-V01-catalogo.html');
+  try {
+    const D = p.w.DTP;
+    assert.deepEqual({ ...D.prezzoMinimo('app') }, { qty: 2500, amount: 375 });
+    const cards = [...p.d.querySelectorAll('#results .scard')];
+    cards.forEach((card, i) => {
+      const s = D.services[i], m = D.prezzoMinimo(s.id);
+      assert.equal(m.amount, Math.round(s.step * s.unit * 100) / 100, s.id);
+      const img = card.querySelector('img');
+      assert.equal(img.getAttribute('src'), 'img/servizi/' + s.id + '.svg');
+      assert.equal(img.getAttribute('alt'), '');
+      const svg = src('img/servizi/' + s.id + '.svg');
+      assert.match(svg, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/, s.id);
+      assert.doesNotMatch(svg, /href=|<image|<script/i, s.id + ': nessuna risorsa esterna');
+      assert.deepEqual([...card.querySelectorAll('img, .eyebrow, h3, .scard-desc, .scard-price, .scard-note, a')].map(el => el.tagName === 'IMG' ? 'img' : el.className.split(' ').find(c => c) || el.tagName.toLowerCase()),
+        ['img', 'eyebrow', 'h3', 'scard-desc', 'scard-price', 'scard-note', 'btn'], s.id + ': ordine dei contenuti');
+      assert.equal(card.querySelector('.eyebrow').textContent, s.family);
+      assert.equal(card.querySelector('h3').textContent, s.name);
+      assert.equal(card.querySelector('.scard-desc').textContent, s.desc);
+      assert.equal(card.querySelector('.scard-price').textContent, 'A partire da ' + D.eur(m.amount) + ' · ' + D.num(m.qty) + ' unità');
+      assert.equal(card.querySelector('.scard-note').textContent, 'IVA esclusa, più fee di attivazione e canone');
+      assert.doesNotMatch(card.textContent, /Finalità|Dipendenze|Condizioni di utilizzo|per unità|Listino/, s.id);
+    });
+    p.d.getElementById('q').value = 'sistema di interscambio';
+    p.d.getElementById('q').dispatchEvent(new p.w.Event('input'));
+    assert.equal(p.d.querySelectorAll('#results .scard').length, 1, 'la ricerca non cambia');
+  } finally { p.close(); }
+});
+
 test('V-04 carica il menu condiviso e non gestisce il pulsante da sé', () => {
   assert.match(src('vetrina-V04-servizio.html'), /<script src="dtp-vetrina\.js"><\/script>/);
   assert.doesNotMatch(src('vetrina-V04.js'), /pv-toggle/);

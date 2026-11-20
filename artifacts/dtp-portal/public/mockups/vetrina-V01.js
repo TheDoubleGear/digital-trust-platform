@@ -7,17 +7,14 @@
     el.onclick = function (ev) { var b = ev.target.closest('button'); if (!b) return; st[key] = b.dataset.v; render(); };
   }
   function match(text) { return !st.q || text.toLowerCase().indexOf(st.q) >= 0; }
-  function deps(s) {
-    return s.deps.length ? s.deps.map(function (d) { return D.byId(d).name; }).join(', ') : 'Nessuna';
-  }
+  /* Card essenziale: immagine, famiglia, nome, descrizione breve e prezzo «a partire da»; il resto è nella scheda V-04. */
   function svcCard(s) {
-    return '<article class="card scard reveal"><span class="eyebrow">' + e(s.family) + '</span><h3>' + e(s.name) + '</h3>' +
-      '<ul class="kv" style="gap:8px"><li style="flex-direction:column;gap:2px"><span>Caratteristiche</span><strong style="font-weight:500">' + e(s.desc) + '</strong></li>' +
-      '<li style="flex-direction:column;gap:2px"><span>Finalità</span><strong style="font-weight:500">' + e(s.purpose) + '</strong></li>' +
-      '<li style="flex-direction:column;gap:2px"><span>Dipendenze</span><strong style="font-weight:500">' + e(deps(s)) + '</strong></li>' +
-      '<li style="flex-direction:column;gap:2px"><span>Condizioni di utilizzo</span><strong style="font-weight:500">' + e(s.terms) + '</strong></li></ul>' +
-      '<div style="display:flex;flex-direction:column;gap:10px;margin-top:auto"><div class="pack"><div><b>' + D.unit3(s.unit) + ' € per unità</b><br><span>Quantità a multipli di ' + D.num(s.step) + ' unità</span></div><div class="pr">Listino</div></div>' +
-      '<a class="btn btn-l more scard-link" href="vetrina-V04-servizio.html?servizio=' + encodeURIComponent(s.id) + '" aria-label="Scopri il servizio ' + e(s.name) + '">Scopri il servizio</a></div></article>';
+    var m = D.prezzoMinimo(s.id);
+    return '<article class="card scard scard-img reveal"><div class="scard-pic"><img src="' + e(s.img) + '" alt="" width="320" height="160" loading="lazy"></div>' +
+      '<div class="scard-body"><span class="eyebrow">' + e(s.family) + '</span><h3>' + e(s.name) + '</h3><p class="scard-desc">' + e(s.desc) + '</p>' +
+      '<div class="scard-foot"><p class="scard-price"><span>A partire da</span> <strong>' + D.eur(m.amount) + '</strong> · ' + D.num(m.qty) + ' unità</p>' +
+      '<p class="scard-note">IVA esclusa, più fee di attivazione e canone</p>' +
+      '<a class="btn btn-l more scard-link" href="vetrina-V04-servizio.html?servizio=' + encodeURIComponent(s.id) + '" aria-label="Scopri il servizio ' + e(s.name) + '">Scopri il servizio</a></div></div></article>';
   }
   function render() {
     chips(document.getElementById('f-fam'), [['all', 'Tutte le famiglie']].concat(D.families.map(function (f) { return [f, f]; })), 'fam');

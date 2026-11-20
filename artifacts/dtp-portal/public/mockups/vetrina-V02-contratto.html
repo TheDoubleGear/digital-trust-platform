@@ -70,6 +70,7 @@
 <!-- PASSO 1: CONFIGURAZIONE -->
 <section class="card panel" id="s1" aria-labelledby="t1">
 <div><h1 id="t1" tabindex="-1">Configura servizi e quantità</h1><p class="lead">Componi la tua offerta: scegli i servizi e le quantità. Il prezzo è calcolato dalla piattaforma come componente variabile, fee di attivazione e canone periodico. Se un servizio ne richiede un altro, lo aggiungiamo noi al carrello.</p></div>
+<div class="selall"><button type="button" class="btn btn-o" id="select-all" aria-describedby="select-all-h" data-testid="button-seleziona-tutto">Seleziona tutto</button><span class="hint" id="select-all-h">Aggiunge ogni servizio con la quantità minima; le quantità già più alte restano invariate.</span></div>
 <div id="cat"></div>
 <div class="discount" id="discount-box" hidden>
 <div class="f"><label for="sconto">Sconto sul prezzo complessivo (%)</label><input id="sconto" inputmode="decimal" autocomplete="off" placeholder="0" aria-describedby="sconto-h" data-testid="input-sconto"><span class="hint" id="sconto-h"></span><span class="err" id="sconto-e" role="alert"></span></div>

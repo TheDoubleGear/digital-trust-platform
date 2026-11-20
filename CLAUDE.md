@@ -59,14 +59,15 @@ Le due sessioni non si parlano direttamente: il canale è questo repository.
   - `src/pages/workspace.tsx`: indice delle schermate su `/workspace`, richiede una sessione demo.
   - `public/mockups/`: le 22 schermate come pagine HTML indipendenti, più i moduli condivisi
     (`dtp-auth.js`, `dtp-catalogo.js`, `dtp-contract-pdf.js`, `dtp-modifiche.js`, `dtp-subentro.js`, `dtp-theme.css`, `dtp-acquisto.css`,
-    `dtp-vetrina.css` e `dtp-vetrina.js` per testata, banner e modulo di contatto dell'area pubblica, `img/dtp-hero.svg`).
+    `dtp-vetrina.css` e `dtp-vetrina.js` per testata, banner e modulo di contatto dell'area pubblica, `img/dtp-hero.svg`,
+    `img/servizi/<id>.svg` con l'immagine di ogni servizio per le card di V-01).
     `dtp-modifiche.js` tiene le richieste di modifica dell'offerta del cliente di esempio (avvio, approvazione del
     legale rappresentante, firma, controfirma) in `localStorage` `dtp-demo-modifiche`, condivise da H, M5, U, N, O2 e O5.
     `dtp-subentro.js` tiene il cambio del legale rappresentante del cliente di esempio (invito da U-02, richiesta in V-03,
     esiti e approvazione in O2-07) in `localStorage` `dtp-demo-subentro`.
     Il pulsante "Ripristina dati demo" del login azzera queste richieste, il subentro e i codici di configurazione (`dtp-demo-config-codes`).
   - `tests/`: test node su accesso demo, PDF del contratto, modifiche dell'offerta, rinnovo, subentro del legale rappresentante,
-    scheda del servizio V-04 e card di V-01.
+    scheda del servizio V-04, card di V-01 e «Seleziona tutto» di V-02.
 - `artifacts/api-server`, `lib/db` — scaffolding non usato dalla demo.
 - `artifacts/mockup-sandbox` — ambiente di progettazione di Replit.
 - `.github/workflows/pages.yml` — pubblicazione su GitHub Pages.
@@ -112,16 +113,17 @@ issue con etichetta `analisi` aperte: in caso di dubbio prevale la issue.
   sceglie servizi e quantità; il prezzo è calcolato dalla piattaforma come componente variabile, fee di attivazione
   e canone periodico. Ogni variazione è un upgrade o una modifica dell'offerta e del contratto.
 - V-01 è la pagina iniziale del sito, in sola consultazione e senza carrello: testata con le aree di offerta, banner
-  con le azioni «Acquista» (verso V-02) e «Contatta un consulente» (verso V-05); per ogni servizio caratteristiche,
-  finalità, dipendenze e condizioni di utilizzo. Ogni card apre la scheda del servizio V-04, da cui «Acquista» apre
+  con le azioni «Acquista» (verso V-02) e «Contatta un consulente» (verso V-05); card con immagine,
+  breve descrizione e prezzo "a partire da" (prezzo della quantità minima con la quantità). Ogni card apre la scheda del servizio V-04, da cui «Acquista» apre
   V-02 con il servizio già nel carrello alla quantità minima.
 - V-04 (`?servizio=<id>`): presentazione con prezzo e azioni, caratteristiche e passi di acquisto, offerta e prezzi,
   video, domande frequenti, documentazione e servizi correlati; un identificativo sconosciuto mostra «Servizio non trovato».
 - Le pagine pubbliche (V-01 … V-05) condividono la testata a due livelli: segmenti di clientela con
   «Contatta un consulente» e barra di sessione, marchio Postel e menu delle aree di offerta. L'accesso demo è su `/accesso`.
 - V-05 raccoglie la richiesta di contatto con controlli formali e conferma; nel prototipo nulla viene inviato o salvato.
-- V-02 segue l'ordine: configurazione di servizi e quantità con carrello, con "Genera codice di configurazione" e
-  campo per inserire un codice esistente; dati di azienda e legale rappresentante con controlli formali
+- V-02 segue l'ordine: configurazione di servizi e quantità con carrello, con il comando «Seleziona tutto» (ogni servizio
+  almeno alla quantità minima, le quantità più alte restano), "Genera codice di configurazione" e campo per inserire
+  un codice esistente; dati di azienda e legale rappresentante con controlli formali
   all'inserimento; contratto con i soli servizi configurati, firmato fuori dalla pagina e caricato; verifica della
   firma, controfirma Postel, prima fattura pagata fuori dalla piattaforma, abilitazione del tenant e credenziali
   via e-mail solo dopo il pagamento.

@@ -16,7 +16,7 @@
     ['fat', 'Fatturazione', 'Fatture Elettroniche', 'Emissione e invio delle fatture elettroniche al Sistema di Interscambio.', 'Emettere e trasmettere le fatture elettroniche al Sistema di Interscambio.', [], 0.10, 2000]
   ];
   var services = S.map(function (s) {
-    return { id: s[0], family: s[1], name: s[2], desc: s[3], purpose: s[4], deps: s[5], terms: TERMS, unit: s[6], step: s[7], doc: DOC };
+    return { id: s[0], family: s[1], name: s[2], desc: s[3], purpose: s[4], deps: s[5], terms: TERMS, unit: s[6], step: s[7], doc: DOC, img: 'img/servizi/' + s[0] + '.svg' };
   });
   var index = {};
   services.forEach(function (s) { index[s.id] = s; });
@@ -69,6 +69,11 @@
     if (v > sogliaSconto) return { ok: false, value: 0, error: 'Sconto non consentito: la soglia massima è ' + grp(sogliaSconto) + '%. Il sistema non permette di superarla e non sono previste deroghe.' };
     return { ok: true, value: v, error: '' };
   }
+  /* Prezzo «a partire da» di un servizio: componente variabile della quantità minima (un passo × prezzo unitario). */
+  function prezzoMinimo(id) {
+    var s = byId(id);
+    return s ? { qty: s.step, amount: round(s.step * s.unit) } : null;
+  }
   // Dipendenze non soddisfatte: [{ id, name, missing: [nomi] }]
   function missingDeps(config) {
     return lines(config).map(function (x) {
@@ -115,7 +120,7 @@
     services: services, byId: byId,
     families: ['Identità e verifica', 'Firma elettronica', 'Contratti e documenti', 'Fatturazione'],
     feeAttivazione: feeAttivazione, canonePeriodico: canonePeriodico, periodicita: periodicita, SEGNAPOSTO: SEGNAPOSTO,
-    lines: lines, price: price, missingDeps: missingDeps, esempio: esempio,
+    lines: lines, price: price, prezzoMinimo: prezzoMinimo, missingDeps: missingDeps, esempio: esempio,
     sogliaSconto: sogliaSconto, SOGLIA_SCONTO_STATO: SOGLIA_SCONTO_STATO, applySconto: applySconto, checkSconto: checkSconto,
     eur: eur, num: num, unit3: unit3, esc: esc
   };

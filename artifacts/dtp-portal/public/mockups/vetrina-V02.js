@@ -316,6 +316,15 @@
     }
     cartEdited(); refocus(a, i);
   });
+  /* «Seleziona tutto»: ogni servizio almeno alla quantità minima (un passo); le quantità più alte restano.
+     È una modifica della configurazione: lo sconto di un codice del commerciale decade come per ogni altra modifica. */
+  function selectAll() {
+    if (S.submitted) return;
+    var changed = false;
+    D.services.forEach(function (s) { if (!(S.qty[s.id] >= s.step)) { S.qty[s.id] = s.step; changed = true; } });
+    if (changed) cartEdited();
+  }
+  $('select-all').addEventListener('click', selectAll);
   function refocus(a, i) {
     var el = $('cat').querySelector('[data-act="' + a + '"][data-i="' + i + '"]');
     if (el && !el.disabled) el.focus(); else { var alt = $('cat').querySelector('[data-act="inc"][data-i="' + i + '"]'); if (alt) alt.focus(); }
