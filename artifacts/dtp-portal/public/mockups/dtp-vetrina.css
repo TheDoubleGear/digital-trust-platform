@@ -63,6 +63,15 @@
 .scard:has(.scard-link:focus-visible){outline:3px solid var(--blue);outline-offset:2px}
 .scard:hover .scard-link{background:var(--blue-l)}
 
+/* Riepilogo «Il tuo ordine» di V-02: resta sotto la testata e scorre al proprio interno se è più alto dello schermo. */
+.pv-head~main .side{top:94px;max-height:calc(100dvh - 110px);overflow-y:auto;overscroll-behavior:contain}
+.side>*{flex-shrink:0}
+.side-body{display:flex;flex-direction:column;gap:12px}
+.side .codebox{padding:12px 14px}
+.side-actions{display:flex;flex-direction:column;gap:10px}
+.side-actions .btn{width:100%}
+@media (max-width:980px){.pv-head~main .side{max-height:none;overflow:visible}}
+
 /* ---------- Percorso di navigazione ---------- */
 .pv-crumb{background:#FFFFFF;border-bottom:1px solid var(--line2)}
 .pv-crumb ol{display:flex;flex-wrap:wrap;gap:4px 8px;margin:0;padding:12px 0;list-style:none;font-size:13px;color:var(--mut)}

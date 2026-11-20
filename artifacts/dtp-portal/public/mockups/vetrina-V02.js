@@ -83,7 +83,8 @@
     var A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', p = function () { var x = ''; for (var i = 0; i < 4; i++) x += A[Math.floor(Math.random() * A.length)]; return x; };
     return 'DTP-' + p() + '-' + p();
   }
-  function generateCode() {
+  function generateCode(ev) {
+    var from = ev && ev.currentTarget && ev.currentTarget.id === 'gen-code' ? 'gen-code' : 'side-gen';
     S.codeErr = '';
     if (!items().length) { S.code = null; S.codeErr = 'Aggiungi almeno un servizio prima di generare il codice.'; render(); return; }
     if (S.scontoErr) { S.code = null; S.codeErr = 'Correggi lo sconto prima di generare il codice: ' + S.scontoErr; render(); return; }
@@ -104,7 +105,7 @@
       S.codeErr = 'Non è possibile salvare il codice: il browser non consente di salvare i dati di questo sito. Consenti i dati del sito oppure esci dalla navigazione privata, poi riprova.';
     }
     render();
-    var out = $('code-copy') || $('gen-code'); if (out) out.focus();
+    var out = $('code-copy') || $(from); if (out) out.focus();
   }
   function restoreCode() {
     var v = $('code-in').value.trim().toUpperCase(), err = '', saved = null;
@@ -138,7 +139,8 @@
     S.pwOk = false;
     if (S.data) { S.data = null; invalidate(); }
   }
-  $('gen-code').addEventListener('click', function () { if (!S.submitted) generateCode(); });
+  $('gen-code').addEventListener('click', function (ev) { if (!S.submitted) generateCode(ev); });
+  $('side-gen').addEventListener('click', function (ev) { if (!S.submitted) generateCode(ev); });
   $('code-apply').addEventListener('click', function () { if (!S.submitted) restoreCode(); });
   $('code-in').addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); restoreCode(); } });
   $('code-in').addEventListener('input', function () { $('code-in').setAttribute('aria-invalid', 'false'); $('code-in-e').textContent = ''; });
@@ -270,11 +272,13 @@
     if (notes.length) h += '<div class="notes">' + notes.join('') + '</div>';
     $('cat').innerHTML = h;
     var n = items().length;
-    $('confirm').disabled = !n || !!S.scontoErr;
-    $('confirm').textContent = n ? 'Conferma la configurazione · ' + D.eur(total()) : 'Conferma la configurazione';
-    $('confirm').title = !n ? 'Aggiungi almeno un servizio al carrello' : S.scontoErr ? 'Correggi lo sconto' : '';
+    var why = !n ? 'Aggiungi almeno un servizio al carrello' : S.scontoErr ? 'Correggi lo sconto' : '';
+    /* «Acquista» in fondo al passo e nel riepilogo: stessi controlli, stesso passaggio ai dati. */
+    $('confirm').disabled = $('side-buy').disabled = !n || !!S.scontoErr;
+    $('confirm').textContent = n ? 'Acquista · ' + D.eur(total()) : 'Acquista';
+    $('confirm').title = $('side-buy').title = why;
   }
-  /* Codice generato: nel passo 1, sotto il catalogo. */
+  /* Codice generato: nel passo 1, una sola volta, nel riepilogo «Il tuo ordine» sotto i pulsanti. */
   function renderCode() {
     var c = '';
     if (S.codeErr) c = '<div class="ferr" role="alert">' + e(S.codeErr) + '</div>';
@@ -304,16 +308,18 @@
     var el = $('cat').querySelector('[data-act="' + a + '"][data-i="' + i + '"]');
     if (el && !el.disabled) el.focus(); else { var alt = $('cat').querySelector('[data-act="inc"][data-i="' + i + '"]'); if (alt) alt.focus(); }
   }
-  $('confirm').addEventListener('click', function () {
+  function buy() {
     if (!items().length || S.submitted || S.scontoErr) return;
     S.configured = true;
     go(2);
-  });
+  }
+  $('confirm').addEventListener('click', buy);
+  $('side-buy').addEventListener('click', buy);
 
   /* ---------- riepilogo laterale ---------- */
   function renderSide() {
     var it = items();
-    var h = '<h2 id="t-side">Il tuo carrello</h2>';
+    var h = '';
     if (!it.length) h += '<div class="cempty">Il carrello è vuoto.<br>Scegli i servizi e le quantità, oppure ripristina una configurazione con il codice.</div>';
     else h += '<ul class="citems">' + it.map(function (i) {
       var req = requiredBy(i.key);
@@ -334,7 +340,7 @@
     }
     h += '<div class="tot"><span class="muted" style="font-size:14px">' + (S.sconto > 0 && it.length ? 'Totale scontato' : 'Totale') + ', IVA esclusa</span><strong>' + D.eur(total()) + '</strong></div>';
     h += '<p class="muted" style="margin:0;font-size:12px">Durata 12 mesi dalla controfirma di Postel. Nessun addebito in questa fase: la prima fattura si paga fuori dalla piattaforma.</p>';
-    $('side').innerHTML = h;
+    $('side-body').innerHTML = h;
   }
   $('side').addEventListener('click', function (ev) {
     var b = ev.target.closest('[data-rm]'); if (!b || S.submitted) return;
@@ -493,9 +499,12 @@
     /* Nessun dato in modalità assistita: il modulo dei dati resta vuoto e non raggiungibile. */
     FIELDS.concat(['pw', 'pw2']).forEach(function (f) { $(f).value = ''; $(f).disabled = true; });
     $('demo-prefill').hidden = true;
+    /* Nessun «Acquista» per il commerciale: resta solo «Genera codice di configurazione», come pulsante principale. */
     $('confirm').hidden = true;
+    $('side-buy').hidden = true;
     $('gen-code').className = 'btn btn-p btn-lg';
     $('gen-code').textContent = 'Genera codice di configurazione';
+    $('side-gen').className = 'btn btn-p btn-lg';
     setScontoMsg();
     $('sconto').addEventListener('input', function () {
       var r = D.checkSconto($('sconto').value);

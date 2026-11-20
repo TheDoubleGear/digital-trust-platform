@@ -485,3 +485,63 @@ test('da V-04, ?servizio=<id> apre la configurazione con il servizio alla quanti
     assert.deepEqual(Object.keys(qty(t.$)), [t.w.DTP.byId('fp').name]);
   } finally { t.dom.window.close(); }
 });
+
+test('riepilogo «Il tuo ordine»: nel passo 1 codice, «Acquista» e «Genera codice di configurazione»; codice mostrato una volta', () => {
+  const { w, $, dom } = setup();
+  try {
+    const side = $('#side');
+    assert.equal(side.querySelector('h2').textContent, 'Il tuo ordine');
+    assert.doesNotMatch(w.document.body.textContent, /Il tuo carrello|Conferma la configurazione/);
+    // Il campo del codice è nel riepilogo, sopra l'elenco dei servizi; non più in cima al passo 1.
+    assert.ok(side.contains($('#code-restore')));
+    assert.equal($('#s1').querySelector('#code-in'), null);
+    assert.ok($('#code-restore').compareDocumentPosition($('#side-body')) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+    // Azioni sotto il totale, codice sotto i pulsanti.
+    assert.ok($('#side-body .tot').compareDocumentPosition($('#side-actions')) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+    assert.ok($('#side-actions').compareDocumentPosition($('#code-out')) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+    assert.deepEqual([...$('#side-actions').querySelectorAll('button')].map(b => [b.id, b.textContent, b.className]),
+      [['side-buy', 'Acquista', 'btn btn-p btn-lg'], ['side-gen', 'Genera codice di configurazione', 'btn btn-l']]);
+    // Carrello vuoto: «Acquista» disabilitato in entrambe le posizioni, errore del codice nel riepilogo.
+    assert.equal($('#side-buy').disabled, true);
+    assert.equal($('#confirm').disabled, true);
+    assert.equal($('#confirm').textContent, 'Acquista');
+    $('#side-gen').click();
+    assert.match($('#code-out').textContent, /Aggiungi almeno un servizio/);
+    // In fondo al passo: «Acquista · € …» accanto a «Genera codice di configurazione».
+    $('[data-act="inc"][data-i="2"]').click();
+    assert.equal($('#confirm').textContent, 'Acquista · ' + w.DTP.eur(w.DTP.price({ [w.DTP.services[2].id]: w.DTP.services[2].step }).totale));
+    assert.equal($('#gen-code').textContent, 'Genera codice di configurazione');
+    // Il codice generato da qualunque pulsante compare una sola volta, nel riepilogo.
+    for (const btn of ['#side-gen', '#gen-code']) {
+      $(btn).click();
+      assert.equal(w.document.querySelectorAll('#code-value').length, 1, btn);
+      assert.ok(side.contains($('#code-value')), btn);
+      assert.equal(w.document.activeElement.id, 'code-copy');
+    }
+    // Il ripristino dal riepilogo funziona come prima.
+    const code = $('#code-value').textContent;
+    $('[data-act="inc"][data-i="5"]').click();
+    $('#code-in').value = code;
+    $('#code-apply').click();
+    assert.match($('#cat').textContent, new RegExp('Configurazione ripristinata dal codice ' + code));
+    // «Acquista» nel riepilogo porta ai dati, come quello in fondo.
+    assert.equal($('#side-buy').disabled, false);
+    $('#side-buy').click();
+    assert.equal($('#s2').hidden, false);
+    assert.equal($('#side').hidden, true, 'nei passi 2 e 3 il riepilogo resta come prima');
+  } finally { dom.window.close(); }
+});
+
+test('modalità assistita: nessun «Acquista», né nel riepilogo né in fondo; «Genera codice» è il pulsante principale', () => {
+  const { w, $, dom } = setup({ role: 'com', query: '?cliente=Prova' });
+  try {
+    assert.equal($('#confirm').hidden, true);
+    assert.equal($('#side-buy').hidden, true);
+    assert.equal($('#side-gen').className, 'btn btn-p btn-lg');
+    assert.equal($('#gen-code').className, 'btn btn-p btn-lg');
+    $('[data-act="inc"][data-i="2"]').click();
+    $('#side-gen').click();
+    assert.equal(w.document.querySelectorAll('#code-value').length, 1);
+    assert.match($('#code-out').textContent, /ritrova servizi, quantità e sconto/);
+  } finally { dom.window.close(); }
+});

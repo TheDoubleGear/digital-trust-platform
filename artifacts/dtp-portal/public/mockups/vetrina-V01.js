@@ -17,7 +17,7 @@
       '<li style="flex-direction:column;gap:2px"><span>Dipendenze</span><strong style="font-weight:500">' + e(deps(s)) + '</strong></li>' +
       '<li style="flex-direction:column;gap:2px"><span>Condizioni di utilizzo</span><strong style="font-weight:500">' + e(s.terms) + '</strong></li></ul>' +
       '<div style="display:flex;flex-direction:column;gap:10px;margin-top:auto"><div class="pack"><div><b>' + D.unit3(s.unit) + ' € per unità</b><br><span>Quantità a multipli di ' + D.num(s.step) + ' unità</span></div><div class="pr">Listino</div></div>' +
-      '<a class="btn btn-l more scard-link" href="vetrina-V04-servizio.html?servizio=' + encodeURIComponent(s.id) + '" aria-label="Scopri ' + e(s.name) + '">Scopri il servizio</a></div></article>';
+      '<a class="btn btn-l more scard-link" href="vetrina-V04-servizio.html?servizio=' + encodeURIComponent(s.id) + '" aria-label="Scopri il servizio ' + e(s.name) + '">Scopri il servizio</a></div></article>';
   }
   function render() {
     chips(document.getElementById('f-fam'), [['all', 'Tutte le famiglie']].concat(D.families.map(function (f) { return [f, f]; })), 'fam');

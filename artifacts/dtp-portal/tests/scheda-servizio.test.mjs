@@ -65,7 +65,7 @@ test('V-01: ogni card apre la scheda del proprio servizio e la finestra «Approf
       const a = links[0];
       assert.ok(a.classList.contains('scard-link'));
       assert.equal(a.getAttribute('href'), 'vetrina-V04-servizio.html?servizio=' + encodeURIComponent(s.id));
-      assert.equal(a.getAttribute('aria-label'), 'Scopri ' + s.name);
+      assert.equal(a.getAttribute('aria-label'), 'Scopri il servizio ' + s.name, 'il nome accessibile contiene il testo visibile');
       assert.equal(a.textContent, 'Scopri il servizio');
     });
     assert.equal(p.d.querySelector('dialog'), null);
