@@ -4,7 +4,7 @@
    - sessionStorage  "dtp-demo-role"      -> solo il ruolo della sessione demo (mai la password)
    - localStorage    "dtp-demo-lr-setup"  -> avanzamento del primo setup del legale rappresentante
    - sessionStorage  "dtp-demo-flash"     -> messaggio di cortesia mostrato una sola volta dopo un reindirizzamento
-   Il file è usato dalle 21 pagine HTML, dall'app React (login e Workspace) e dai test node. */
+   Il file è usato dalle 22 pagine HTML, dall'app React (login e Workspace) e dai test node. */
 (function (root) {
   'use strict';
 
@@ -53,6 +53,7 @@
     'vetrina-V01-catalogo.html': { code: 'V-01', open: true },
     'vetrina-V02-contratto.html': { code: 'V-02', open: true },
     'vetrina-V03-subentro.html': { code: 'V-03', open: true },
+    'vetrina-V04-servizio.html': { code: 'V-04', open: true },
     'vetrina-V05-consulente.html': { code: 'V-05', open: true },
     'cliente-H-catalogo.html': { code: 'H', roles: CLIENT },
     'cliente-U-utenze.html': { code: 'U', roles: CLIENT },
@@ -345,7 +346,7 @@
     return n;
   }
 
-  /* Barra delle pagine pubbliche (V-01, V-02, V-03, V-05): Accedi per i visitatori, ruolo e uscita per chi è in sessione. */
+  /* Barra delle pagine pubbliche (V-01 … V-05): Accedi per i visitatori, ruolo e uscita per chi è in sessione. */
   function hydratePublicBar() {
     var bars = doc.querySelectorAll('[data-dtp-publicbar]');
     var role = getRole();

@@ -27,7 +27,8 @@ const M5 = 'cliente-M5-contratto.html';
 test('nessun riferimento a rinnovo automatico o tacito e niente «modalità di rinnovo [DA DEFINIRE]»', () => {
   for (const f of readdirSync(mockups).filter(f => /\.(html|js)$/.test(f))) {
     const s = src(f);
-    assert.doesNotMatch(s, /rinnovo (automatico|tacito)|tacito rinnovo|si rinnova automaticamente|rinnovo tra \d+ giorni/i, f);
+    /* La domanda frequente di V-04 «Il contratto si rinnova automaticamente?» è ammessa: la risposta è «No». */
+    assert.doesNotMatch(s, /rinnovo (automatico|tacito)|tacito rinnovo|si rinnova automaticamente(?!\?)|rinnovo tra \d+ giorni/i, f);
     assert.doesNotMatch(s, /modalità di rinnovo/i, f);
     assert.doesNotMatch(s, /Disdetti/, f);
   }

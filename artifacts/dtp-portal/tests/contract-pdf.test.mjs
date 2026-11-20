@@ -440,3 +440,48 @@ test('changing the configuration prepared by sales drops the discount with an ex
     assert.ok($('#side').textContent.includes(w.DTP.eur(w.DTP.price({ cert: 1000 }).totale)));
   } finally { dom.window.close(); }
 });
+
+test('da V-04, ?servizio=<id> apre la configurazione con il servizio alla quantità minima e i servizi richiesti', () => {
+  const qty = $ => Object.fromEntries([...$('#side').querySelectorAll('.citems li')].map(li => [li.querySelector('strong').textContent, li.querySelector('small').textContent]));
+  let t = setup({ query: '?servizio=app' });
+  try {
+    const D = t.w.DTP, app = D.byId('app'), cert = D.byId('cert');
+    assert.deepEqual(qty(t.$), {
+      [cert.name]: D.num(cert.step) + ' unità × ' + D.unit3(cert.unit) + ' €',
+      [app.name]: D.num(app.step) + ' unità × ' + D.unit3(app.unit) + ' €',
+    });
+    assert.match(t.$('#cat').textContent, /Aggiunto Nuovi Certificati FEA: è necessario per Apposizioni FEA con COD/);
+    assert.equal(t.$('[data-rm="cert"]'), null, 'il servizio richiesto non si toglie');
+    assert.equal(t.$('#s1').hidden, false, 'si parte dalla configurazione');
+  } finally { t.dom.window.close(); }
+
+  for (const q of ['?servizio=sconosciuto', '?servizio=__proto__', '?servizio=', '']) {
+    t = setup({ query: q });
+    try { assert.equal(t.w.document.querySelectorAll('.citems li').length, 0, q || 'senza parametro'); } finally { t.dom.window.close(); }
+  }
+
+  // Un codice di configurazione inserito dopo sostituisce il carrello preselezionato.
+  t = setup({ query: '?servizio=fp' });
+  let code;
+  try {
+    t.$('[data-rm="fp"]').click();
+    t.$('[data-act="inc"][data-i="0"]').click();
+    t.$('#gen-code').click();
+    code = t.$('#code-value').textContent;
+    var storage = { 'dtp-demo-config-codes': t.w.localStorage.getItem('dtp-demo-config-codes') };
+  } finally { t.dom.window.close(); }
+  t = setup({ query: '?servizio=fp', storage });
+  try {
+    assert.deepEqual(Object.keys(qty(t.$)), [t.w.DTP.byId('fp').name]);
+    t.$('#code-in').value = code;
+    t.$('#code-apply').click();
+    assert.deepEqual(Object.keys(qty(t.$)), [t.w.DTP.services[0].name]);
+  } finally { t.dom.window.close(); }
+
+  // Convive con la modalità assistita del commerciale.
+  t = setup({ query: '?cliente=Azienda%20Demo&servizio=fp', role: 'com' });
+  try {
+    assert.equal(t.$('#assist-band').hidden, false);
+    assert.deepEqual(Object.keys(qty(t.$)), [t.w.DTP.byId('fp').name]);
+  } finally { t.dom.window.close(); }
+});

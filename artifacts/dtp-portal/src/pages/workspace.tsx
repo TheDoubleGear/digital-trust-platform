@@ -36,11 +36,12 @@ const SessionContext = createContext<DemoSession>({ role: null, setup: { delegat
 
 /* Collegamento a una schermata: se il ruolo della sessione non può aprirla diventa un'etichetta non attivabile,
    con il motivo leggibile anche dagli screen reader. Le pagine applicano comunque la stessa regola all'ingresso. */
-function GuardedLink({ file, className, children, ...rest }: { file: string } & Omit<ComponentPropsWithoutRef<'a'>, 'href'>) {
+/* "query" apre la schermata su un esempio (es. la scheda V-04 di un servizio); i permessi dipendono solo dal file. */
+function GuardedLink({ file, query, className, children, ...rest }: { file: string; query?: string } & Omit<ComponentPropsWithoutRef<'a'>, 'href'>) {
   const auth = demoAuth();
   const { role, setup } = useContext(SessionContext);
   const decision = auth.decide(file, role, setup);
-  if (decision.allow) return <a className={className} href={auth.urls.page(file)} {...rest}>{children}</a>;
+  if (decision.allow) return <a className={className} href={auth.urls.page(file) + (query ?? '')} {...rest}>{children}</a>;
   const reason = auth.reasonText(decision.reason, role);
   return (
     <span className={`${className ?? ''} is-locked`.trim()} aria-disabled="true" title={reason} data-locked={decision.reason} data-testid={rest['data-testid' as keyof typeof rest] as string | undefined}>
@@ -78,6 +79,7 @@ export default function Workspace() {
     { code: 'V-01', name: 'Vetrina pubblica dei servizi', detail: 'Pagina iniziale · consulta i servizi, poi acquista o contatta un consulente', group: 'storefront', file: 'vetrina-V01-catalogo.html', icon: Store, tag: 'Vetrina' },
     { code: 'V-02', name: 'Richiesta di attivazione', detail: 'Dati, catalogo e carrello, contratto firmato e attesa verifica', group: 'storefront', file: 'vetrina-V02-contratto.html', icon: FileSignature, tag: 'Attivazione' },
     { code: 'V-03', name: 'Subentro del legale rappresentante', detail: 'Il nuovo legale rappresentante subentra con invito o dall’area pubblica, firma e verifiche', group: 'storefront', file: 'vetrina-V03-subentro.html', icon: UserCheck, tag: 'Subentro' },
+    { code: 'V-04', name: 'Scheda del servizio', detail: 'Caratteristiche, prezzi, video, domande frequenti e documentazione; «Acquista» con il servizio nel carrello', group: 'storefront', file: 'vetrina-V04-servizio.html', query: '?servizio=cert', icon: BookOpen, tag: 'Servizio' },
     { code: 'V-05', name: 'Contatta un consulente', detail: 'Richiesta di contatto con i servizi di interesse, informativa e conferma', group: 'storefront', file: 'vetrina-V05-consulente.html', icon: Headset, tag: 'Contatto' },
     { code: 'H', name: 'Catalogo e acquisti', detail: 'Home cliente · offerte, ordini e consumi', group: 'client', file: 'cliente-H-catalogo.html', icon: Layers3, tag: 'Ingresso' },
     { code: 'U', name: 'Utenze e deleghe', detail: 'Accessi, poteri e registro attività', group: 'client', file: 'cliente-U-utenze.html', icon: UsersRound, tag: 'Accessi' },
@@ -98,8 +100,8 @@ export default function Workspace() {
     { code: 'O5', name: 'Scheda cliente 360°', detail: 'Vista Postel del cliente, in sola lettura', group: 'postel', file: 'postel-O5-scheda-cliente.html', icon: Fingerprint, tag: 'Clienti' },
   ] as const;
   const filters: { id: Group; label: string; count: string }[] = [
-    { id: 'all', label: 'Tutte', count: '21' },
-    { id: 'storefront', label: 'Vetrina', count: '04' },
+    { id: 'all', label: 'Tutte', count: '22' },
+    { id: 'storefront', label: 'Vetrina', count: '05' },
     { id: 'client', label: 'Cliente', count: '11' },
     { id: 'technical', label: 'Tecnico', count: '01' },
     { id: 'postel', label: 'Postel', count: '05' },
@@ -144,11 +146,11 @@ export default function Workspace() {
             </div>
           </div>
           <div className="intro-aside" aria-label="Riepilogo del prototipo">
-            <div className="aside-topline"><span>Indice schermate</span><span className="mono">DTP / 01—21</span></div>
-            <div className="big-count">21<span>pagine navigabili</span></div>
+            <div className="aside-topline"><span>Indice schermate</span><span className="mono">DTP / 01—22</span></div>
+            <div className="big-count">22<span>pagine navigabili</span></div>
             <div className="aside-rule" />
             <div className="aside-meta">
-              <span><b>04</b> vetrina</span><span><b>11</b> cliente</span><span><b>01</b> tecnico</span><span><b>05</b> Postel</span>
+              <span><b>05</b> vetrina</span><span><b>11</b> cliente</span><span><b>01</b> tecnico</span><span><b>05</b> Postel</span>
             </div>
             <div className="aside-foot"><span className="mini-shield"><ShieldCheck size={14} /></span> Le schermate originali restano la fonte di verità</div>
           </div>
@@ -205,7 +207,7 @@ export default function Workspace() {
         <section className="library-section" id="screen-library" aria-labelledby="library-title">
           <div className="section-wrap">
             <div className="library-top">
-              <div><div className="eyebrow">Libreria schermate <span className="count-pill">21</span></div><h2 id="library-title">Apri una vista specifica.</h2><p>Ogni link porta al mockup HTML originale. Si aprono le schermate previste per il tuo ruolo.</p></div>
+              <div><div className="eyebrow">Libreria schermate <span className="count-pill">22</span></div><h2 id="library-title">Apri una vista specifica.</h2><p>Ogni link porta al mockup HTML originale. Si aprono le schermate previste per il tuo ruolo.</p></div>
               <label className="search-box"><Search size={17} aria-hidden="true" /><span className="visually-hidden">Cerca schermata</span><input ref={searchRef} type="search" placeholder="Cerca una schermata…" value={query} onChange={(event) => setQuery(event.target.value)} data-testid="input-search-pages" /><kbd aria-hidden="true">/</kbd></label>
             </div>
             <div className="library-controls">
@@ -223,7 +225,7 @@ export default function Workspace() {
                   const Icon = item.icon;
                   const open = auth.decide(item.file, role, setup).allow;
                   return (
-                    <GuardedLink className={`screen-card ${item.group === 'postel' ? 'postel-card' : item.group === 'storefront' ? 'store-card' : item.group === 'technical' ? 'tech-card' : ''}`} file={item.file} key={item.code} data-testid={`link-screen-${item.code.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
+                    <GuardedLink className={`screen-card ${item.group === 'postel' ? 'postel-card' : item.group === 'storefront' ? 'store-card' : item.group === 'technical' ? 'tech-card' : ''}`} file={item.file} query={'query' in item ? item.query : undefined} key={item.code} data-testid={`link-screen-${item.code.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
                       <div className="screen-card-top"><span className="screen-code">{item.code}</span><span className="screen-tag">{item.tag}</span></div>
                       <div className="screen-icon"><Icon size={18} strokeWidth={1.8} /></div>
                       <h3>{item.name}</h3><p>{item.detail}</p>
