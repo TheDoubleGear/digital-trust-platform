@@ -1,4 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 160" aria-hidden="true" focusable="false">
-<rect width="320" height="160" fill="#EAF1FF"/><circle cx="160" cy="80" r="70" fill="#FFFFFF" opacity=".7"/><g fill="#8DB3FF" opacity=".45"><circle cx="24" cy="24" r="2.5"/><circle cx="40" cy="24" r="2.5"/><circle cx="24" cy="40" r="2.5"/><circle cx="40" cy="40" r="2.5"/><circle cx="280" cy="120" r="2.5"/><circle cx="296" cy="120" r="2.5"/><circle cx="280" cy="136" r="2.5"/><circle cx="296" cy="136" r="2.5"/></g>
-<path d="M84 34h152l-56 50v34l-40 14V84z" fill="#0047BB"/><path d="M104 46h112l-40 36H144z" fill="#3D7BFF" opacity=".55"/><g fill="#FFFFFF"><circle cx="120" cy="22" r="6"/><circle cx="160" cy="18" r="6"/><circle cx="200" cy="22" r="6"/></g><circle cx="230" cy="122" r="20" fill="#EEDC00"/><path d="M220 122l7 7 13-14" fill="none" stroke="#0B2A5B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M168 126c16 6 30 4 40-2" fill="none" stroke="#0B2A5B" stroke-width="2.5" stroke-dasharray="4 5" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" role="img" aria-labelledby="t">
+<title id="t">Percorso di identificazione completato</title>
+<defs><filter id="s" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0B2A5B" flood-opacity=".16"/></filter></defs>
+<rect width="240" height="140" fill="#F2F7FF"/>
+<circle cx="120" cy="74" r="58" fill="#E1ECFF"/>
+<g fill="#9DBDF2" opacity=".45"><circle cx="26" cy="24" r="2"/><circle cx="38" cy="24" r="2"/><circle cx="50" cy="24" r="2"/><circle cx="26" cy="36" r="2"/><circle cx="38" cy="36" r="2"/><circle cx="50" cy="36" r="2"/><circle cx="190" cy="108" r="2"/><circle cx="202" cy="108" r="2"/><circle cx="214" cy="108" r="2"/><circle cx="190" cy="120" r="2"/><circle cx="202" cy="120" r="2"/><circle cx="214" cy="120" r="2"/></g>
+<g filter="url(#s)"><path d="M72 32h96l-34 40v26a4 4 0 0 1-2 3.5l-20 11A3 3 0 0 1 108 110V72z" fill="#FFFFFF"/><path d="M80 40h80l-11 13H91z" fill="#E5EFFF"/><path d="M96 59h48l-10 12h-28z" fill="#C9DAF7"/><path d="M112 77h16v22l-16 9z" fill="#0047BB"/></g>
+<g fill="#0047BB"><circle cx="92" cy="22" r="4"/><circle cx="108" cy="18" r="4"/><circle cx="124" cy="20" r="4"/><circle cx="140" cy="17" r="4"/><circle cx="154" cy="22" r="4"/></g>
+<g filter="url(#s)"><circle cx="160" cy="104" r="15" fill="#EEDC00"/><path d="M153.25 104l4.5 4.5 8.25-9.0" fill="none" stroke="#0B2A5B" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"/></g>
 </svg>

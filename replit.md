@@ -36,7 +36,7 @@ A navigable Postel prototype hub linking 20 screens: eleven customer/setup scree
 - `artifacts/dtp-portal/public/mockups/dtp-subentro.js` — legal representative change of the sample customer (invitation from U-02, request in V-03, digital-signature and company-registry outcomes and sales approval in O2-07), kept in `localStorage` `dtp-demo-subentro`. The login's “Ripristina dati demo” button clears modification requests, the legal representative change and the configuration codes (`dtp-demo-config-codes`).
 - `artifacts/dtp-portal/tests/` — `pnpm --filter @workspace/dtp-portal run test` (demo-auth + contract PDF + offer modifications + renewal + legal representative change + V-04 service page, V-01 cards and V-02 “Seleziona tutto”).
 - `artifacts/dtp-portal/public/mockups/` — original HTML prototype screens (22).
-- `artifacts/dtp-portal/public/mockups/dtp-vetrina.css` + `dtp-vetrina.js` + `img/dtp-hero.svg` + `img/servizi/<id>.svg` (one illustration per service for the V-01 cards) — two-level public header, hero banner and contact form shared by the public pages V-01 … V-05.
+- `artifacts/dtp-portal/public/mockups/dtp-vetrina.css` + `dtp-vetrina.js` — two-level public header, hero banner, service cards and contact form shared by the public pages V-01 … V-05. Images live in `img/`: `dtp-hero.svg` (banner), `dtp-accesso.svg` (login page), `servizi/<id>.svg` (one per service). Graphics and images are designed by the analysis session: do not redraw them.
 - `artifacts/dtp-portal/src/index.css` — portal styles.
 - `artifacts/api-server/src/routes/health.ts` — `GET /api/healthz`, returns `{"status":"ok"}`.
 - `lib/db/` — unused PostgreSQL/Drizzle scaffold; its schema is empty.

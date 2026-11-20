@@ -25,14 +25,15 @@ Questa sessione di Claude Code implementa sul repository.
 | Attività | Chi la svolge |
 |---|---|
 | Analisi e cambi dei requisiti | Sessione di analisi: aggiorna i documenti e prepara le istruzioni per Claude Code |
-| Design di nuove pagine | Sessione di analisi, partendo dallo stile del sito attuale |
-| Rielaborazione grafica di pagine esistenti | Claude Code |
-| Implementazione di requisiti e nuove pagine | Claude Code, seguendo le istruzioni ricevute |
+| Grafica: design di nuove pagine, rielaborazioni grafiche, immagini e illustrazioni | Sessione di analisi, con una propria pull request o un ramo di design |
+| Implementazione di requisiti e integrazione della grafica fornita | Claude Code, seguendo le istruzioni ricevute |
 
 - La fonte grafica è solo il sito in questo repository: non esistono altre copie del mockup da tenere allineate.
 - Non cambiare di tua iniziativa flussi, ruoli, permessi, regole di business o contenuti funzionali: se una richiesta
   li tocca senza istruzioni dalla sessione di analisi, segnalalo prima di procedere.
 - Le rielaborazioni grafiche non devono alterare comportamento e contenuti funzionali delle pagine.
+- Non creare né ridisegnare immagini, illustrazioni o layout di tua iniziativa: integra la grafica fornita dalla sessione
+  di analisi senza modificarla. Se una issue richiede grafica non ancora fornita, chiedila con un commento sulla issue.
 - A fine lavoro riepiloga schermate e file modificati, così la sessione di analisi può verificare l'allineamento
   con i documenti.
 
@@ -59,8 +60,8 @@ Le due sessioni non si parlano direttamente: il canale è questo repository.
   - `src/pages/workspace.tsx`: indice delle schermate su `/workspace`, richiede una sessione demo.
   - `public/mockups/`: le 22 schermate come pagine HTML indipendenti, più i moduli condivisi
     (`dtp-auth.js`, `dtp-catalogo.js`, `dtp-contract-pdf.js`, `dtp-modifiche.js`, `dtp-subentro.js`, `dtp-theme.css`, `dtp-acquisto.css`,
-    `dtp-vetrina.css` e `dtp-vetrina.js` per testata, banner e modulo di contatto dell'area pubblica, `img/dtp-hero.svg`,
-    `img/servizi/<id>.svg` con l'immagine di ogni servizio per le card di V-01).
+    `dtp-vetrina.css` e `dtp-vetrina.js` per testata, banner, card e modulo di contatto dell'area pubblica).
+    Le immagini sono in `img/`: `dtp-hero.svg` (banner), `dtp-accesso.svg` (pagina di accesso), `servizi/<id>.svg` (una per servizio).
     `dtp-modifiche.js` tiene le richieste di modifica dell'offerta del cliente di esempio (avvio, approvazione del
     legale rappresentante, firma, controfirma) in `localStorage` `dtp-demo-modifiche`, condivise da H, M5, U, N, O2 e O5.
     `dtp-subentro.js` tiene il cambio del legale rappresentante del cliente di esempio (invito da U-02, richiesta in V-03,
@@ -114,7 +115,8 @@ issue con etichetta `analisi` aperte: in caso di dubbio prevale la issue.
   e canone periodico. Ogni variazione è un upgrade o una modifica dell'offerta e del contratto.
 - V-01 è la pagina iniziale del sito, in sola consultazione e senza carrello: testata con le aree di offerta, banner
   con le azioni «Acquista» (verso V-02) e «Contatta un consulente» (verso V-05); card con immagine,
-  breve descrizione e prezzo "a partire da" (prezzo della quantità minima con la quantità). Ogni card apre la scheda del servizio V-04, da cui «Acquista» apre
+  breve descrizione e prezzo "a partire da" (prezzo della quantità minima con la quantità); caratteristiche, finalità,
+  dipendenze e condizioni di utilizzo sono nella scheda del servizio V-04. Ogni card apre la scheda, da cui «Acquista» apre
   V-02 con il servizio già nel carrello alla quantità minima.
 - V-04 (`?servizio=<id>`): presentazione con prezzo e azioni, caratteristiche e passi di acquisto, offerta e prezzi,
   video, domande frequenti, documentazione e servizi correlati; un identificativo sconosciuto mostra «Servizio non trovato».

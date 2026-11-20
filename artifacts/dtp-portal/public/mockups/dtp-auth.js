@@ -310,12 +310,14 @@
           actions.appendChild(logout);
           sidebar.appendChild(actions);
         } else {
+          /* Workspace è un collegamento del prototipo: sta nel gruppo dell'utente, a destra, prima di identità ed Esci. */
           header.classList.add('dtp-client-header');
           home.classList.add('dtp-workspace-link');
-          header.prepend(home);
+          home.setAttribute('title', 'Workspace: indice delle schermate del prototipo');
           var identity = header.lastElementChild;
           var account = el('div', { 'class': 'dtp-client-account' });
-          if (identity && identity !== home) account.appendChild(identity);
+          account.appendChild(home);
+          if (identity) account.appendChild(identity);
           account.appendChild(logout);
           header.appendChild(account);
         }
