@@ -16,6 +16,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
 <script src="dtp-catalogo.js"></script>
+<script src="dtp-modifiche.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -481,13 +482,12 @@ class Component extends DCLogic {
     var signedNow = st.signed || [];
     var PS = {
       sign: ['Da controfirmare', '#FDE7DC', '#B03A0B'], client: ['In attesa di firma del cliente', '#FDF1D6', '#855800'],
-      review: ['In presa visione del LR', '#FDF1D6', '#855800'], conguaglio: ['Recesso · conguaglio da emettere', '#EAEFF5', '#3A424C'],
+      conguaglio: ['Recesso · conguaglio da emettere', '#EAEFF5', '#3A424C'],
       active: ['Attivato', '#E3F3EA', '#1A6B4A']
     };
     var pratiche = [
       ['p1', 'Studio Legale Martini', 'Nuovo contratto · 3 servizi configurati', 'firmato dal LR oggi alle 10:12', 'Vetrina', 'sign'],
       ['p2', 'Ottica Riviera S.r.l.', 'Nuovo contratto · offerta componibile, 6 servizi', 'configurazione assistita di S. Greco', 'Commerciale', 'client', 8],
-      ['p3', 'Assicurazioni Aurora S.p.A.', 'Upgrade Identificazioni Full Prospect: +3.000 unità', 'richiesto dal delegato amministrativo', 'Portale cliente', 'review'],
       ['p4', 'Energia Verde Soc. Coop.', 'Recesso al 10/11/2026', 'disattivazione dei servizi alla data', 'Portale cliente', 'conguaglio'],
       ['p5', 'Logistica Adriatica S.r.l.', 'Upgrade Verifiche Contatti: +10.000 unità', 'controfirmato il 26 ott 2026', 'Portale cliente', 'active']
     ].map(function (r) {
@@ -500,6 +500,19 @@ class Component extends DCLogic {
         note: k === 'sign' ? 'controfirma del commerciale' : (k === 'conguaglio' ? 'a cura di rating e fatturazione' : '—'),
         act: function () { set({ signed: signedNow.concat([r[0]]) }); } };
     });
+    /* O2-07: modifiche dell'offerta di Assicurazioni Aurora dal portale cliente (dtp-modifiche.js), con lo stato
+       dell'approvazione del legale rappresentante. La controfirma del commerciale attiva la modifica. */
+    var MOD = window.DTPModifiche, recent = Date.now() - 7 * 24 * 3600 * 1000;
+    var modPratiche = MOD.list().filter(function (r) { return r.state !== 'done' || (r.countersigned && r.countersigned.at > recent); }).map(function (r) {
+      var s = MOD.STATES[r.state], can = r.state === 'countersign' && P === 'com';
+      return { client: 'Assicurazioni Aurora S.p.A.', what: r.id + ' · ' + r.what,
+        detail: 'avviata da ' + MOD.PEOPLE[r.by].name + ' (' + MOD.PEOPLE[r.by].role + ') · ' + MOD.approvalText(r),
+        origin: 'Portale cliente', state: s.postel, bg: s.bg, fg: s.fg,
+        hasAct: can, noAct: !can, btn: 'Controfirma',
+        note: r.state === 'countersign' ? 'controfirma del commerciale' : (r.state === 'approval' ? 'in attesa del cliente' : '—'),
+        act: function () { MOD.countersign(r.id); set({}); } };
+    });
+    pratiche = pratiche.slice(0, 2).concat(modPratiche, pratiche.slice(2));
     var prospects = ['Ottica Riviera S.r.l.', 'Studio Notarile Ferraro', 'Cantine del Garda S.r.l.'];
     var insoluti = [
       ['Energia Verde Soc. Coop.', '€ 1.225', 'Canone 4° trimestre scaduto da 22 giorni · 2° sollecito inviato via PEC'],

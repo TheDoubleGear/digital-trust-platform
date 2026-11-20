@@ -15,6 +15,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
+<script src="dtp-modifiche.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -273,16 +274,32 @@ class Component extends DCLogic {
     };
     var C = { soglia: ['#FDE7DC', '#B03A0B'], contratto: ['#E5EFFF', '#0047BB'], fattura: ['#E5EFFF', '#0047BB'], delega: ['#E5EFFF', '#0047BB'], ticket: ['#FDF1D6', '#855800'], tec: ['#FDF1D6', '#855800'] };
     var readAll = !!st.readAll;
-    var N = [
+    /* Eventi delle modifiche dell'offerta (dtp-modifiche.js): "Modifica dell'offerta da approvare" per il legale
+       rappresentante, invio ed esito dell'approvazione per il delegato amministrativo. */
+    var MOD = window.DTPModifiche, LR = MOD.PEOPLE.lr.name;
+    var modN = [];
+    MOD.list().forEach(function (r) {
+      var href = 'cliente-M5-contratto.html#richiesta-' + r.id;
+      if (r.state === 'approval') {
+        modN.push([r.created, ['contratto', 'Modifica dell’offerta da approvare', MOD.PEOPLE[r.by].name + ' ha avviato ' + r.id + ': ' + r.what + '. Approva o rifiuta con motivazione.', MOD.when(r.created), 'e-mail, in-app', href, 'Apri la richiesta', true, ['lr']]]);
+        if (r.by === 'amm') modN.push([r.created, ['contratto', 'Modifica dell’offerta inviata per approvazione', 'La tua richiesta ' + r.id + ' è in approvazione di ' + LR + '.', MOD.when(r.created), 'in-app', href, 'Apri la richiesta', true, ['amm']]]);
+      }
+      if (r.approval && r.by === 'amm' && (r.state === 'sign' || r.state === 'rejected')) {
+        var ok = r.approval.outcome === 'approved';
+        modN.push([r.approval.at, ['contratto', 'Esito dell’approvazione: ' + r.id + (ok ? ' approvata' : ' rifiutata'),
+          r.what + (ok ? '. Approvata da ' + LR + ': ora puoi firmare l’atto di modifica.' : '. Rifiutata da ' + LR + ' · motivazione: ' + r.approval.reason + '.'),
+          MOD.when(r.approval.at), 'e-mail, in-app', href, ok ? 'Firma l’atto' : 'Apri la richiesta', true, ['amm']]]);
+      }
+    });
+    modN = modN.sort(function (a, b) { return b[0] - a[0]; }).map(function (x) { return x[1]; });
+    var N = modN.concat([
       ['soglia', 'Identificazioni Full Prospect in soglia critica', 'Consumato il 92,2% della quantità inclusa; esaurimento previsto il 13 nov.', 'oggi 08:00', 'e-mail, in-app', 'cliente-M1-panoramica.html', 'Vedi i consumi', true, ['lr', 'amm', 'op', 'tec']],
-      ['contratto', 'Richiesta di modifica da autorizzare', 'Giulia Marchetti chiede l\'upgrade di 3.000 Identificazioni Full Prospect.', 'oggi 09:14', 'e-mail, in-app', 'cliente-M5-contratto.html', 'Apri la richiesta', true, ['lr']],
-      ['contratto', 'Upgrade Identificazioni Full Prospect: in attesa di presa visione', 'La tua richiesta RM-014 è stata inviata a Paolo Ferretti.', 'oggi 09:14', 'in-app', 'cliente-M5-contratto.html', 'Apri la richiesta', true, ['amm']],
       ['ticket', 'Aggiornamento sulla richiesta TCK-20418', 'La richiesta è passata agli specialisti Postel.', 'oggi 11:20', 'e-mail, in-app', 'cliente-A-assistenza.html', 'Apri la richiesta', false, ['lr', 'op']],
       ['tec', 'Credenziale di produzione in scadenza', 'Il segreto dell\'applicazione «Portale web» scade il 30 nov 2026.', 'ieri 09:00', 'e-mail, in-app', 'tecnico-D0-developer-portal.html', 'Apri il developer portal', true, ['tec', 'lr']],
       ['fattura', 'Nuova fattura disponibile', 'Overage di ottobre, € 420, scadenza 30 nov 2026. Accettata dal Sistema di Interscambio.', '2 nov', 'e-mail, PEC, in-app', 'cliente-M4-fatture.html', 'Vedi e paga', false, ['lr', 'amm']],
       ['contratto', 'Decisione sul rinnovo entro il 30 nov', 'Il contratto scade il 28 feb 2027.', '1 nov', 'e-mail, PEC, in-app', 'cliente-M5-contratto.html', 'Vai al contratto', false, ['lr', 'amm']],
       ['delega', 'Delega tecnica attiva', 'Andrea Colombo ha firmato l\'accettazione della delega tecnica.', '28 ott', 'e-mail, in-app', 'cliente-U-utenze.html', 'Vai alle deleghe', false, ['lr', 'tec']]
-    ];
+    ]);
     var F = st.f || 'all';
     var groups = [['all', 'Tutte'], ['unread', 'Da leggere'], ['soglia', 'Consumi'], ['contratto', 'Contratto'], ['fattura', 'Fatture'], ['ticket', 'Assistenza']].filter(function (g) { return money || g[0] !== 'fattura'; });
     var filters = groups.map(function (g) { var on = g[0] === F; return { label: g[1], pressed: on ? 'true' : 'false', bg: on ? '#0047BB' : '#FFFFFF', fg: on ? '#FFFFFF' : '#1A1C1E', border: on ? '#0047BB' : '#B8C2CF', pick: function () { set({ f: g[0] }); } }; });
@@ -298,7 +315,8 @@ class Component extends DCLogic {
       ['Esaurimento previsto prima del rinnovo', 'Consumi', [1, 0, 0, 1], [0, 0, 0, 1], ['lr', 'amm']],
       ['Nuova fattura disponibile', 'Fatture', [1, 1, 0, 1], [0, 0, 0, 1], ['lr', 'amm']],
       ['Fattura in scadenza o sollecito', 'Fatture', [1, 1, 0, 1], [0, 1, 0, 1], ['lr', 'amm']],
-      ['Richiesta di modifica del contratto', 'Contratto', [1, 0, 0, 1], [0, 0, 0, 1], ['lr', 'amm']],
+      ['Modifica dell’offerta da approvare', 'Contratto', [1, 0, 0, 1], [0, 0, 0, 1], ['lr']],
+      ['Esito dell’approvazione di una modifica', 'Contratto', [1, 0, 0, 1], [0, 0, 0, 1], ['amm']],
       ['Scadenza del contratto e finestra di preavviso', 'Contratto', [1, 1, 0, 1], [0, 1, 0, 1], ['lr', 'amm']],
       ['Nomina, modifica o revoca di una delega', 'Deleghe', [1, 0, 0, 1], [1, 0, 0, 1], ['lr', 'amm', 'op', 'tec']],
       ['Aggiornamento di una richiesta di assistenza', 'Assistenza', [1, 0, 0, 1], [0, 0, 0, 1], ['lr', 'amm', 'op', 'tec']],
@@ -317,7 +335,7 @@ class Component extends DCLogic {
     });
     var LS = { ok: ['Consegnato', '#E3F3EA', '#1A6B4A'], read: ['Letto', '#E3F3EA', '#1A6B4A'], ko: ['Non consegnato · casella piena', '#FBE3E1', '#A3201A'], wait: ['In consegna', '#FDF1D6', '#855800'] };
     var LOG = [
-      ['oggi 09:14', 'Richiesta di modifica da autorizzare', 'Paolo Ferretti · p.ferretti@aurora.example', 'E-mail', 'read', ['lr']],
+      ['oggi 09:14', 'Modifica dell’offerta da approvare · RM-014', 'Paolo Ferretti · p.ferretti@aurora.example', 'E-mail', 'read', ['lr']],
       ['oggi 08:00', 'Soglia critica · Full Prospect', 'Giulia Marchetti · g.marchetti@aurora.example', 'E-mail', 'ok', ['lr', 'amm']],
       ['oggi 08:00', 'Soglia critica · Full Prospect', 'Giulia Marchetti · +39 3•• ••• ••18', 'SMS', 'ok', ['lr', 'amm']],
       ['oggi 08:00', 'Soglia critica · Full Prospect', 'Davide Sala · d.sala@aurora.example', 'E-mail', 'ko', ['lr', 'op']],

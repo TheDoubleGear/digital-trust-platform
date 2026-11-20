@@ -15,6 +15,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
+<script src="dtp-modifiche.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -315,14 +316,14 @@ class Component extends DCLogic {
       { label: 'Ultima variazione', value: '10 mar 2026', sub: 'nomina del delegato tecnico', color: '#1A1C1E' }
     ];
     var delegati = [
-      { type: 'Delegato amministrativo', name: 'Giulia Marchetti', email: 'g.marchetti@aurora.example', since: '2 mar 2026', last: 'oggi', scope: 'Acquisti, soglie, consumi, fatture e pagamenti; firma delle modifiche al contratto dopo la tua presa visione.', act: 'Atto di delega firmato il 2 mar 2026, accettato il 2 mar · conservato' },
+      { type: 'Delegato amministrativo', name: 'Giulia Marchetti', email: 'g.marchetti@aurora.example', since: '2 mar 2026', last: 'oggi', scope: 'Acquisti, soglie, consumi, fatture e pagamenti; avvio delle modifiche dell’offerta e firma dell’atto dopo la tua approvazione.', act: 'Atto di delega firmato il 2 mar 2026, accettato il 2 mar · conservato' },
       { type: 'Delegato operativo', name: 'Davide Sala', email: 'd.sala@aurora.example', since: '2 mar 2026', last: 'ieri', scope: 'Configurazione di servizi e journey; consumi in quantità.', act: 'Atto di delega firmato il 2 mar 2026, accettato il 3 mar · conservato' },
       { type: 'Delegato tecnico', name: 'Andrea Colombo', email: 'a.colombo@aurora.example', since: '10 mar 2026', last: 'oggi', scope: 'Developer portal (API, SDK, sandbox, collaudo); consumi in quantità.', act: 'Atto di delega firmato il 10 mar 2026, accettato il 11 mar · conservato' }
     ];
     var Y = ['✓', '#1A6B4A'], N = ['—', '#9AA6B8'];
     var powers = [
       ['Firmare il primo contratto e gli atti di delega', Y, N, N, N],
-      ['Prendere visione e autorizzare le modifiche al contratto', Y, N, N, N],
+      ['Approvare o rifiutare le modifiche dell’offerta (evidenza conservata)', Y, N, N, N],
       ['Firmare rinnovi e modifiche approvate', Y, Y, N, N],
       ['Comporre e avviare upgrade e modifiche dell’offerta', Y, Y, N, N],
       ['Gestire soglie e destinatari delle notifiche', Y, Y, N, N],
@@ -332,16 +333,21 @@ class Component extends DCLogic {
       ['Integrare API, SDK e componenti white label', Y, N, N, Y],
       ['Aprire richieste di assistenza', Y, Y, Y, Y]
     ].map(function (r) { return { name: r[0], v1: r[1][0], c1: r[1][1], v2: r[2][0], c2: r[2][1], v3: r[3][0], c3: r[3][1], v4: r[4][0], c4: r[4][1] }; });
-    var log = [
-      { who: 'Giulia Marchetti', what: 'ha chiesto l’upgrade di 3.000 Identificazioni Full Prospect (in attesa di presa visione)', when: 'oggi, 09:14' },
-      { who: 'Giulia Marchetti', what: 'ha avviato l’upgrade di 500 Nuovi Certificati FEA', when: '24 ott 2026, 11:30' },
-      { who: 'Giulia Marchetti', what: 'ha modificato la soglia di attenzione di Apposizioni FEA con COD', when: '15 ott 2026, 09:47' },
-      { who: 'Davide Sala', what: 'ha aggiornato il journey di onboarding del canale app', when: '9 ott 2026, 16:05' },
-      { who: 'Giulia Marchetti', what: 'ha esportato il report mensile dei consumi', when: '1 ott 2026, 08:50' },
-      { who: 'Andrea Colombo', what: 'ha firmato l’accettazione della delega tecnica', when: '11 mar 2026, 09:02' },
-      { who: 'Paolo Ferretti', what: 'ha firmato l’atto di delega tecnica per Andrea Colombo', when: '10 mar 2026, 10:15' },
-      { who: 'Paolo Ferretti', what: 'ha nominato Giulia Marchetti e Davide Sala delegati', when: '2 mar 2026, 12:00' }
-    ];
+    /* Registro: avvio, approvazione o rifiuto, firma e controfirma delle modifiche dell'offerta (dtp-modifiche.js),
+       insieme alle altre attività dell'azienda, dal più recente. */
+    var MOD = window.DTPModifiche;
+    var at = function (y, mo, d, h, m) { return new Date(y, mo - 1, d, h, m).getTime(); };
+    var log = MOD.events().map(function (e) {
+      return { ts: e.ts, who: e.by === 'postel' ? 'Postel' : MOD.PEOPLE[e.by].name, what: e.text, when: MOD.when(e.ts) };
+    }).concat([
+      { ts: at(2026, 10, 24, 11, 30), who: 'Giulia Marchetti', what: 'ha avviato l’upgrade di 500 Nuovi Certificati FEA' },
+      { ts: at(2026, 10, 15, 9, 47), who: 'Giulia Marchetti', what: 'ha modificato la soglia di attenzione di Apposizioni FEA con COD' },
+      { ts: at(2026, 10, 9, 16, 5), who: 'Davide Sala', what: 'ha aggiornato il journey di onboarding del canale app' },
+      { ts: at(2026, 10, 1, 8, 50), who: 'Giulia Marchetti', what: 'ha esportato il report mensile dei consumi' },
+      { ts: at(2026, 3, 11, 9, 2), who: 'Andrea Colombo', what: 'ha firmato l’accettazione della delega tecnica' },
+      { ts: at(2026, 3, 10, 10, 15), who: 'Paolo Ferretti', what: 'ha firmato l’atto di delega tecnica per Andrea Colombo' },
+      { ts: at(2026, 3, 2, 12, 0), who: 'Paolo Ferretti', what: 'ha nominato Giulia Marchetti e Davide Sala delegati' }
+    ].map(function (l) { l.when = MOD.when(l.ts); return l; })).sort(function (x, y) { return y.ts - x.ts; });
     return {
       who: WHO[P], f: f, notice: notice, kpis: kpis, delegati: delegati, powers: powers, log: log,
       nominaOpen: !!st.nomina && P === 'lr', openNomina: function () { set({ nomina: true }); }, closeNomina: function () { set({ nomina: false }); }

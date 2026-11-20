@@ -16,6 +16,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
 <script src="dtp-catalogo.js"></script>
+<script src="dtp-modifiche.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -69,14 +70,14 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div style="display: flex; flex-wrap: wrap; gap: 10px">
 <a class="dtp-linkcard" href="cliente-M1-panoramica.html" style="display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: 6px; background: #FFFFFF; border: 1px solid #D9E1EC; text-decoration: none; color: #1A1C1E; min-width: 150px"><span style="font-size: 20px; font-weight: 600">6 di 9</span><span style="font-size: 12px; color: #4D5762">servizi in soglia</span></a>
 <a class="dtp-linkcard" href="cliente-M1-panoramica.html" style="display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: 6px; background: #FFFFFF; border: 1px solid #D9E1EC; text-decoration: none; color: #1A1C1E; min-width: 150px"><span style="font-size: 20px; font-weight: 600; color: #A3201A">1</span><span style="font-size: 12px; color: #4D5762">servizio esaurito</span></a>
-<a class="dtp-linkcard" href="#ordini" style="display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: 6px; background: #FFFFFF; border: 1px solid #D9E1EC; text-decoration: none; color: #1A1C1E; min-width: 150px"><span style="font-size: 20px; font-weight: 600">{{orderCount}}</span><span style="font-size: 12px; color: #4D5762">ordini in attivazione</span></a>
+<a class="dtp-linkcard" href="#ordini" style="display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: 6px; background: #FFFFFF; border: 1px solid #D9E1EC; text-decoration: none; color: #1A1C1E; min-width: 150px"><span style="font-size: 20px; font-weight: 600">{{orderCount}}</span><span style="font-size: 12px; color: #4D5762">modifiche in corso</span></a>
 </div>
 </section>
 
 <sc-if value="{{f.lr}}" hint-placeholder-val="{{ true }}">
 <section class="dtp-card" aria-labelledby="titolo-decidere" style="background: #FFFFFF; border: 2px solid #0047BB; border-radius: 6px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px">
 <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
-<h2 id="titolo-decidere" style="margin: 0; font-size: 18px; font-weight: 600">Da decidere · 3</h2>
+<h2 id="titolo-decidere" style="margin: 0; font-size: 18px; font-weight: 600">Da decidere · {{decideCount}}</h2>
 <span style="font-size: 12px; color: #4D5762">Solo il legale rappresentante vede questo riquadro</span>
 </div>
 <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
@@ -147,32 +148,48 @@ a{color:#0047BB}a:hover{color:#003A99}
 </sc-if>
 <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
 <sc-for list="{{cart.items}}" as="c" hint-placeholder-count="1">
-<li style="display: flex; align-items: center; gap: 10px">
+<li style="display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid #EAEFF5">
+<div style="display: flex; align-items: flex-start; gap: 10px">
 <div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 600">{{c.name}}</span><span style="font-size: 12px; color: #4D5762">{{c.pack}}</span></div>
-<span style="font-size: 14px; font-weight: 600">{{c.price}}</span>
+<sc-if value="{{f.money}}" hint-placeholder-val="{{ true }}"><span style="font-size: 14px; font-weight: 600">{{c.price}}</span></sc-if>
 <button class="dtp-btn dtp-btn-o" type="button" onClick="{{c.remove}}" aria-label="Rimuovi {{c.name}}" style="width: 44px; height: 44px; border-radius: 999px; border: 1px solid #D9E1EC; background: #FFFFFF; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4D5762" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+</div>
+<div role="group" aria-label="Quantità da aggiungere per {{c.name}}" style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4D5762">
+<span style="flex: 1">Quantità da aggiungere · passo {{c.step}}</span>
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{c.less}}" aria-label="Riduci la quantità di {{c.name}}" disabled="{{c.atMin}}" style="width: 40px; height: 40px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; color: #0047BB; font: inherit; font-size: 18px; font-weight: 600; cursor: pointer">−</button>
+<strong style="min-width: 64px; text-align: center; font-size: 14px; color: #1A1C1E">+{{c.qty}}</strong>
+<button class="dtp-btn dtp-btn-o" type="button" onClick="{{c.more}}" aria-label="Aumenta la quantità di {{c.name}}" style="width: 40px; height: 40px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; color: #0047BB; font: inherit; font-size: 18px; font-weight: 600; cursor: pointer">+</button>
+</div>
 </li>
 </sc-for>
 </ul>
-<div style="display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid #EAEFF5; font-size: 15px"><span>Totale IVA esclusa</span><strong style="font-weight: 700">{{cart.total}}</strong></div>
+<sc-if value="{{cart.any}}" hint-placeholder-val="{{ true }}">
+<dl style="margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px">
+<sc-for list="{{cart.summary}}" as="k" hint-placeholder-count="4">
+<div style="display: flex; justify-content: space-between; gap: 12px"><dt style="color: #4D5762">{{k.k}}</dt><dd style="margin: 0; text-align: right; font-weight: 600">{{k.v}}</dd></div>
+</sc-for>
+</dl>
+<div style="display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid #EAEFF5; font-size: 15px"><span>Importo della modifica, IVA esclusa</span><strong style="font-weight: 700; white-space: nowrap">{{cart.total}}</strong></div>
+</sc-if>
 <label style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #1A1C1E; line-height: 1.4"><input type="checkbox" style="width: 18px; height: 18px; margin-top: 1px"> Accetto le condizioni d'uso e il listino in vigore</label>
-<button class="dtp-btn dtp-btn-p" type="button" onClick="{{cart.confirm}}" style="min-height: 48px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Conferma la modifica</button>
+<p style="margin: 0; font-size: 13px; color: #4D5762; line-height: 1.45">{{cart.note}}</p>
+<button class="dtp-btn dtp-btn-p" type="button" onClick="{{cart.confirm}}" disabled="{{cart.empty}}" style="min-height: 48px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{cart.btn}}</button>
 <sc-if value="{{cart.done}}" hint-placeholder-val="{{ false }}">
-<p role="status" style="margin: 0; padding: 10px 12px; border-radius: 6px; background: #E3F3EA; color: #1A6B4A; font-size: 13px; font-weight: 500">Modifica inviata. La trovi negli ordini con stato «In attivazione».</p>
+<p role="status" style="margin: 0; padding: 10px 12px; border-radius: 6px; background: #E3F3EA; color: #1A6B4A; font-size: 13px; font-weight: 500">{{cart.doneText}} <a href="cliente-M5-contratto.html#richieste" style="color: #1A6B4A; font-weight: 600">Vedi le richieste di modifica</a></p>
 </sc-if>
 </section>
 </sc-if>
 <sc-if value="{{f.noBuy}}" hint-placeholder-val="{{ false }}">
 <section class="dtp-card" aria-labelledby="titolo-richieste" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 22px; display: flex; flex-direction: column; gap: 12px">
-<h2 id="titolo-richieste" style="margin: 0; font-size: 18px; font-weight: 600">Le tue richieste</h2>
-<p style="margin: 0; font-size: 13px; color: #4D5762; line-height: 1.45">Upgrade e modifiche dell'offerta li conferma il delegato amministrativo o il legale rappresentante. Le richieste che invii arrivano a entrambi.</p>
+<h2 id="titolo-richieste" style="margin: 0; font-size: 18px; font-weight: 600">Le tue segnalazioni</h2>
+<p style="margin: 0; font-size: 13px; color: #4D5762; line-height: 1.45">Upgrade e modifiche dell'offerta li avvia il delegato amministrativo o il legale rappresentante. Le segnalazioni che invii arrivano a entrambi.</p>
 <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
 <sc-for list="{{requests}}" as="r" hint-placeholder-count="1">
 <li style="display: flex; justify-content: space-between; gap: 8px; font-size: 14px; padding: 8px 0; border-bottom: 1px solid #EAEFF5"><span>{{r.name}}</span><span style="font-size: 12px; font-weight: 600; color: #855800">Inviata</span></li>
 </sc-for>
 </ul>
 <sc-if value="{{noRequests}}" hint-placeholder-val="{{ true }}">
-<p style="margin: 0; font-size: 13px; color: #4D5762">Nessuna richiesta inviata.</p>
+<p style="margin: 0; font-size: 13px; color: #4D5762">Nessuna segnalazione inviata.</p>
 </sc-if>
 </section>
 </sc-if>
@@ -342,10 +359,14 @@ class Component extends DCLogic {
     };
     var buy = P !== 'op', money = P !== 'op';
     var eur = C.eur, n = C.num;
-    var cartIds = st.cart || ['fp'];
+    var MOD = window.DTPModifiche;
+    /* Modifica in composizione: { idServizio: quantità da aggiungere }. */
+    var cartQ = st.cart || {};
+    var cartIds = Object.keys(cartQ);
     var reqs = st.requests || [];
     var addReq = function (name) { if (reqs.indexOf(name) < 0) set({ requests: reqs.concat([name]) }); };
-    var add = function (id) { if (cartIds.indexOf(id) < 0) set({ cart: cartIds.concat([id]), done: false }); };
+    var setQ = function (id, q) { var nq = Object.assign({}, cartQ); if (q > 0) nq[id] = q; else delete nq[id]; set({ cart: nq, done: null }); };
+    var add = function (id) { if (!cartQ[id]) setQ(id, up[id].add); };
     var DOT = { out: '#C7322A', crit: '#E8692A', warn: '#E0A100', ok: '#2E8B62', off: '#9AA6B8' };
     var STATE = { out: 'esaurito', crit: 'critico', warn: 'in attenzione', ok: 'regolare' };
     /* Offerta configurata e consumi del cliente di esempio: fonte unica in dtp-catalogo.js (DTP.esempio). */
@@ -365,17 +386,12 @@ class Component extends DCLogic {
     });
     var ovTot = E.overageTotale();
     var upName = function (id) { var sv = C.byId(id); return 'Upgrade ' + sv.name + ' · +' + n(up[id].add); };
-    var catalog = {};
-    C.services.forEach(function (sv) {
-      var u = up[sv.id], c = conf[sv.id];
-      catalog[sv.id] = { name: sv.name, pack: c ? 'upgrade +' + n(u.add) + ' unità · da ' + n(u.from) + ' a ' + n(u.to) : 'nuovo servizio · ' + n(u.add) + ' unità', price: Math.round(u.add * sv.unit * 100) / 100 };
-    });
     var tab = st.tab || 'all', fam = st.fam || 'all';
     var svc = C.services.filter(function (sv) {
       var on = !!conf[sv.id];
       return (fam === 'all' || sv.family === fam) && (tab === 'all' || (tab === 'on') === on);
     }).map(function (sv) {
-      var c = conf[sv.id], u = up[sv.id], inCart = cartIds.indexOf(sv.id) >= 0, requested = reqs.indexOf(upName(sv.id)) >= 0;
+      var c = conf[sv.id], u = up[sv.id], inCart = !!cartQ[sv.id], requested = reqs.indexOf(upName(sv.id)) >= 0;
       var active = buy ? inCart : requested;
       var kv = [{ k: 'Quantità configurata', v: c ? n(c.qty) + ' unità' : 'Non attivo' }];
       if (c) kv.push({ k: 'Consumo previsto a fine periodo', v: n(c.fc) + ' unità' });
@@ -390,34 +406,70 @@ class Component extends DCLogic {
         upTitle: (u.reco ? 'Upgrade consigliato +' : (c ? 'Upgrade +' : 'Attiva ')) + n(u.add) + ' unità',
         upSub: sub,
         boxBorder: u.reco ? '#F3C2A8' : '#DDE4EE', boxBg: u.reco ? '#FFF8F4' : '#FFFFFF',
-        btn: buy ? (inCart ? 'Aggiunto' : 'Aggiungi') : (requested ? 'Richiesta inviata' : 'Richiedi'),
-        btnLabel: (buy ? (inCart ? 'Aggiunto: ' : 'Aggiungi upgrade di ') : (requested ? 'Richiesta inviata: ' : 'Richiedi upgrade di ')) + sv.name,
+        btn: buy ? (inCart ? 'Aggiunto' : 'Aggiungi') : (requested ? 'Segnalazione inviata' : 'Segnala'),
+        btnLabel: (buy ? (inCart ? 'Aggiunto: ' : 'Aggiungi upgrade di ') : (requested ? 'Segnalazione inviata: ' : 'Segnala upgrade di ')) + sv.name,
         btnBg: active ? '#E5EFFF' : '#FFFFFF', btnFg: '#0047BB', btnBorder: active ? '#0047BB' : '#B8C2CF',
         act: function () { if (buy) add(sv.id); else addReq(upName(sv.id)); }
       };
     });
-    var items = cartIds.filter(function (id) { return catalog[id]; }).map(function (id) {
-      var c = catalog[id];
-      return { name: c.name, pack: c.pack, price: eur(c.price), remove: function () { set({ cart: cartIds.filter(function (x) { return x !== id; }) }); } };
+    /* Riepilogo della modifica: variazioni per servizio, prezzo ricalcolato per componente e decorrenza. */
+    var lineOf = function (id) {
+      var sv = C.byId(id), q = cartQ[id], from = conf[id] ? conf[id].qty : 0;
+      return { id: id, sv: sv, q: q, from: from, to: from + q, price: Math.round(q * sv.unit * 100) / 100 };
+    };
+    var lines = C.services.filter(function (sv) { return cartQ[sv.id]; }).map(function (sv) { return lineOf(sv.id); });
+    var items = lines.map(function (l) {
+      return { name: l.sv.name, step: n(l.sv.step), qty: n(l.q), atMin: l.q <= l.sv.step,
+        pack: l.from ? 'upgrade da ' + n(l.from) + ' a ' + n(l.to) + ' unità' : 'nuovo servizio · ' + n(l.to) + ' unità',
+        price: eur(l.price),
+        less: function () { if (l.q > l.sv.step) setQ(l.id, l.q - l.sv.step); },
+        more: function () { setQ(l.id, l.q + l.sv.step); },
+        remove: function () { setQ(l.id, 0); } };
     });
-    var total = cartIds.reduce(function (a, id) { return a + (catalog[id] ? catalog[id].price : 0); }, 0);
-    var placed = st.placed || [];
+    var total = Math.round(lines.reduce(function (a, l) { return a + l.price; }, 0) * 100) / 100;
+    var newCfg = Object.assign({}, E.config);
+    lines.forEach(function (l) { newCfg[l.id] = l.to; });
+    var before = E.contratto(), after = C.price(newCfg, { fee: false });
+    var decorrenza = 'dalla controfirma di Postel fino al 28 feb 2027';
+    var summary = money ? [
+      { k: 'Componente variabile', v: eur(before.variabile) + ' → ' + eur(after.variabile) },
+      { k: 'Canone periodico', v: eur(after.canone) + ' · invariato · [DA DEFINIRE]' },
+      { k: 'Nuovo valore del contratto', v: eur(after.totale) + ' / anno' },
+      { k: 'Decorrenza', v: decorrenza }
+    ] : [{ k: 'Decorrenza', v: decorrenza }];
+    var isLr = P === 'lr';
     var cart = {
-      items: items, empty: items.length === 0, total: eur(total), done: !!st.done,
+      items: items, empty: items.length === 0, any: items.length > 0, total: eur(total), summary: summary,
+      done: !!st.done, doneText: st.done || '',
+      btn: isLr ? 'Conferma e firma' : 'Invia per approvazione',
+      note: isLr
+        ? 'Come legale rappresentante confermi e firmi direttamente. La modifica si attiva alla controfirma di Postel.'
+        : 'La modifica va a ' + MOD.PEOPLE.lr.name + ' per l’approvazione e resta «In approvazione» finché non decide. Dopo l’approvazione firmi tu l’atto e Postel controfirma.',
       confirm: function () {
-        if (!items.length) return;
-        var names = cartIds.filter(function (id) { return catalog[id]; }).map(function (id) { return catalog[id].name + ' · ' + catalog[id].pack; });
-        set({ placed: placed.concat([{ what: 'Modifica dell’offerta: ' + names.join(' + '), total: total }]), cart: [], done: true });
+        if (!lines.length) return;
+        var what = lines.length === 1
+          ? 'Upgrade ' + lines[0].sv.name + ': +' + n(lines[0].q) + ' unità'
+          : 'Modifica dell’offerta: ' + lines.map(function (l) { return l.sv.name + ' +' + n(l.q); }).join(', ');
+        var detail = lines.map(function (l) { return l.from ? 'da ' + n(l.from) + ' a ' + n(l.to) + ' unità' : 'nuovo servizio, ' + n(l.to) + ' unità'; }).join(' · ');
+        var r = MOD.create({ role: P, what: what, detail: detail, amount: total });
+        if (!r) return;
+        set({ cart: {}, done: isLr
+          ? 'Modifica ' + r.id + ' confermata e firmata. Si attiva alla controfirma di Postel.'
+          : 'Modifica ' + r.id + ' inviata a ' + MOD.PEOPLE.lr.name + ' per l’approvazione.' });
       }
     };
-    var orders = placed.map(function (o, i) {
-      return { what: o.what, meta: 'ORD-2026-' + (1201 + i) + ' · oggi · avviata da ' + WHO[P].name, state: 'In attivazione', bg: '#FDF1D6', fg: '#855800', amount: money ? eur(o.total) : '' };
-    }).reverse().concat([
+    /* Modifiche in corso o rifiutate, dalla fonte condivisa (dtp-modifiche.js). */
+    var mods = MOD.list().filter(function (r) { return r.state !== 'done'; });
+    var orders = mods.map(function (r) {
+      var s = MOD.STATES[r.state];
+      return { what: r.what, meta: r.id + ' · ' + MOD.when(r.created) + ' · avviata da ' + MOD.PEOPLE[r.by].name + (r.state === 'rejected' && r.approval.reason ? ' · motivazione: ' + r.approval.reason : ''),
+        state: s.label, bg: s.bg, fg: s.fg, amount: money && r.amount != null ? eur(r.amount) : '' };
+    }).concat([
       { what: 'Upgrade Nuovi Certificati FEA · +500 unità', meta: 'ORD-2026-1187 · 24 ott 2026 · avviato da Giulia Marchetti', state: 'In attivazione', bg: '#FDF1D6', fg: '#855800', amount: money ? eur(E.upgradeInCorsoPrezzo()) : '' },
       { what: 'Offerta componibile · rinnovo annuale · 9 servizi', meta: 'ORD-2026-0311 · 1 mar 2026 · firmato da Paolo Ferretti', state: 'Attivo', bg: '#E3F3EA', fg: '#1A6B4A', amount: money ? eur(E.contratto().totale) : '' }
     ]);
     if (P === 'op') {
-      orders = reqs.map(function (r) { return { what: r, meta: 'richiesta inviata oggi a G. Marchetti e P. Ferretti', state: 'Richiesta', bg: '#E5EFFF', fg: '#0047BB', amount: '' }; }).concat(orders);
+      orders = reqs.map(function (r) { return { what: r, meta: 'segnalazione inviata oggi a G. Marchetti e P. Ferretti', state: 'Segnalazione', bg: '#E5EFFF', fg: '#0047BB', amount: '' }; }).concat(orders);
     }
     var alerts = [
       {
@@ -440,24 +492,29 @@ class Component extends DCLogic {
       return { label: t[1], pressed: on ? 'true' : 'false', bg: on ? '#FFFFFF' : 'transparent', weight: on ? 600 : 500, pick: function () { set({ tab: t[0] }); } };
     });
     var famOpts = [{ v: 'all', label: 'Tutte' }].concat(C.families.map(function (f) { return { v: f, label: f }; })).map(function (o) { o.sel = o.v === fam; return o; });
+    /* H-10 "Da decidere": modifiche avviate dal delegato amministrativo in attesa di approvazione, con link a M5-03. */
+    var decide = MOD.list().filter(function (r) { return r.state === 'approval'; }).map(function (r) {
+      return { kind: 'Modifica da approvare', what: r.what, meta: r.id + ' · avviata da ' + MOD.PEOPLE[r.by].name + ' ' + MOD.when(r.created) + (money && r.amount != null ? ' · ' + eur(r.amount) + ' IVA esclusa' : ''),
+        btn: 'Apri la richiesta', act: function () { location.href = 'cliente-M5-contratto.html#richiesta-' + r.id; } };
+    }).concat([
+      { kind: 'Segnalazione', what: 'Davide Sala segnala la necessità di un upgrade di ' + n(up.fp.add) + ' Identificazioni Full Prospect', meta: 'oggi · delegato operativo · al ritmo attuale il servizio si esaurisce il 13 nov', btn: 'Aggiungi al riepilogo', act: function () { add('fp'); } },
+      { kind: 'Rinnovo', what: 'Decidi sul rinnovo del contratto entro il 30 nov 2026', meta: 'scadenza 28 feb 2027 · overage previsto con le quantità attuali ' + eur(ovTot), btn: 'Vedi le proposte di upgrade', act: function () { set({ tab: 'on', fam: 'all' }); var c = document.getElementById('catalogo'); if (c) c.scrollIntoView({ behavior: 'smooth' }); } },
+      { kind: 'Condizioni', what: 'Nuove condizioni generali in vigore dal 1 dic 2026', meta: 'da accettare prima della prossima modifica dell’offerta', btn: 'Leggi e accetta', act: function () {} }
+    ]);
     return {
       who: WHO[P],
       svcCount: CFG.length, contractValue: eur(E.contratto().totale),
       f: { buy: buy, noBuy: !buy, money: money, lr: P === 'lr' },
-      decide: [
-        { kind: 'Richiesta', what: 'Davide Sala chiede un upgrade di ' + n(up.fp.add) + ' Identificazioni Full Prospect', meta: 'oggi · delegato operativo · al ritmo attuale il servizio si esaurisce il 13 nov', btn: 'Aggiungi al riepilogo', act: function () { add('fp'); } },
-        { kind: 'Rinnovo', what: 'Decidi sul rinnovo del contratto entro il 30 nov 2026', meta: 'scadenza 28 feb 2027 · overage previsto con le quantità attuali ' + eur(ovTot), btn: 'Vedi le proposte di upgrade', act: function () { set({ tab: 'on', fam: 'all' }); var c = document.getElementById('catalogo'); if (c) c.scrollIntoView({ behavior: 'smooth' }); } },
-        { kind: 'Condizioni', what: 'Nuove condizioni generali in vigore dal 1 dic 2026', meta: 'da accettare prima della prossima modifica dell’offerta', btn: 'Leggi e accetta', act: function () {} }
-      ],
-      alerts: alerts, orders: orders, orderCount: 1 + placed.length,
-      ordersTitle: P === 'op' ? 'Ordini e richieste' : 'Ordini recenti',
+      decide: decide, decideCount: decide.length,
+      alerts: alerts, orders: orders, orderCount: MOD.pending().length + 1,
+      ordersTitle: P === 'op' ? 'Modifiche e segnalazioni' : 'Modifiche e ordini recenti',
       cart: cart, requests: reqs.map(function (r) { return { name: r }; }), noRequests: reqs.length === 0,
       tabs: tabs, famOpts: famOpts, pickFam: function (ev) { set({ fam: ev.target.value }); },
       svc: svc, noSvc: svc.length === 0,
       noSvcText: tab === 'off' ? 'Tutti i servizi del catalogo sono già configurati nella tua offerta.' : 'Nessun servizio corrisponde ai filtri.',
       advice: money
         ? 'Per il tuo consumo previsto conviene un upgrade dei servizi in esaurimento: con le quantità attuali l’overage previsto a fine periodo è ' + eur(ovTot) + '. Le proposte indicano quantità consigliata, prezzo ricalcolato e overage evitato.'
-        : 'Per il consumo previsto conviene un upgrade dei servizi in esaurimento. Le richieste che invii arrivano al delegato amministrativo.'
+        : 'Per il consumo previsto conviene un upgrade dei servizi in esaurimento. Le segnalazioni che invii arrivano al delegato amministrativo e al legale rappresentante.'
     };
   }
 }

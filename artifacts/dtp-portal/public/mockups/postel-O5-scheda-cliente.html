@@ -16,6 +16,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <link rel="stylesheet" href="dtp-auth.css">
 <script src="dtp-auth.js"></script>
 <script src="dtp-catalogo.js"></script>
+<script src="dtp-modifiche.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -353,6 +354,14 @@ class Component extends DCLogic {
       ['Identificazioni Proprietarie', '1.140', '2.500', 45.6, 'ok', 'oltre rinnovo', '0,69'],
       ['Fatture Elettroniche', '2.380', '6.000', 39.7, 'ok', 'oltre rinnovo', '0,60']
     ].map(function (r) { var s = ST[r[4]]; return { name: r[0], used: r[1], incl: r[2], pct: r[3].toFixed(1).replace('.', ',') + '%', w: Math.min(r[3], 100) + '%', state: s[0], bg: s[1], fg: s[2], bar: s[3], ex: r[5], pace: r[6] }; });
+    /* O5-05: modifiche dell'offerta dal portale cliente (dtp-modifiche.js) con lo stato dell'approvazione del LR. */
+    var MOD = window.DTPModifiche;
+    var mods = MOD.list().map(function (r) {
+      var s = MOD.STATES[r.state];
+      return { ts: r.created, date: MOD.when(r.created).replace(/, \d\d:\d\d$/, ''), what: r.what, meta: r.id + ' · avviata da ' + MOD.PEOPLE[r.by].name + ' (' + MOD.PEOPLE[r.by].role + ') · ' + MOD.approvalText(r),
+        state: s.postel, bg: s.bg, fg: s.fg, amount: money && r.amount != null ? DTP.eur(r.amount) : '' };
+    });
+    var inCorso = MOD.pending()[0] || null;
     var OS = { act: ['In attivazione', '#E5EFFF', '#0047BB'], on: ['Attivo', '#E3F3EA', '#1A6B4A'], done: ['Concluso', '#EAEFF5', '#3A424C'] };
     var orders = [
       ['24 ott 2026', 'Upgrade +500 Nuovi Certificati FEA', 'ORD-2026-1187 · modifica dell’offerta avviata da G. Marchetti (delegato amministrativo)', 'act', DTP.eur(DTP.esempio.upgradeInCorsoPrezzo())],
@@ -360,6 +369,9 @@ class Component extends DCLogic {
       ['15 nov 2025', 'Upgrade +1.000 Identificazioni Full Prospect', 'ORD-2025-0866 · modifica dell’offerta firmata da P. Ferretti', 'done', '€ 1.200'],
       ['1 mar 2025', 'Contratto · 9 servizi configurati · 2025/26', 'CTR-2025-0127 · primo contratto con fee di attivazione, firmato da P. Ferretti', 'done', DTP.eur(DTP.esempio.primoContratto().totale)]
     ].map(function (r) { var s = OS[r[3]]; return { date: r[0], what: r[1], meta: r[2], state: s[0], bg: s[1], fg: s[2], amount: money ? r[4] : '' }; });
+    var ORD_TS = [new Date(2026, 9, 24).getTime(), new Date(2026, 2, 1).getTime(), new Date(2025, 10, 15).getTime(), new Date(2025, 2, 1).getTime()];
+    orders.forEach(function (o, i) { o.ts = ORD_TS[i]; });
+    orders = mods.concat(orders).sort(function (a, b) { return b.ts - a.ts; });
     var TS = { P3: ['#FDF1D6', '#855800'], P4: ['#EAEFF5', '#3A424C'] };
     var tickets = [
       ['P4', 'Chiarimento sull’overage dei certificati FEA', 'PIX-48190', '21 ott 2026', 'aperto'],
@@ -374,7 +386,8 @@ class Component extends DCLogic {
     ];
     return { adminNote: money ? 'Stato dei pagamenti e delle modifiche contrattuali richieste dal portale cliente.' : 'Per Operations lo stato dei pagamenti è indicato senza importi.',
       admin: [
-        { label: 'Richiesta in corso', value: 'Upgrade Identificazioni Full Prospect: +3.000 unità', sub: 'RM-014 · in presa visione del legale rappresentante', color: '#855800' },
+        inCorso ? { label: 'Richiesta in corso', value: inCorso.what, sub: inCorso.id + " · " + MOD.STATES[inCorso.state].postel + " · " + MOD.approvalText(inCorso), color: '#855800' }
+          : { label: 'Richiesta in corso', value: 'Nessuna', sub: 'nessuna modifica dell’offerta in corso', color: '#1A1C1E' },
         { label: 'Origine del contratto', value: 'Commerciale', sub: 'stesso percorso della vetrina: firma del LR, controfirma Postel', color: '#1A1C1E' },
         { label: 'Pagamenti', value: money ? 'Nessun insoluto' : 'In regola', sub: money ? 'FT-2026-11012 da € 420 approvata, scade il 30 nov' : '1 fattura in scadenza, nessun sollecito', color: '#1A6B4A' },
         { label: 'Modalità di rinnovo', value: '[DA DEFINIRE]', sub: 'decisione del cliente attesa entro il 30 nov', color: '#1A1C1E' }

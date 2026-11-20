@@ -57,8 +57,10 @@ Le due sessioni non si parlano direttamente: il canale è questo repository.
   - `src/pages/login.tsx`: accesso demo su `/`.
   - `src/pages/workspace.tsx`: indice delle schermate su `/workspace`, richiede una sessione demo.
   - `public/mockups/`: le 19 schermate come pagine HTML indipendenti, più i moduli condivisi
-    (`dtp-auth.js`, `dtp-catalogo.js`, `dtp-contract-pdf.js`, `dtp-theme.css`, `dtp-acquisto.css`).
-  - `tests/`: test node su accesso demo e PDF del contratto.
+    (`dtp-auth.js`, `dtp-catalogo.js`, `dtp-contract-pdf.js`, `dtp-modifiche.js`, `dtp-theme.css`, `dtp-acquisto.css`).
+    `dtp-modifiche.js` tiene le richieste di modifica dell'offerta del cliente di esempio (avvio, approvazione del
+    legale rappresentante, firma, controfirma) in `localStorage` `dtp-demo-modifiche`, condivise da H, M5, U, N, O2 e O5.
+  - `tests/`: test node su accesso demo, PDF del contratto e modifiche dell'offerta.
 - `artifacts/api-server`, `lib/db` — scaffolding non usato dalla demo.
 - `artifacts/mockup-sandbox` — ambiente di progettazione di Replit.
 - `.github/workflows/pages.yml` — pubblicazione su GitHub Pages.
