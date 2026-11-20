@@ -277,10 +277,30 @@ a{color:#0047BB}a:hover{color:#003A99}
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #2E8B62"></span>Rinnovati {{r.done}}</span>
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #E0A100"></span>In trattativa {{r.neg}}</span>
 <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #9AA6B8"></span>Non avviati {{r.not}}</span>
-<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #C7322A"></span>Disdetti {{r.lost}}</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #C7322A"></span>Non rinnovati {{r.lost}}</span>
 </div>
 </div>
 </sc-for>
+</div>
+<div>
+<h3 style="margin: 0; font-size: 15px; font-weight: 600">In scadenza e scaduti</h3>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Rinnovo non tacito: alla scadenza senza rinnovo il servizio è disabilitato e i dati restano conservati per [DA DEFINIRE] giorni, poi vengono cancellati.</p>
+</div>
+<div style="overflow-x: auto">
+<div role="table" aria-label="Contratti in scadenza e scaduti" style="min-width: 680px; font-size: 13px">
+<div role="row" style="display: grid; grid-template-columns: 2fr 1fr 1.6fr 1.4fr 2fr; gap: 12px; padding: 8px 10px; border-bottom: 1px solid #D9E1EC; color: #4D5762; font-size: 12px">
+<span role="columnheader">Cliente</span><span role="columnheader">Scadenza</span><span role="columnheader">Stato</span><span role="columnheader">Giorni</span><span role="columnheader">Cancellazione dei dati</span>
+</div>
+<sc-for list="{{expiries}}" as="e" hint-placeholder-count="4">
+<div role="row" style="display: grid; grid-template-columns: 2fr 1fr 1.6fr 1.4fr 2fr; gap: 12px; padding: 10px; border-bottom: 1px solid #EAEFF5; align-items: center">
+<span role="cell" style="font-weight: 500">{{e.name}}</span>
+<span role="cell">{{e.date}}</span>
+<span role="cell"><span style="padding: 2px 8px; border-radius: 999px; background: {{e.bg}}; color: {{e.fg}}; font-size: 12px; font-weight: 600">{{e.state}}</span></span>
+<span role="cell">{{e.days}}</span>
+<span role="cell" style="color: #3A424C">{{e.deletion}}</span>
+</div>
+</sc-for>
+</div>
 </div>
 </section>
 
@@ -475,8 +495,19 @@ class Component extends DCLogic {
       return {
         window: r[0], n: r[1], arr: r[2], done: r[3], neg: r[4], not: r[5], lost: r[6],
         wDone: w(r[3]), wNeg: w(r[4]), wNot: w(r[5]), wLost: w(r[6]),
-        aria: r[0] + ': rinnovati ' + r[3] + ', in trattativa ' + r[4] + ', non avviati ' + r[5] + ', disdetti ' + r[6]
+        aria: r[0] + ': rinnovati ' + r[3] + ', in trattativa ' + r[4] + ', non avviati ' + r[5] + ', non rinnovati ' + r[6]
       };
+    });
+    /* O2-06: lo scadenzario distingue i contratti in scadenza da quelli scaduti e in conservazione dei dati. */
+    var expiries = [
+      ['Credito Alpino S.p.A.', '30/11/2026', 'soon', '10 giorni alla scadenza'],
+      ['Banca Levante S.p.A.', '31/12/2026', 'soon', '41 giorni alla scadenza'],
+      ['Mutua Valdera', '31/10/2026', 'kept', 'scaduto da 20 giorni'],
+      ['Logistica Tirrena S.r.l.', '15/10/2026', 'kept', 'scaduto da 36 giorni']
+    ].map(function (e) {
+      var kept = e[2] === 'kept';
+      return { name: e[0], date: e[1], state: kept ? 'Scaduto, in conservazione' : 'In scadenza', bg: kept ? '#FBE3E1' : '#FDF1D6', fg: kept ? '#A3201A' : '#855800',
+        days: e[3], deletion: kept ? 'giorni residui alla cancellazione: [DA DEFINIRE] giorni di conservazione meno ' + e[3].replace('scaduto da ', '') : 'servizio attivo fino alla scadenza' };
     });
     var money = P !== 'ops', act = P === 'com';
     var signedNow = st.signed || [];
@@ -524,7 +555,7 @@ class Component extends DCLogic {
       gridCols: act ? '2.1fr 1fr 1fr 0.95fr 1.9fr 0.65fr 1.1fr 0.95fr 1.1fr 1.6fr' : '2.3fr 1fr 1fr 1fr 2fr 0.7fr 1.2fr 1fr 1.2fr',
       exportLabel: money ? 'Esporta lista di lavoro' : 'Esporta lista (senza importi)',
       renewTitle: money ? 'Scadenzario rinnovi: 23 contratti e € 512k di ARR nei prossimi 90 giorni' : 'Scadenzario rinnovi: 23 contratti nei prossimi 90 giorni',
-      who: WHO[P], nav: nav, ext: ext, filters: filters, segments: segments, m: m, moves: moves, clients: clients, renewals: renewals };
+      who: WHO[P], nav: nav, ext: ext, filters: filters, segments: segments, m: m, moves: moves, clients: clients, renewals: renewals, expiries: expiries };
   }
 }
 

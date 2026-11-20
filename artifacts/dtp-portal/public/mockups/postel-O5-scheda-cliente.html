@@ -318,7 +318,7 @@ class Component extends DCLogic {
     var money = P !== 'ops', isCom = P === 'com', isOps = P === 'ops';
     var head = [
       { k: 'Health score', v: '82', sub: 'consumi alti, processi stabili', color: '#1A6B4A' },
-      { k: 'Rinnovo', v: '124 gg', sub: 'scadenza 28 feb 2027', color: '#1A1C1E' },
+      { k: 'Scadenza', v: '124 gg', sub: 'scadenza 28 feb 2027 · rinnovo non tacito', color: '#1A1C1E' },
       { k: 'Servizio più urgente', v: 'ritmo 1,60', sub: 'Nuovi Certificati FEA, esaurito', color: '#A3201A' }
     ];
     if (money) head.unshift({ k: 'Valore annuo', v: DTP.eur(DTP.esempio.contratto().totale), sub: 'overage YTD ' + DTP.eur(DTP.esempio.overageOra()), color: '#1A1C1E' });
@@ -390,7 +390,7 @@ class Component extends DCLogic {
           : { label: 'Richiesta in corso', value: 'Nessuna', sub: 'nessuna modifica dell’offerta in corso', color: '#1A1C1E' },
         { label: 'Origine del contratto', value: 'Commerciale', sub: 'stesso percorso della vetrina: firma del LR, controfirma Postel', color: '#1A1C1E' },
         { label: 'Pagamenti', value: money ? 'Nessun insoluto' : 'In regola', sub: money ? 'FT-2026-11012 da € 420 approvata, scade il 30 nov' : '1 fattura in scadenza, nessun sollecito', color: '#1A6B4A' },
-        { label: 'Modalità di rinnovo', value: '[DA DEFINIRE]', sub: 'decisione del cliente attesa entro il 30 nov', color: '#1A1C1E' }
+        { label: 'Stato del rinnovo e della conservazione dei dati', value: 'In scadenza', sub: 'rinnovo non tacito · decisione del cliente attesa entro il 30 nov · senza rinnovo, dal 28 feb 2027 servizio disabilitato e dati conservati per [DA DEFINIRE] giorni', color: '#1A1C1E' }
       ],
       who: WHO[P], nav: nav, ext: ext,
       isCom: isCom, isOps: isOps, head: head, vtabs: vtabs, view: view, m1kpi: m1kpi, svc: svc, orders: orders, tickets: tickets, alerts: alerts

@@ -283,7 +283,9 @@ class Component extends DCLogic {
       ['Richieste di acquisto dei delegati', 'inviate dal delegato operativo', true, true, false, false],
       ['Ordini confermati, attivati o bloccati', 'upgrade e modifiche dell’offerta', true, true, false, false],
       ['Fatture emesse', 'canone, overage, componente variabile', false, true, false, false],
-      ['Scadenza del contratto', 'entro le finestre di preavviso', true, true, false, false]
+      ['Scadenza del contratto (preavviso)', 'entro le finestre di preavviso · e-mail, PEC, in-app', true, true, false, false],
+      ['Servizio disabilitato per mancato rinnovo', 'alla scadenza senza rinnovo · e-mail, PEC, in-app', true, true, false, false],
+      ['Cancellazione dei dati imminente', 'prima della fine della conservazione · e-mail, PEC, in-app', true, true, false, false]
     ].map(function (e) { return { name: e[0], sub: e[1], lr: e[2], amm: e[3], op: e[4], opAllowed: e[5], opNo: !e[5] }; });
     return {
       services: services, events: events, customOpen: open,
