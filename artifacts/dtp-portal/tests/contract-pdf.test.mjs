@@ -571,3 +571,46 @@ test('modalità assistita: nessun «Acquista», né nel riepilogo né in fondo; 
     assert.match($('#code-out').textContent, /ritrova servizi, quantità e sconto/);
   } finally { dom.window.close(); }
 });
+
+test('«Seleziona tutto» porta ogni servizio almeno alla quantità minima senza ridurre le quantità più alte', () => {
+  const { w, $, dom } = setup();
+  try {
+    const D = w.DTP, i = D.services.findIndex(s => s.id === 'ver'), ver = D.services[i];
+    for (let k = 0; k < 3; k++) $(`[data-act="inc"][data-i="${i}"]`).click();
+    const btn = $('#select-all');
+    assert.equal(btn.textContent, 'Seleziona tutto');
+    assert.ok(btn.compareDocumentPosition($('#cat')) & w.Node.DOCUMENT_POSITION_FOLLOWING, 'sopra l\'elenco dei servizi');
+    btn.click();
+    const atteso = Object.fromEntries(D.services.map(s => [s.id, s.id === 'ver' ? 3 * ver.step : s.step]));
+    const outs = D.services.map((s, j) => $(`[data-act="inc"][data-i="${j}"]`).parentElement.querySelector('output').textContent);
+    assert.deepEqual(outs, D.services.map(s => D.num(atteso[s.id])));
+    assert.equal($('#side').querySelectorAll('.citems li').length, D.services.length, 'riepilogo aggiornato');
+    assert.ok($('#side').textContent.includes(D.eur(D.price(atteso).totale)));
+    assert.equal($('#confirm').textContent, 'Acquista · ' + D.eur(D.price(atteso).totale));
+    assert.equal(w.document.querySelectorAll('#cat .info').length, 0, 'nessuna dipendenza da segnalare');
+    btn.click();
+    assert.equal($(`[data-act="inc"][data-i="${i}"]`).parentElement.querySelector('output').textContent, D.num(3 * ver.step), 'un secondo clic non cambia nulla');
+  } finally { dom.window.close(); }
+});
+
+test('«Seleziona tutto» su una configurazione del commerciale fa decadere lo sconto; il pulsante c\'è anche in modalità assistita', () => {
+  const codes = { 'DTP-AAAA-BBBB': { qty: { cert: 500 }, sconto: 5, origine: 'Commerciale', commerciale: 'Marco Rinaldi' } };
+  let t = setup({ storage: { 'dtp-demo-config-codes': JSON.stringify(codes) } });
+  try {
+    t.$('#code-in').value = 'DTP-AAAA-BBBB';
+    t.$('#code-apply').click();
+    assert.ok(t.$('[data-testid="table-sconto"]'));
+    t.$('#select-all').click();
+    assert.equal(t.$('[data-testid="table-sconto"]'), null);
+    assert.match(t.$('#cat').textContent, /lo sconto del 5% vale solo per quella configurazione/);
+  } finally { t.dom.window.close(); }
+
+  t = setup({ role: 'com' });
+  try {
+    t.$('#sconto').value = '8';
+    t.$('#sconto').dispatchEvent(new t.w.Event('input', { bubbles: true }));
+    t.$('#select-all').click();
+    assert.equal(t.$('#side').querySelectorAll('.citems li').length, t.w.DTP.services.length);
+    assert.ok(t.$('[data-testid="table-sconto"]'), 'in modalità assistita lo sconto del commerciale resta');
+  } finally { t.dom.window.close(); }
+});
