@@ -353,7 +353,7 @@ class Component extends DCLogic {
     var expired = st.mode === 'expired';
     var tiles = [
       { label: 'Offerta configurata', value: '9 servizi', sub: DTP.eur(DTP.esempio.contratto().totale) + ' / anno · componente variabile e canone periodico', color: '#1A1C1E' },
-      expired ? { label: 'Scadenza', value: '28 feb 2027', sub: 'scaduto · servizio disabilitato', color: '#A3201A' } : { label: 'Scadenza', value: '28 feb 2027', sub: 'tra 108 giorni', color: '#1A1C1E' },
+      expired ? { label: 'Scadenza', value: '28 feb 2027', sub: 'scaduto · servizio disabilitato', color: '#A3201A' } : { label: 'Scadenza', value: '28 feb 2027', sub: 'tra 124 giorni', color: '#1A1C1E' },
       { label: 'Decisione sul rinnovo', value: 'entro 30 nov', sub: 'Rinnovo non tacito: rinnova entro la scadenza', color: '#B03A0B' },
       { label: 'Upgrade in attivazione', value: '1', sub: 'upgrade +500 Nuovi Certificati FEA', color: '#1A1C1E' }
     ];
@@ -397,7 +397,7 @@ class Component extends DCLogic {
         ['Conservazione dei dati', '[DA DEFINIRE] giorni', 'giorni residui prima della cancellazione', '#B03A0B'],
         ['Data di cancellazione', '[DA DEFINIRE]', '28 feb 2027 più il periodo di conservazione', '#1A1C1E']
       ] : [
-        ['Giorni alla scadenza', '108 giorni', 'scadenza 28 feb 2027', '#1A1C1E'],
+        ['Giorni alla scadenza', '124 giorni', 'scadenza 28 feb 2027', '#1A1C1E'],
         ['Finestre di preavviso', '[DA DEFINIRE]', 'avvisi via e-mail, PEC e in-app al legale rappresentante e al delegato amministrativo', '#1A1C1E'],
         ['Decisione sul rinnovo', 'entro 30 nov 2026', 'senza rinnovo, alla scadenza il servizio viene disabilitato', '#B03A0B']
       ]).map(function (x) { return { k: x[0], v: x[1], sub: x[2], color: x[3] }; }),

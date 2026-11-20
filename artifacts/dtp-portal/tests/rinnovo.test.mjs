@@ -28,8 +28,7 @@ test('nessun riferimento a rinnovo automatico o tacito e niente «modalità di r
   for (const f of readdirSync(mockups).filter(f => /\.(html|js)$/.test(f))) {
     const s = src(f);
     assert.doesNotMatch(s, /rinnovo (automatico|tacito)|tacito rinnovo|si rinnova automaticamente|rinnovo tra \d+ giorni/i, f);
-    /* Il testo del contratto (dtp-contract-pdf.js) mantiene il segnaposto «Modalità di rinnovo: [DA DEFINIRE]»: non è oggetto della issue. */
-    if (f !== 'dtp-contract-pdf.js') assert.doesNotMatch(s, /modalità di rinnovo/i, f);
+    assert.doesNotMatch(s, /modalità di rinnovo/i, f);
     assert.doesNotMatch(s, /Disdetti/, f);
   }
 });
@@ -39,7 +38,7 @@ test('M5-05 visibile a LR e DA, assente per DO e DT', () => {
     const t = openPage(M5, role).text();
     assert.match(t, /Scadenza e conservazione dei dati/, role);
     assert.match(t, /Rinnovo non tacito: rinnova entro la scadenza/, role);
-    assert.match(t, /Giorni alla scadenza 108 giorni/, role);
+    assert.match(t, /Giorni alla scadenza 124 giorni/, role);
     assert.match(t, /Finestre di preavviso/, role);
   }
   const op = openPage(M5, 'op');
@@ -72,6 +71,7 @@ test('«Rinnova» in M5-05: il DA invia per approvazione, il LR firma direttamen
 });
 
 test('testate, notifiche e console usano scadenza e conservazione', () => {
+  assert.match(openPage(M5, 'lr').text(), /Scadenza 28 feb 2027 tra 124 giorni/);
   assert.match(openPage('cliente-H-catalogo.html', 'lr').text(), /scadenza tra 124 giorni/);
   assert.match(openPage('cliente-M1-panoramica.html', 'lr').text(), /Scadenza tra 124 giorni/);
   assert.match(openPage('cliente-M2-dettaglio.html', 'lr').text(), /scadenza tra 124 giorni/);
@@ -85,7 +85,11 @@ test('testate, notifiche e console usano scadenza e conservazione', () => {
   for (const role of ['com', 'ops']) {
     const o2 = openPage('postel-O2-portafoglio.html', role).text();
     assert.match(o2, /In scadenza/, role);
+    assert.doesNotMatch(o2, /disdett/i, role);
+    if (role === 'com') assert.match(o2, /Il cliente ha comunicato che non rinnoverà: call di recupero/);
     assert.match(o2, /Scaduto, in conservazione .*giorni residui alla cancellazione/, role);
-    assert.match(openPage('postel-O5-scheda-cliente.html', role).text(), /Stato del rinnovo e della conservazione dei dati/, role);
+    const o5 = openPage('postel-O5-scheda-cliente.html', role).text();
+    assert.match(o5, /Stato del rinnovo e della conservazione dei dati/, role);
+    assert.match(o5, /Scadenza ?124 gg/, role);
   }
 });

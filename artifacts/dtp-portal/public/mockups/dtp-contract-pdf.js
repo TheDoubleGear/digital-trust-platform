@@ -72,7 +72,7 @@
     } else heading('Totale, IVA esclusa: ' + D.eur(pr.totale));
     text('Oltre le quantità configurate si applica l\'overage al prezzo unitario di listino. Ogni variazione successiva è una modifica dell\'offerta e del contratto. Modalità di fatturazione: [DA DEFINIRE].');
     heading('5. Durata');
-    text('12 mesi dalla data di controfirma di Postel. Modalità di rinnovo: [DA DEFINIRE].');
+    text('12 mesi dalla data di controfirma di Postel. Rinnovo non tacito: alla scadenza, in assenza di rinnovo, l\'accesso ai servizi è disabilitato e i dati sono conservati per [DA DEFINIRE] giorni, al termine dei quali sono cancellati.');
     heading('6. Firma, verifica e attivazione');
     text('Il contratto è firmato dal legale rappresentante fuori dalla piattaforma e caricato in formato PDF o P7M. Tipologie di firma ammesse: [DA DEFINIRE].');
     text("Nel processo definitivo Postel verifica la firma e la corrispondenza con i dati indicati, poi controfirma il contratto. La prima fattura è inviata all'e-mail del legale rappresentante con il collegamento per il pagamento, che avviene fuori dalla piattaforma. Il servizio è abilitato e le credenziali sono inviate solo dopo il pagamento. Questa bozza non avvia alcuna attivazione.");
