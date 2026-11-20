@@ -111,6 +111,10 @@ test('direct PDF download lists only configured services, the three components, 
     const flat = text.replace(/\s+/g, ' ');
     assert.ok(flat.includes("Rinnovo non tacito: alla scadenza, in assenza di rinnovo, l'accesso ai servizi è disabilitato e i dati sono conservati per [DA DEFINIRE] giorni, al termine dei quali sono cancellati."));
     assert.ok(!/modalità di rinnovo/i.test(flat));
+    assert.ok(flat.includes("12 mesi dall'attivazione dell'area clienti."));
+    assert.ok(!/controfirm/i.test(flat), 'nessuna controfirma di Postel nel contratto');
+    assert.ok(flat.includes('verifica in automatico la firma'));
+    assert.ok(/prima e-mail.*prima fattura.*seconda e-mail.*allega il contratto/.test(flat));
     assert.ok(!/bundle|enterprise|ricaric/i.test(text));
     assert.ok(text.includes('TESTO DA FORNIRE E APPROVARE A CURA DI POSTEL'));
     assert.ok(!text.includes('SecretNotInPDF123'));
@@ -304,9 +308,16 @@ test('signed contract accepts PDF and P7M, requires the legal representative dec
     assert.equal($('#submit').disabled, false);
     $('#submit').click();
     const done = $('#done').textContent;
-    for (const step of ['Verifica della firma e dei dati', 'Controfirma di Postel', 'fuori dalla piattaforma', 'Pagamento, abilitazione e credenziali', 'PS-01', 'I servizi non sono ancora attivi']) {
+    for (const step of ['Verifica della firma e dei dati', 'E-mail con esito e prima fattura', 'Pagamento della fattura, fuori dalla piattaforma', 'E-mail di conferma con contratto e attivazione dell’area clienti', 'Primo accesso', 'PS-01', 'I servizi non sono ancora attivi']) {
       assert.ok(done.includes(step), step);
     }
+    assert.doesNotMatch(done, /controfirm/i);
+    assert.doesNotMatch($('#contract').textContent, /controfirm/i);
+    assert.match($('#side-body').textContent, /Durata 12 mesi dall'attivazione/);
+    const dlg = $('#dlg-root').textContent;
+    assert.match(dlg, /prima fattura/);
+    assert.match(dlg, /contratto e l'attivazione dell'area clienti/);
+    assert.doesNotMatch(dlg, /controfirm/i);
     assert.doesNotMatch(done, /poteri/);
   } finally { dom.window.close(); }
 });

@@ -63,7 +63,7 @@ Le due sessioni non si parlano direttamente: il canale è questo repository.
     `dtp-vetrina.css` e `dtp-vetrina.js` per testata, banner, card e modulo di contatto dell'area pubblica).
     Le immagini sono in `img/`: `dtp-hero.svg` (banner), `dtp-accesso.svg` (pagina di accesso), `servizi/<id>.svg` (una per servizio).
     `dtp-modifiche.js` tiene le richieste di modifica dell'offerta del cliente di esempio (avvio, approvazione del
-    legale rappresentante, firma, controfirma) in `localStorage` `dtp-demo-modifiche`, condivise da H, M5, U, N, O2 e O5.
+    legale rappresentante, firma, verifica automatica della firma) in `localStorage` `dtp-demo-modifiche`, condivise da H, M5, U, N, O2 e O5.
     `dtp-subentro.js` tiene il cambio del legale rappresentante del cliente di esempio (invito da U-02, richiesta in V-03,
     esiti e approvazione in O2-07) in `localStorage` `dtp-demo-subentro`.
     Il pulsante "Ripristina dati demo" del login azzera queste richieste, il subentro e i codici di configurazione (`dtp-demo-config-codes`).
@@ -126,16 +126,21 @@ issue con etichetta `analisi` aperte: in caso di dubbio prevale la issue.
 - V-02 segue l'ordine: configurazione di servizi e quantità con carrello, con il comando «Seleziona tutto» (ogni servizio
   almeno alla quantità minima, le quantità più alte restano), "Genera codice di configurazione" e campo per inserire
   un codice esistente; dati di azienda e legale rappresentante con controlli formali
-  all'inserimento; contratto con i soli servizi configurati, firmato fuori dalla pagina e caricato; verifica della
-  firma, controfirma Postel, prima fattura pagata fuori dalla piattaforma, abilitazione del tenant e credenziali
-  via e-mail solo dopo il pagamento.
+  all'inserimento; contratto con i soli servizi configurati, firmato fuori dalla pagina e caricato; verifica automatica
+  della firma e dei dati; prima e-mail con l'esito e la prima fattura con il collegamento di pagamento; pagamento fuori
+  dalla piattaforma; seconda e-mail con conferma del pagamento, contratto e attivazione dell'area clienti con i servizi
+  (tenant e credenziali solo dopo il pagamento); primo accesso. La durata del contratto decorre dall'attivazione.
+- Postel non controfirma nessun atto (primo contratto, modifiche dell'offerta, rinnovi): le verifiche sono automatiche
+  e non serve un'azione del commerciale. In O2-07 il commerciale vede origine, stato ed esito delle verifiche; resta
+  solo l'approvazione del subentro del legale rappresentante.
 - Il primo acquisto è concluso solo dal legale rappresentante. Il commerciale può preparare in V-02, in modalità
   assistita, solo la configurazione di servizi e quantità con uno sconto entro una soglia controllata dal sistema,
   e genera il codice per il legale rappresentante. Il codice contiene solo servizi, quantità e sconto. Lo sconto
   decade se il legale rappresentante modifica la configurazione. Il commerciale non inserisce dati, non carica il
   contratto e non invia la richiesta.
 - Modifiche dell'offerta: il delegato amministrativo avvia, il legale rappresentante approva (evidenza conservata),
-  il delegato firma l'atto, Postel controfirma. Il legale rappresentante può avviare e firmare direttamente.
+  il delegato firma l'atto, la piattaforma verifica la firma in automatico e la modifica è attiva. Il legale
+  rappresentante può avviare e firmare direttamente.
 - La variazione del referente amministrativo per la fatturazione è riservata al legale rappresentante, che la avvia
   e la firma; il delegato amministrativo non può avviarla né firmarla.
 - Deleghe gerarchiche (U): il legale rappresentante nomina e modifica i poteri di tutti i delegati, il delegato

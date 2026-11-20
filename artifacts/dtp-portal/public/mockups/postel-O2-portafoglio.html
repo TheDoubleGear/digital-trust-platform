@@ -218,7 +218,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <section class="dtp-card" aria-labelledby="titolo-pratiche" style="flex: 999 1 640px; min-width: 0; background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
 <div>
 <h2 id="titolo-pratiche" style="margin: 0; font-size: 18px; font-weight: 600">Ordini e richieste contrattuali in corso</h2>
-<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Vetrina self-service e ordini del commerciale seguono lo stesso percorso: firma del cliente, controfirma Postel, attivazione.</p>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Vetrina self-service e ordini del commerciale seguono lo stesso percorso: firma del cliente, verifica automatica della firma e dei dati, e-mail con la prima fattura, pagamento, e-mail con contratto e attivazione. Postel non controfirma: il commerciale vede origine, stato ed esito delle verifiche.</p>
 </div>
 <div style="overflow-x: auto">
 <div role="table" aria-label="Ordini e richieste contrattuali" style="min-width: 760px; font-size: 13px">
@@ -511,38 +511,40 @@ class Component extends DCLogic {
         days: e[3], deletion: kept ? 'giorni residui alla cancellazione: [DA DEFINIRE] giorni di conservazione meno ' + e[3].replace('scaduto da ', '') : 'servizio attivo fino alla scadenza' };
     });
     var money = P !== 'ops', act = P === 'com';
-    var signedNow = st.signed || [];
+    /* Stati automatici del primo contratto: nessuna controfirma e nessuna azione del commerciale. */
     var PS = {
-      sign: ['Da controfirmare', '#FDE7DC', '#B03A0B'], client: ['In attesa di firma del cliente', '#FDF1D6', '#855800'],
+      verify: ['In verifica', '#E5EFFF', '#0047BB'], invoice: ['Fattura inviata, in attesa di pagamento', '#FDF1D6', '#855800'],
+      client: ['In attesa di firma del cliente', '#FDF1D6', '#855800'],
       conguaglio: ['Recesso · conguaglio da emettere', '#EAEFF5', '#3A424C'],
       active: ['Attivato', '#E3F3EA', '#1A6B4A']
     };
     var pratiche = [
-      ['p1', 'Studio Legale Martini', 'Nuovo contratto · 3 servizi configurati', 'firmato dal LR oggi alle 10:12', 'Vetrina', 'sign'],
+      ['p1', 'Studio Legale Martini', 'Nuovo contratto · 3 servizi configurati', 'firmato dal LR oggi alle 10:12 · verifica automatica della firma e dei dati in corso', 'Vetrina', 'verify'],
+      ['p3', 'Tipografia Emiliana S.r.l.', 'Nuovo contratto · 4 servizi configurati', 'firmato dal LR il 17 nov 2026 · firma e dati verificati: esito positivo · e-mail con la prima fattura e il collegamento di pagamento inviata il 17 nov 2026', 'Vetrina', 'invoice'],
       ['p2', 'Ottica Riviera S.r.l.', 'Nuovo contratto · offerta componibile, 6 servizi', 'configurazione assistita di S. Greco', 'Commerciale', 'client', 8],
       ['p4', 'Energia Verde Soc. Coop.', 'Recesso al 10/11/2026', 'disattivazione dei servizi alla data', 'Portale cliente', 'conguaglio'],
-      ['p5', 'Logistica Adriatica S.r.l.', 'Upgrade Verifiche Contatti: +10.000 unità', 'controfirmato il 26 ott 2026', 'Portale cliente', 'active']
+      ['p5', 'Logistica Adriatica S.r.l.', 'Upgrade Verifiche Contatti: +10.000 unità', 'firma verificata in automatico, attivato il 26 ott 2026', 'Portale cliente', 'active']
     ].map(function (r) {
-      var k = signedNow.indexOf(r[0]) >= 0 ? 'active' : r[5], s = PS[k], can = k === 'sign' && P === 'com';
+      var k = r[5], s = PS[k];
       /* Richieste nate da una configurazione assistita (O2-09): origine "Commerciale" e sconto applicato, nascosto a chi non vede dati economici. */
-      var detail = k === 'active' && r[5] === 'sign' ? 'controfirmato ora: servizi attivi, accesso inviato al LR' : r[3];
+      var detail = r[3];
       if (r[6] && money) detail += ' · sconto ' + DTP.num(r[6]) + '% sul prezzo complessivo';
       return { client: r[1], what: r[2], detail: detail, origin: r[4], state: s[0], bg: s[1], fg: s[2],
-        hasAct: can, noAct: !can, btn: 'Controfirma',
-        note: k === 'sign' ? 'controfirma del commerciale' : (k === 'conguaglio' ? 'a cura di rating e fatturazione' : '—'),
-        act: function () { set({ signed: signedNow.concat([r[0]]) }); } };
+        hasAct: false, noAct: true,
+        note: { verify: 'verifica automatica', invoice: 'pagamento fuori dalla piattaforma; poi e-mail con contratto e attivazione', client: 'in attesa del cliente', conguaglio: 'a cura di rating e fatturazione' }[k] || '—' };
     });
     /* O2-07: modifiche dell'offerta di Assicurazioni Aurora dal portale cliente (dtp-modifiche.js), con lo stato
-       dell'approvazione del legale rappresentante. La controfirma del commerciale attiva la modifica. */
+       dell'approvazione del legale rappresentante. Dopo la firma la verifica è automatica e la modifica si attiva:
+       nessuna azione del commerciale. */
     var MOD = window.DTPModifiche, recent = Date.now() - 7 * 24 * 3600 * 1000;
-    var modPratiche = MOD.list().filter(function (r) { return r.state !== 'done' || (r.countersigned && r.countersigned.at > recent); }).map(function (r) {
-      var s = MOD.STATES[r.state], can = r.state === 'countersign' && P === 'com';
+    var modPratiche = MOD.list().filter(function (r) { return r.state !== 'done' || (r.verified && r.verified.at > recent); }).map(function (r) {
+      var s = MOD.STATES[r.state];
       return { client: 'Assicurazioni Aurora S.p.A.', what: r.id + ' · ' + r.what,
-        detail: 'avviata da ' + MOD.PEOPLE[r.by].name + ' (' + MOD.PEOPLE[r.by].role + ') · ' + MOD.approvalText(r),
+        detail: 'avviata da ' + MOD.PEOPLE[r.by].name + ' (' + MOD.PEOPLE[r.by].role + ') · ' + MOD.approvalText(r) +
+          (r.verified ? ' · firma verificata in automatico il ' + MOD.full(r.verified.at) + ': esito positivo' : ''),
         origin: 'Portale cliente', state: s.postel, bg: s.bg, fg: s.fg,
-        hasAct: can, noAct: !can, btn: 'Controfirma',
-        note: r.state === 'countersign' ? 'controfirma del commerciale' : (r.state === 'approval' ? 'in attesa del cliente' : '—'),
-        act: function () { MOD.countersign(r.id); set({}); } };
+        hasAct: false, noAct: true,
+        note: r.state === 'approval' || r.state === 'sign' ? 'in attesa del cliente' : (r.state === 'done' ? 'verifica automatica' : '—') };
     });
     /* O2-07: subentro del legale rappresentante. Esiti di firma digitale e visura camerale; il commerciale approva
        solo a verifiche positive, poi la nuova utenza è attiva e la precedente revocata. Fino ad allora il cliente

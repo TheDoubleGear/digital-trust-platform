@@ -66,7 +66,7 @@
     '<li><span>Fee di attivazione</span><strong>[DA DEFINIRE]</strong></li>' +
     '<li><span>Canone periodico</span><strong>[DA DEFINIRE] · periodicità ' + e(D.periodicita) + '</strong></li>' +
     '<li><span>Oltre la quantità configurata</span><strong>overage al prezzo unitario di listino</strong></li>' +
-    '<li><span>Durata</span><strong>12 mesi dalla controfirma, rinnovo non tacito</strong></li>' +
+    '<li><span>Durata</span><strong>12 mesi dall\'attivazione, rinnovo non tacito</strong></li>' +
     '</ul>';
   var depLine = deps.length ? ' e ' + deps.map(function (d) { return D.num(d.step) + ' unità di ' + e(d.name); }).join(', ') + ', necessari' + (deps.length === 1 ? 'o' : '') + ' per questo servizio' : '';
   $('buy-box').innerHTML =
@@ -84,7 +84,7 @@
 
   /* Domande frequenti: risposte dalle regole del percorso di acquisto. */
   var faq = [
-    ['Come si acquista ' + s.name + '?', 'Con «Acquista» si apre la configurazione con il servizio già nel carrello alla quantità minima. Puoi cambiare le quantità, poi inserisci i dati dell\'azienda e del legale rappresentante, scarichi il contratto, lo firmi e lo carichi. Dopo la verifica della firma, la controfirma di Postel e il pagamento della prima fattura ricevi le credenziali di accesso.'],
+    ['Come si acquista ' + s.name + '?', 'Con «Acquista» si apre la configurazione con il servizio già nel carrello alla quantità minima. Puoi cambiare le quantità, poi inserisci i dati dell\'azienda e del legale rappresentante, scarichi il contratto, lo firmi e lo carichi. Dopo la verifica della firma e il pagamento della prima fattura ricevi via e-mail il contratto e l’accesso all’area clienti.'],
     ['Qual è la quantità minima acquistabile?', 'La quantità minima è di ' + D.num(s.step) + ' unità; si possono acquistare quantità maggiori a multipli di ' + D.num(s.step) + ' unità.'],
     ['Cosa succede se supero la quantità acquistata?', s.terms],
     ['Il servizio richiede altri servizi?', deps.length ? 'Sì: richiede ' + names(deps) + ', che viene aggiunto automaticamente al carrello con la quantità minima. Puoi modificarne la quantità ma non toglierlo finché ' + s.name + ' resta nel carrello.' : 'No, si può acquistare da solo.'],

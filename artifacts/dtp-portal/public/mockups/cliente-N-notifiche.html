@@ -275,9 +275,10 @@ class Component extends DCLogic {
     var C = { soglia: ['#FDE7DC', '#B03A0B'], contratto: ['#E5EFFF', '#0047BB'], fattura: ['#E5EFFF', '#0047BB'], delega: ['#E5EFFF', '#0047BB'], ticket: ['#FDF1D6', '#855800'], tec: ['#FDF1D6', '#855800'] };
     var readAll = !!st.readAll;
     /* Eventi delle modifiche dell'offerta (dtp-modifiche.js): "Modifica dell'offerta da approvare" per il legale
-       rappresentante, invio ed esito dell'approvazione per il delegato amministrativo. */
+       rappresentante, invio ed esito dell'approvazione per il delegato amministrativo, attivazione dopo la verifica
+       automatica della firma (ultimi 7 giorni) per entrambi. Postel non controfirma. */
     var MOD = window.DTPModifiche, LR = MOD.PEOPLE.lr.name;
-    var modN = [];
+    var modN = [], recent = Date.now() - 7 * 24 * 3600 * 1000;
     MOD.list().forEach(function (r) {
       var href = 'cliente-M5-contratto.html#richiesta-' + r.id;
       if (r.state === 'approval') {
@@ -289,6 +290,11 @@ class Component extends DCLogic {
         modN.push([r.approval.at, ['contratto', 'Esito dell’approvazione: ' + r.id + (ok ? ' approvata' : ' rifiutata'),
           r.what + (ok ? '. Approvata da ' + LR + ': ora puoi firmare l’atto di modifica.' : '. Rifiutata da ' + LR + ' · motivazione: ' + r.approval.reason + '.'),
           MOD.when(r.approval.at), 'e-mail, in-app', href, ok ? 'Firma l’atto' : 'Apri la richiesta', true, ['amm']]]);
+      }
+      if (r.state === 'done' && r.verified && r.verified.at > recent) {
+        modN.push([r.verified.at, ['contratto', 'Modifica dell’offerta attiva: ' + r.id,
+          r.what + '. Firma dell’atto verificata in automatico con esito positivo: la modifica è attiva.',
+          MOD.when(r.verified.at), 'e-mail, in-app', href, 'Apri la richiesta', true, ['lr', 'amm']]]);
       }
     });
     modN = modN.sort(function (a, b) { return b[0] - a[0]; }).map(function (x) { return x[1]; });
@@ -317,6 +323,7 @@ class Component extends DCLogic {
       ['Fattura in scadenza o sollecito', 'Fatture', [1, 1, 0, 1], [0, 1, 0, 1], ['lr', 'amm']],
       ['Modifica dell’offerta da approvare', 'Contratto', [1, 0, 0, 1], [0, 0, 0, 1], ['lr']],
       ['Esito dell’approvazione di una modifica', 'Contratto', [1, 0, 0, 1], [0, 0, 0, 1], ['amm']],
+      ['Modifica dell’offerta attiva', 'Contratto', [1, 0, 0, 1], [0, 0, 0, 1], ['lr', 'amm']],
       ['Scadenza del contratto (preavviso)', 'Contratto', [1, 1, 0, 1], [0, 1, 0, 1], ['lr', 'amm']],
       ['Servizio disabilitato per mancato rinnovo', 'Contratto', [1, 1, 0, 1], [0, 1, 0, 1], ['lr', 'amm']],
       ['Cancellazione dei dati imminente', 'Contratto', [1, 1, 0, 1], [0, 1, 0, 1], ['lr', 'amm']],

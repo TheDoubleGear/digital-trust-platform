@@ -82,7 +82,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div class="dtp-hero" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
 <div>
 <h1 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em">Contratto</h1>
-<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">DTP-2026-0418 · 9 servizi configurati · dal 1 mar 2026 al 28 feb 2027 · firmato da Paolo Ferretti, controfirmato da Postel</p>
+<p style="margin: 4px 0 0; font-size: 14px; color: #4D5762">DTP-2026-0418 · 9 servizi configurati · dal 1 mar 2026 al 28 feb 2027 · firmato da Paolo Ferretti, firma verificata in automatico</p>
 </div>
 <a class="dtp-btn dtp-btn-o" href="#contratto-pdf" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid #B8C2CF; background: #FFFFFF; font-size: 14px; font-weight: 600; color: #1A1C1E; text-decoration: none; display: flex; align-items: center">Scarica il contratto firmato</a>
 </div>
@@ -173,7 +173,7 @@ a{color:#0047BB}a:hover{color:#003A99}
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
 <div>
 <h2 id="titolo-richieste" style="margin: 0; font-size: 18px; font-weight: 600">Richieste di modifica</h2>
-<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Il primo contratto lo firma solo il legale rappresentante. Ogni modifica dell'offerta avviata dal delegato amministrativo richiede l'approvazione del legale rappresentante, conservata come evidenza in piattaforma; poi il delegato firma l'atto di modifica e Postel controfirma. Il legale rappresentante può avviare e firmare direttamente.</p>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Il primo contratto lo firma solo il legale rappresentante. Ogni modifica dell'offerta avviata dal delegato amministrativo richiede l'approvazione del legale rappresentante, conservata come evidenza in piattaforma; poi il delegato firma l'atto di modifica, la piattaforma verifica la firma in automatico e la modifica si attiva, senza controfirma di Postel. Il legale rappresentante può avviare e firmare direttamente.</p>
 </div>
 </div>
 <ol aria-label="Percorso di una modifica" style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px">
@@ -408,7 +408,7 @@ class Component extends DCLogic {
         if (MOD.create({ role: P, what: 'Rinnovo del contratto', detail: 'creata da «Scadenza e conservazione dei dati» · dettaglio da completare' })) set({ made: made.concat(['Rinnova']) });
       }
     };
-    /* M5-03: percorso avvio -> approvazione del LR -> firma dell'AMM -> controfirma Postel -> attivazione. */
+    /* M5-03: percorso avvio -> approvazione del LR -> firma dell'AMM -> verifica automatica della firma -> modifica attiva. */
     var rejecting = st.rejecting || null;
     var focus = (location.hash || '').replace('#richiesta-', '');
     var requests = MOD.list().map(function (r) {
@@ -422,8 +422,7 @@ class Component extends DCLogic {
         approval: 'In attesa dell’approvazione di ' + LR,
         rejected: 'Modifica non attivata',
         sign: 'In attesa della firma di ' + AMM,
-        countersign: 'In attesa della controfirma Postel',
-        done: r.countersigned ? 'Controfirmata da Postel il ' + MOD.full(r.countersigned.at).replace(' alle ', ', ore ') : 'Controfirmata da Postel'
+        done: r.verified ? 'Firma verificata in automatico il ' + MOD.full(r.verified.at).replace(' alle ', ', ore ') + ' · modifica attiva' : 'Firma verificata in automatico · modifica attiva'
       }[s];
       return { id: r.id, what: r.what, detail: r.detail + (r.amount != null ? ' · prezzo ricalcolato ' + DTP.eur(r.amount) : ''), by: MOD.PEOPLE[r.by].name,
         state: M.label, bg: M.bg, fg: M.fg, evidence: ev, evFg: evFg, rowBg: focus === r.id ? '#F2F8FF' : 'transparent',
@@ -448,10 +447,10 @@ class Component extends DCLogic {
         'Evidenza conservata', ok ? '#E3F3EA' : '#FBE3E1', ok ? '#1A6B4A' : '#A3201A', 'Scarica'];
     });
     var acts = all.filter(function (r) { return r.state === 'done' && r.signed; }).map(function (r) {
-      return ['Atto di modifica ' + r.id, 'Firmato da ' + MOD.PEOPLE[r.signed.by].name + ' il ' + MOD.full(r.signed.at) + (r.approval ? ' dopo l’approvazione del LR' : '') + ', controfirmato da Postel', 'Conservato', '#E3F3EA', '#1A6B4A', 'Scarica'];
+      return ['Atto di modifica ' + r.id, 'Firmato da ' + MOD.PEOPLE[r.signed.by].name + ' il ' + MOD.full(r.signed.at) + (r.approval ? ' dopo l’approvazione del LR' : '') + ', firma verificata in automatico', 'Conservato', '#E3F3EA', '#1A6B4A', 'Scarica'];
     });
     var docs = [
-      ['Contratto DTP-2026-0418', 'Firma elettronica avanzata del LR, firma digitale Postel, marca temporale · conservato a norma', 'Conservato', '#E3F3EA', '#1A6B4A', 'Scarica'],
+      ['Contratto DTP-2026-0418', 'Firma elettronica avanzata del LR, verifica automatica della firma, marca temporale · conservato a norma', 'Conservato', '#E3F3EA', '#1A6B4A', 'Scarica'],
       ['Allegato A · servizi e quantità', 'Servizi e quantità configurati, listino 2026', 'Conservato', '#E3F3EA', '#1A6B4A', 'Scarica']
     ].concat(acts, evidences, [
       ['Condizioni generali, versione 1 dic 2026', isLr ? 'Da accettare prima del prossimo acquisto o modifica' : 'In attesa di accettazione del legale rappresentante', 'Da accettare', '#FDF1D6', '#855800', isLr ? 'Leggi e accetta' : 'Leggi']
@@ -466,8 +465,8 @@ class Component extends DCLogic {
         { n: '1', what: 'Avvio', who: 'delegato amministrativo' },
         { n: '2', what: 'Approvazione', who: 'legale rappresentante · evidenza conservata' },
         { n: '3', what: 'Firma dell\'atto', who: 'delegato amministrativo' },
-        { n: '4', what: 'Controfirma', who: 'commerciale Postel' },
-        { n: '5', what: 'Attivazione', who: 'alla controfirma' }
+        { n: '4', what: 'Verifica della firma', who: 'automatica, senza controfirma di Postel' },
+        { n: '5', what: 'Attivazione', who: 'subito dopo la verifica' }
       ],
       requests: requests, docs: docs
     };
