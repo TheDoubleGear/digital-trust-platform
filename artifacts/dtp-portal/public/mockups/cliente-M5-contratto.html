@@ -97,6 +97,40 @@ a{color:#0047BB}a:hover{color:#003A99}
 </sc-for>
 </section>
 
+<section class="dtp-card" id="scadenza" aria-labelledby="titolo-scadenza" style="background: #FFFFFF; border: 1px solid {{exp.border}}; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div>
+<h2 id="titolo-scadenza" style="margin: 0; font-size: 18px; font-weight: 600">Scadenza e conservazione dei dati</h2>
+<p style="margin: 4px 0 0; font-size: 13px; color: #4D5762">Rinnovo non tacito: il contratto non si rinnova da solo. Senza rinnovo entro la scadenza l'accesso ai servizi viene disabilitato e i dati restano conservati per [DA DEFINIRE] giorni, poi vengono cancellati.</p>
+</div>
+<div role="group" aria-label="Stato dimostrativo del contratto" style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: #4D5762">
+<span>Stato dimostrativo:</span>
+<sc-for list="{{exp.modes}}" as="m" hint-placeholder-count="2">
+<button type="button" aria-pressed="{{m.pressed}}" onClick="{{m.pick}}" style="min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid {{m.border}}; background: {{m.bg}}; color: {{m.fg}}; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{m.label}}</button>
+</sc-for>
+</div>
+</div>
+<sc-if value="{{exp.expired}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; gap: 12px; align-items: center; padding: 12px 16px; border-radius: 6px; background: #FBE3E1; border: 1px solid #F2BDB8; color: #7A1712; font-size: 14px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A3201A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M4.9 4.9l14.2 14.2"></path></svg>
+<span><strong style="font-weight: 600">Contratto scaduto il 28 feb 2027 · servizio disabilitato per mancato rinnovo.</strong> I servizi non elaborano nuove richieste; i dati sono conservati fino alla data di cancellazione.</span>
+</div>
+</sc-if>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px">
+<sc-for list="{{exp.facts}}" as="x" hint-placeholder-count="3">
+<div style="border: 1px solid #D9E1EC; border-radius: 6px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+<dt style="font-size: 13px; color: #4D5762; font-weight: 500">{{x.k}}</dt>
+<dd style="margin: 0; font-size: 20px; font-weight: 600; color: {{x.color}}">{{x.v}}</dd>
+<dd style="margin: 0; font-size: 12px; color: #4D5762">{{x.sub}}</dd>
+</div>
+</sc-for>
+</dl>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<button class="dtp-btn dtp-btn-p" type="button" onClick="{{exp.renew}}" style="min-height: 44px; padding: 0 22px; border-radius: 999px; border: 0; background: #0047BB; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{exp.btn}}</button>
+<span style="font-size: 13px; color: #3A424C">{{exp.note}}</span>
+</div>
+</section>
+
 <section class="dtp-card" aria-labelledby="titolo-offerta" style="background: #FFFFFF; border: 1px solid #D9E1EC; border-radius: 6px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
 <div>
 <h2 id="titolo-offerta" style="margin: 0; font-size: 18px; font-weight: 600">Servizi e quantità configurati</h2>
@@ -315,10 +349,12 @@ class Component extends DCLogic {
       return { label: t[0], href: t[1], current: on ? 'page' : 'false', weight: on ? 600 : 500, color: on ? '#0047BB' : '#4D5762', line: on ? '#0047BB' : 'transparent' };
     });
     var isLr = P === 'lr';
+    /* M5-05: stato dimostrativo commutabile tra contratto in corso e contratto scaduto, in conservazione. */
+    var expired = st.mode === 'expired';
     var tiles = [
       { label: 'Offerta configurata', value: '9 servizi', sub: DTP.eur(DTP.esempio.contratto().totale) + ' / anno · componente variabile e canone periodico', color: '#1A1C1E' },
-      { label: 'Scadenza', value: '28 feb 2027', sub: 'tra 108 giorni', color: '#1A1C1E' },
-      { label: 'Decisione sul rinnovo', value: 'entro 30 nov', sub: 'modalità di rinnovo: [DA DEFINIRE]', color: '#B03A0B' },
+      expired ? { label: 'Scadenza', value: '28 feb 2027', sub: 'scaduto · servizio disabilitato', color: '#A3201A' } : { label: 'Scadenza', value: '28 feb 2027', sub: 'tra 108 giorni', color: '#1A1C1E' },
+      { label: 'Decisione sul rinnovo', value: 'entro 30 nov', sub: 'Rinnovo non tacito: rinnova entro la scadenza', color: '#B03A0B' },
       { label: 'Upgrade in attivazione', value: '1', sub: 'upgrade +500 Nuovi Certificati FEA', color: '#1A1C1E' }
     ];
     var IC = {
@@ -348,6 +384,30 @@ class Component extends DCLogic {
           if (MOD.create({ role: P, kind: a[6], what: a[5], detail: 'creata da «Cosa puoi fare sul contratto» · dettaglio da completare' })) set({ made: made.concat([a[1]]) });
         } };
     });
+    /* M5-05: "Rinnova" segue lo stesso percorso dell'azione Rinnova: il LR firma, il DA invia per approvazione. */
+    var renewDone = made.indexOf('Rinnova') >= 0;
+    var exp = {
+      expired: expired, border: expired ? '#F2BDB8' : '#D9E1EC',
+      modes: [['active', 'Contratto in corso'], ['expired', 'Contratto scaduto']].map(function (m) {
+        var on = (m[0] === 'expired') === expired;
+        return { label: m[1], pressed: on ? 'true' : 'false', bg: on ? '#0047BB' : '#FFFFFF', fg: on ? '#FFFFFF' : '#1A1C1E', border: on ? '#0047BB' : '#B8C2CF', pick: function () { set({ mode: m[0] }); } };
+      }),
+      facts: (expired ? [
+        ['Servizio', 'Disabilitato', 'dal 28 feb 2027, per mancato rinnovo', '#A3201A'],
+        ['Conservazione dei dati', '[DA DEFINIRE] giorni', 'giorni residui prima della cancellazione', '#B03A0B'],
+        ['Data di cancellazione', '[DA DEFINIRE]', '28 feb 2027 più il periodo di conservazione', '#1A1C1E']
+      ] : [
+        ['Giorni alla scadenza', '108 giorni', 'scadenza 28 feb 2027', '#1A1C1E'],
+        ['Finestre di preavviso', '[DA DEFINIRE]', 'avvisi via e-mail, PEC e in-app al legale rappresentante e al delegato amministrativo', '#1A1C1E'],
+        ['Decisione sul rinnovo', 'entro 30 nov 2026', 'senza rinnovo, alla scadenza il servizio viene disabilitato', '#B03A0B']
+      ]).map(function (x) { return { k: x[0], v: x[1], sub: x[2], color: x[3] }; }),
+      btn: renewDone ? 'Richiesta di rinnovo creata' : 'Rinnova',
+      note: (isLr ? 'Come legale rappresentante avvii e firmi il rinnovo direttamente.' : 'Il rinnovo arriva al legale rappresentante per l’approvazione; dopo l’approvazione firmi tu l’atto.') + (expired ? ' Possibilità di rinnovare durante la conservazione: [DA DEFINIRE].' : ''),
+      renew: function () {
+        if (renewDone) return;
+        if (MOD.create({ role: P, what: 'Rinnovo del contratto', detail: 'creata da «Scadenza e conservazione dei dati» · dettaglio da completare' })) set({ made: made.concat(['Rinnova']) });
+      }
+    };
     /* M5-03: percorso avvio -> approvazione del LR -> firma dell'AMM -> controfirma Postel -> attivazione. */
     var rejecting = st.rejecting || null;
     var focus = (location.hash || '').replace('#richiesta-', '');
@@ -398,7 +458,7 @@ class Component extends DCLogic {
     ]).map(function (d) { return { name: d[0], meta: d[1], state: d[2], bg: d[3], fg: d[4], link: d[5] }; });
     return {
       who: WHO[P], subtabs: subtabs, money: money, noMoney: !money,
-      tiles: tiles, actions: actions,
+      tiles: tiles, actions: actions, exp: exp,
       config: DTP.price(DTP.esempio.config).lines.map(function (l) { return { name: l.name, family: l.family, qty: l.qty.toLocaleString('it-IT'), amount: DTP.eur(l.amount) }; }),
       offerLine: (function (c) { return 'componente variabile ' + DTP.eur(c.variabile) + ' · canone periodico ' + DTP.eur(c.canone) + ' (' + DTP.SEGNAPOSTO + ')'; })(DTP.esempio.contratto()),
       actionsNote: isLr ? 'Come legale rappresentante avvii e firmi direttamente ogni operazione, senza passaggio di approvazione.' : 'Le tue richieste arrivano al legale rappresentante per l\'approvazione e restano «In approvazione» finché non decide; dopo l\'approvazione firmi tu l\'atto di modifica.',

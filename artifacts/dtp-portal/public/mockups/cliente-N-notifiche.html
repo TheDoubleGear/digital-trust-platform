@@ -297,7 +297,7 @@ class Component extends DCLogic {
       ['ticket', 'Aggiornamento sulla richiesta TCK-20418', 'La richiesta è passata agli specialisti Postel.', 'oggi 11:20', 'e-mail, in-app', 'cliente-A-assistenza.html', 'Apri la richiesta', false, ['lr', 'op']],
       ['tec', 'Credenziale di produzione in scadenza', 'Il segreto dell\'applicazione «Portale web» scade il 30 nov 2026.', 'ieri 09:00', 'e-mail, in-app', 'tecnico-D0-developer-portal.html', 'Apri il developer portal', true, ['tec', 'lr']],
       ['fattura', 'Nuova fattura disponibile', 'Overage di ottobre, € 420, scadenza 30 nov 2026. Accettata dal Sistema di Interscambio.', '2 nov', 'e-mail, PEC, in-app', 'cliente-M4-fatture.html', 'Vedi e paga', false, ['lr', 'amm']],
-      ['contratto', 'Decisione sul rinnovo entro il 30 nov', 'Il contratto scade il 28 feb 2027.', '1 nov', 'e-mail, PEC, in-app', 'cliente-M5-contratto.html', 'Vai al contratto', false, ['lr', 'amm']],
+      ['contratto', 'Scadenza del contratto (preavviso)', 'Il contratto scade il 28 feb 2027 e non si rinnova da solo: decidi sul rinnovo entro il 30 nov.', '1 nov', 'e-mail, PEC, in-app', 'cliente-M5-contratto.html#scadenza', 'Vai al contratto', false, ['lr', 'amm']],
       ['delega', 'Delega tecnica attiva', 'Andrea Colombo ha firmato l\'accettazione della delega tecnica.', '28 ott', 'e-mail, in-app', 'cliente-U-utenze.html', 'Vai alle deleghe', false, ['lr', 'tec']]
     ]);
     var F = st.f || 'all';
@@ -317,7 +317,9 @@ class Component extends DCLogic {
       ['Fattura in scadenza o sollecito', 'Fatture', [1, 1, 0, 1], [0, 1, 0, 1], ['lr', 'amm']],
       ['Modifica dell’offerta da approvare', 'Contratto', [1, 0, 0, 1], [0, 0, 0, 1], ['lr']],
       ['Esito dell’approvazione di una modifica', 'Contratto', [1, 0, 0, 1], [0, 0, 0, 1], ['amm']],
-      ['Scadenza del contratto e finestra di preavviso', 'Contratto', [1, 1, 0, 1], [0, 1, 0, 1], ['lr', 'amm']],
+      ['Scadenza del contratto (preavviso)', 'Contratto', [1, 1, 0, 1], [0, 1, 0, 1], ['lr', 'amm']],
+      ['Servizio disabilitato per mancato rinnovo', 'Contratto', [1, 1, 0, 1], [0, 1, 0, 1], ['lr', 'amm']],
+      ['Cancellazione dei dati imminente', 'Contratto', [1, 1, 0, 1], [0, 1, 0, 1], ['lr', 'amm']],
       ['Nomina, modifica o revoca di una delega', 'Deleghe', [1, 0, 0, 1], [1, 0, 0, 1], ['lr', 'amm', 'op', 'tec']],
       ['Aggiornamento di una richiesta di assistenza', 'Assistenza', [1, 0, 0, 1], [0, 0, 0, 1], ['lr', 'amm', 'op', 'tec']],
       ['Credenziali in scadenza o passaggio in produzione', 'Developer portal', [1, 0, 0, 1], [0, 0, 0, 1], ['lr', 'tec']],
