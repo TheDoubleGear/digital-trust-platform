@@ -14,7 +14,10 @@ Per avvio, comandi, stack e note tecniche dettagliate vedi anche `README.md` e `
   e da Replit, che si sincronizza su GitHub; prima di intervenire recupera l'ultima versione del ramo `main`.
 - Interfaccia, testi e documentazione in italiano, con registro professionale.
 - I segnaposto come `[DA DEFINIRE]`, `[IBAN POSTEL]` o `[TESTO DA FORNIRE E APPROVARE A CURA DI POSTEL]`
-  indicano decisioni ancora aperte: non sostituirli con valori inventati.
+  indicano decisioni ancora aperte: non sostituirli con valori inventati. Fanno eccezione i giorni che l'analisi
+  ha fissato come «valore d'esempio» (60 giorni per pagare la prima fattura, solleciti a 7, 15 e 30 giorni, sospensione
+  a 45 giorni, conservazione dei dati per 90 giorni, promemoria delle deleghe rinviate a 7 giorni): vanno mostrati
+  sempre con la dicitura «valore d'esempio».
 - Mantieni ben visibile la dicitura "Prototipo dimostrativo" e non presentare mai il login come un sistema di sicurezza.
 
 ## Flusso di lavoro
@@ -62,6 +65,9 @@ Le due sessioni non si parlano direttamente: il canale è questo repository.
     (`dtp-auth.js`, `dtp-catalogo.js`, `dtp-contract-pdf.js`, `dtp-modifiche.js`, `dtp-subentro.js`, `dtp-theme.css`, `dtp-acquisto.css`,
     `dtp-vetrina.css` e `dtp-vetrina.js` per testata, banner, card e modulo di contatto dell'area pubblica).
     Le immagini sono in `img/`: `dtp-hero.svg` (banner), `dtp-accesso.svg` (pagina di accesso), `servizi/<id>.svg` (una per servizio).
+    `dtp-postel-ext.css` dà l'aspetto ai sistemi esterni di Postel simulati (accesso e registrazione, pagamento).
+    `design/` contiene le schermate di riferimento grafico fornite dalla sessione di analisi (indice in `design/index.html`):
+    non fanno parte della navigazione e non vanno modificate; si integrano nelle pagine indicate dalle issue.
     `dtp-modifiche.js` tiene le richieste di modifica dell'offerta del cliente di esempio (avvio, approvazione del
     legale rappresentante, firma, verifica automatica della firma) in `localStorage` `dtp-demo-modifiche`, condivise da H, M5, U, N, O2 e O5.
     `dtp-subentro.js` tiene il cambio del legale rappresentante del cliente di esempio (invito da U-02, richiesta in V-03,
@@ -112,7 +118,11 @@ issue con etichetta `analisi` aperte: in caso di dubbio prevale la issue.
 
 - Offerta componibile: non esistono bundle predefiniti (Base, Medium, Pro, Enterprise) né ricariche. Il cliente
   sceglie servizi e quantità; il prezzo è calcolato dalla piattaforma come componente variabile, fee di attivazione
-  e canone periodico. Ogni variazione è un upgrade o una modifica dell'offerta e del contratto.
+  e canone mensile, riferito al tenant e non ai servizi. Ogni variazione è un upgrade o una modifica dell'offerta e del
+  contratto. Base, Medium, Pro e Integrator sono solo tipologie con cui Postel raggrupperà i clienti, non pacchetti.
+  L'offerta è venduta per workflow: i servizi oggi a catalogo sono esempi, finché Postel non fornisce quelli definitivi.
+- Un'azienda può avere più tenant, cioè più configurazioni tecnico-commerciali distinte; il primo tenant è abilitato
+  dopo il pagamento della prima fattura. Creazione dei tenant aggiuntivi e scelta del tenant nel portale sono `[DA DEFINIRE]`.
 - V-01 è la pagina iniziale del sito, in sola consultazione e senza carrello: testata con le aree di offerta, banner
   con le azioni «Acquista» (verso V-02) e «Contatta un consulente» (verso V-05); card con immagine,
   breve descrizione e prezzo "a partire da" (prezzo della quantità minima con la quantità); caratteristiche, finalità,
@@ -124,19 +134,26 @@ issue con etichetta `analisi` aperte: in caso di dubbio prevale la issue.
   «Contatta un consulente» e barra di sessione, marchio Postel e menu delle aree di offerta. L'accesso demo è su `/accesso`.
 - V-05 raccoglie la richiesta di contatto con controlli formali e conferma; nel prototipo nulla viene inviato o salvato.
 - V-02 segue l'ordine: configurazione di servizi e quantità con carrello, con il comando «Seleziona tutto» (ogni servizio
-  almeno alla quantità minima, le quantità più alte restano), "Genera codice di configurazione" e campo per inserire
-  un codice esistente; dati di azienda e legale rappresentante con controlli formali
-  all'inserimento; contratto con i soli servizi configurati, firmato fuori dalla pagina e caricato; verifica automatica
-  della firma e dei dati; prima e-mail con l'esito e la prima fattura con il collegamento di pagamento; pagamento fuori
-  dalla piattaforma; seconda e-mail con conferma del pagamento, contratto e attivazione dell'area clienti con i servizi
-  (tenant e credenziali solo dopo il pagamento); primo accesso. La durata del contratto decorre dall'attivazione.
+  almeno alla quantità minima, le quantità più alte restano), "Genera codice di configurazione", campo per inserire
+  un codice esistente e campo per il codice sconto del commerciale; accesso o registrazione con le credenziali del
+  sistema di accesso di Postel (esterno e simulato, senza SPID né CIE), con i dati riportati nel modulo; dati di azienda
+  e legale rappresentante con controlli formali all'inserimento e verifica di codice fiscale e partita IVA, compresa la
+  loro corrispondenza, prima di generare il contratto; contratto con i soli servizi configurati, firmato con la firma
+  digitale del legale rappresentante fuori dalla pagina e caricato come allegato; verifica automatica della firma e
+  della visura camerale (per chi non è iscritto al Registro delle imprese, corrispondenza tra codice fiscale del titolare
+  e partita IVA); riepilogo con la prima fattura e la scelta tra «Paga ora» (sistema di pagamento di Postel, esterno e
+  simulato) e «Paga dopo» (IBAN e causale del bonifico); prima e-mail con l'esito e la prima fattura; seconda e-mail con
+  conferma del pagamento, contratto e attivazione dell'area clienti con i servizi (tenant abilitato e accesso con le
+  credenziali dell'account solo dopo il pagamento); primo accesso. Senza pagamento entro 60 giorni (valore d'esempio) la
+  richiesta decade. La durata del contratto decorre dall'attivazione.
 - Postel non controfirma nessun atto (primo contratto, modifiche dell'offerta, rinnovi): le verifiche sono automatiche
   e non serve un'azione del commerciale. In O2-07 il commerciale vede origine, stato ed esito delle verifiche; resta
   solo l'approvazione del subentro del legale rappresentante.
 - Il primo acquisto è concluso solo dal legale rappresentante. Il commerciale può preparare in V-02, in modalità
   assistita, solo la configurazione di servizi e quantità con uno sconto entro una soglia controllata dal sistema,
-  e genera il codice per il legale rappresentante. Il codice contiene solo servizi, quantità e sconto. Lo sconto
-  decade se il legale rappresentante modifica la configurazione. Il commerciale non inserisce dati, non carica il
+  e genera per il legale rappresentante il codice di configurazione, che contiene solo servizi e quantità, e il codice
+  sconto, da inserire nel campo dedicato dell'acquisto. Lo sconto decade se il legale rappresentante modifica la
+  configurazione. Il commerciale non inserisce dati, non carica il
   contratto e non invia la richiesta.
 - Modifiche dell'offerta: il delegato amministrativo avvia, il legale rappresentante approva (evidenza conservata),
   il delegato firma l'atto, la piattaforma verifica la firma in automatico e la modifica è attiva. Il legale
@@ -146,8 +163,11 @@ issue con etichetta `analisi` aperte: in caso di dubbio prevale la issue.
 - Deleghe gerarchiche (U): il legale rappresentante nomina e modifica i poteri di tutti i delegati, il delegato
   amministrativo dei soli delegati operativo e tecnico, il delegato operativo del solo delegato tecnico. Sostituzione
   e revoca restano al legale rappresentante. Chi firma l'atto di delega quando nomina è `[DA DEFINIRE]`.
-- Il rinnovo non è tacito: alla scadenza senza rinnovo il servizio è disabilitato e i dati sono conservati per
-  `[DA DEFINIRE]` giorni, poi cancellati.
+- Il rinnovo non è tacito ed è manuale, con avvisi e solleciti di scadenza: alla scadenza senza rinnovo il servizio è
+  disabilitato e i dati sono conservati per 90 giorni (valore d'esempio), poi cancellati.
+- Pagamenti: nessun addebito automatico; ogni fattura si paga con «Paga ora» o con bonifico; l'approvazione della fattura
+  è una presa visione che non blocca il pagamento. A fattura scaduta la DTP invia al cliente solleciti a 7, 15 e 30 giorni
+  e ne informa commerciale e controllo di gestione; a 45 giorni il tenant è sospeso fino al pagamento (valori d'esempio).
 - Cambio del legale rappresentante: percorso pubblico V-03, avviato da U-02 (legale rappresentante o delegato
   amministrativo) o dall'area pubblica; l'utenza precedente è revocata solo dopo verifica della firma digitale,
   visura camerale e approvazione di Postel.
