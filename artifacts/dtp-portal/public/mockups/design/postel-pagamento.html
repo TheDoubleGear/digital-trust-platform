@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sistema di pagamento di Postel (simulato) – Design – Digital Trust Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../dtp-acquisto.css"><link rel="stylesheet" href="../dtp-postel-ext.css">
+<link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+</head>
+<body class="px-body">
+<div class="pv-demo" role="note" style="background:#FFF4DC;border-bottom:1px solid #F0D9A6;color:#5B3E00;font-size:13px"><div class="wrap" style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;min-height:40px">
+<strong>Design · Sistema di pagamento di Postel</strong><span>Pagina esterna alla DTP, simulata: pagamento della prima fattura con «Paga ora» ed esito.</span><a href="index.html" style="margin-left:auto;color:#5B3E00;font-weight:600">Tutte le schermate di design</a></div></div>
+<header class="px-head"><div class="wrap"><a class="px-mark" href="#"><svg width="36" height="36" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0047BB"></rect><path d="M17 7l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path><path d="M13 16.5l3 3 5-5.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg><span><b>postel</b><small>Pagamenti</small></span></a><span class="px-sim">Servizio simulato nel prototipo</span></div></header><main class="px-main"><div class="demo" role="note"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg><span><strong>Prototipo dimostrativo.</strong> Sistema di pagamento di Postel simulato: nessun addebito: dati di prova, nessuna operazione reale. Comportamento e collegamenti sono descritti nella issue.</span></div><div class="px-grid"><section class="px-card" aria-labelledby="pp-t"><div><h1 id="pp-t">Pagamento della fattura</h1><p class="lead">Digital Trust Platform · prima fattura</p></div>
+<div class="px-amount"><span>Importo</span><strong>4.349,30 €</strong></div>
+<ul class="kv"><li><span>Beneficiario</span><strong>Postel</strong></li><li><span>Fattura</span><strong>FT-BOZZA-0001</strong></li><li><span>Causale</span><strong>DTP RA-1234567</strong></li></ul>
+<div class="px-methods" aria-label="Metodi di pagamento"><span>Carta</span><span>Conto</span><span>Altri metodi</span></div>
+<div class="fgrid"><div class="f wide"><label>Titolare della carta <i aria-hidden="true">*</i></label><input value="Mario Rossi"></div><div class="f wide"><label>Numero della carta <i aria-hidden="true">*</i></label><input value="4000 0000 0000 0000"><span class="hint">Usa solo dati di prova: nessun addebito.</span></div><div class="f"><label>Scadenza <i aria-hidden="true">*</i></label><input value="12/30"></div><div class="f"><label>Codice di sicurezza <i aria-hidden="true">*</i></label><input value="123"></div></div>
+<div class="actions"><a class="btn btn-o" href="V02-pagamento.html">Annulla e torna alla Digital Trust Platform</a><a class="btn btn-p btn-lg" href="#esito">Paga 4.349,30 €</a></div></section>
+<aside class="px-aside"><div class="px-card"><h2>Pagamento sicuro</h2><p>I dati di pagamento sono gestiti da Postel e non vengono conservati dalla Digital Trust Platform.</p></div></aside></div>
+<section class="px-card px-ok" id="esito" aria-labelledby="po-t"><span class="big" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span><p class="eyebrow">Stato dopo il pagamento</p><h1 id="po-t">Pagamento riuscito</h1><p class="lead" style="margin:0">Abbiamo registrato il pagamento di 4.349,30 €. Riceverai l'e-mail di conferma con il contratto e l'attivazione dell'area clienti.</p><a class="btn btn-p btn-lg" href="V02-pagamento.html">Torna alla Digital Trust Platform</a></section>
+</main><footer class="px-foot">Postel · Sistema di pagamento simulato a scopo dimostrativo</footer>
+</body>
+</html>

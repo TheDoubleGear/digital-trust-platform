@@ -1,0 +1,32 @@
+/* Sistemi esterni di Postel simulati nel prototipo: accesso e registrazione, pagamento.
+   Aspetto volutamente distinto dalla DTP: testata bianca essenziale, nessun menu, contenuto centrato.
+   Si carica dopo dtp-acquisto.css e ne riusa variabili, campi e pulsanti. */
+.px-body{background:#F5F6F8;min-height:100vh;display:flex;flex-direction:column}
+.px-head{background:#FFFFFF;border-bottom:3px solid var(--yellow-b)}
+.px-head .wrap{max-width:1040px;display:flex;align-items:center;gap:14px;min-height:64px}
+.px-mark{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.px-mark b{font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--blue)}
+.px-mark small{display:block;font-size:12px;color:var(--mut);font-weight:500}
+.px-sim{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;background:var(--warn-l);border:1px solid #F0D9A6;color:#5B3E00;font-size:12px;font-weight:700}
+.px-main{flex:1;width:100%;max-width:1040px;margin:0 auto;padding:28px 32px 48px;display:flex;flex-direction:column;gap:18px}
+.px-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
+.px-card{background:#FFFFFF;border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);padding:28px;display:flex;flex-direction:column;gap:18px}
+.px-card h1{font-size:24px}.px-card .lead{margin:4px 0 0;font-size:14px;color:var(--mut)}
+.px-from{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:6px;background:var(--pale);border:1px solid #CFE0FA;font-size:13px;color:var(--ink2)}
+.px-from svg{flex:0 0 22px}
+.px-tabs{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:999px;padding:4px;background:#F2F4F7}
+.px-tabs button{min-height:42px;border:0;border-radius:999px;background:transparent;font:inherit;font-size:14px;font-weight:600;color:var(--mut);cursor:pointer}
+.px-tabs button[aria-selected=true]{background:#FFFFFF;color:var(--blue);box-shadow:0 1px 3px rgba(11,31,77,.15)}
+.px-aside{display:flex;flex-direction:column;gap:12px}
+.px-aside .px-card{padding:20px;gap:10px}
+.px-aside h2{font-size:15px}
+.px-aside p,.px-aside li{font-size:13px;color:var(--txt2);margin:0}
+.px-aside ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.px-amount{display:flex;justify-content:space-between;align-items:baseline;padding:16px 18px;border-radius:6px;background:var(--pale);border:1px solid #CFE0FA}
+.px-amount strong{font-size:28px;color:var(--blue)}
+.px-methods{display:flex;flex-wrap:wrap;gap:8px}
+.px-methods span{padding:6px 12px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-weight:700;color:var(--mut);background:#FFFFFF}
+.px-ok{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.px-ok .big{width:56px;height:56px;border-radius:28px;background:var(--ok);color:#fff;display:grid;place-items:center}
+.px-foot{font-size:12px;color:var(--mut);text-align:center;padding:18px 16px;border-top:1px solid var(--line);background:#FFFFFF}
+@media (max-width:900px){.px-grid{grid-template-columns:1fr}.px-main{padding:20px 16px 40px}.px-card{padding:20px}}
